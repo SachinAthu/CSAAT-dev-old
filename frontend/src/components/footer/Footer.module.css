@@ -1,0 +1,19 @@
+.footer {
+  background: #f7f8f9;
+  padding: 10px 0 30px 0;
+  color: #364146;
+  font-size: 14px;
+  border-top: 2px solid #e9ecee;
+}
+
+.copyright {
+  text-align: center;
+  padding-top: 30px;
+}
+
+.credits {
+  padding-top: 8px;
+  text-align: center;
+  font-size: 13px;
+  color: #364146;
+}

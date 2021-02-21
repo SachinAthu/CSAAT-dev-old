@@ -1,0 +1,123 @@
+# IDEs
+.project
+.pydevproject
+.idea
+.vscode
+.settings
+
+# Random files
+*~
+\#*
+
+virtualenv/
+htmlcov/
+src/static_dist/
+src/static_root/
+
+# Python compiled byte code
+*.pyc
+
+# SQLite3 database
+*.sqlite
+
+# Node modules
+node_modules/
+yarn.lock
+npm-debug.log
+
+# Coverage 
+coverage/
+.coverage
+.cache
+
+# static validation files
+.eslintrc
+.sass-lint.yml
+.prospector.yml
+.coveragerc
+
+# in case we run shippable tests don't include it
+shippable/
+
+media/
+
+# JPEG
+*.jpg
+*.jpeg
+*.jpe
+*.jif
+*.jfif
+*.jfi
+
+# JPEG 2000
+*.jp2
+*.j2k
+*.jpf
+*.jpx
+*.jpm
+*.mj2
+
+# JPEG XR
+*.jxr
+*.hdp
+*.wdp
+
+# Graphics Interchange Format
+*.gif
+
+# RAW
+*.raw
+
+# Web P
+*.webp
+
+# Portable Network Graphics
+*.png
+
+# Animated Portable Network Graphics
+*.apng
+
+# Multiple-image Network Graphics
+*.mng
+
+# Tagged Image File Format
+*.tiff
+*.tif
+
+# Scalable Vector Graphics
+*.svg
+*.svgz
+
+# Portable Document Format
+*.pdf
+
+# X BitMap
+*.xbm
+
+# BMP
+*.bmp
+*.dib
+
+# ICO
+*.ico
+
+# 3D Images
+*.3dm
+*.max
+
+*.WEBM
+*.MPG 
+*.MP2 
+*.MPEG 
+*.MPE 
+*.MPV
+*.OGG
+*.MP4 
+*.M4P
+*.M4V
+*.AVI
+*.WMV
+*.MOV
+*.QT
+*.FLV
+*.SWF
