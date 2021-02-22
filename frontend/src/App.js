@@ -5,29 +5,11 @@ import $ from "jquery";
 import classes from "./App.module.css";
 import Header from "./components/header/Header";
 import Footer from "./components/footer/Footer";
+import Profiles from './components/profiles/Profiles'
 
 import store from "./store";
 
 const App = () => {
-  var scrolltoOffset = $('#app_header').outerHeight() - 1;
-
-  // // Activate smooth scroll on page load with hash links in the url
-  // $(document).ready(function () {
-  //   if (window.location.hash) {
-  //     var initial_nav = window.location.hash;
-  //     if ($(initial_nav).length) {
-  //       var scrollto = $(initial_nav).offset().top - scrolltoOffset;
-  //       $("html, body").animate(
-  //         {
-  //           scrollTop: scrollto,
-  //         },
-  //         1500,
-  //         "easeInOutExpo"
-  //       );
-  //     }
-  //   }
-  // });
-
   // Back to top button
   $(window).on('scroll', function () {
     if ($(this).scrollTop() > 100) {
@@ -58,8 +40,10 @@ const App = () => {
         <Header />
 
         <Router>
-          <main id="app_main" className={`container ${classes.main}`}>
-            content
+          <main id="app_main" className={`${classes.main}`}>
+            <Switch>
+              <Route exact path="/" component={Profiles} />
+            </Switch>
           </main>
         </Router>
 

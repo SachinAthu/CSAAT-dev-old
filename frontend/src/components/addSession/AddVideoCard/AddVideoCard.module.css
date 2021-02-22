@@ -1,0 +1,96 @@
+.container {
+  height: auto;
+}
+
+.card_content{
+  box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.1);
+  min-height: 18rem;
+}
+
+.videoplay {
+  box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.3);
+}
+
+.info {
+  padding: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.info_1 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 5px 0 34px 0;
+}
+
+.info_2 {
+  display: flex;
+  justify-content: flex-end;
+  margin: 2px 0;
+}
+
+.info_1_1 {
+  font-size: 0.9rem;
+  color: rgba(0, 0, 0, 0.7);
+  font-weight: 600;
+}
+
+.info_1_2 {
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: 600;
+}
+
+.editbtn,
+.removebtn {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+  width: 5rem;
+  margin: 0 1px;
+  padding: 5px 5px;
+}
+
+.removebtn {
+  background-color: rgba(220, 53, 70, 0.9);
+}
+
+.removebtn:hover {
+  background-color: rgba(220, 53, 70, 1);
+}
+
+.editbtn {
+  background-color: rgba(40, 167, 70, 0.9);
+}
+
+.editbtn:hover {
+  background-color: rgba(40, 167, 70, 1);
+}
+.empty {
+  width: 100%;
+  height: 18rem;
+  box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.1);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.empty button {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  box-shadow: 0 2px 15px 2px rgba(0, 0, 0, 0.1);
+  border-radius: 50px;
+}
+
+.empty button svg {
+  fill: var(--color-primary);
+  transform: scale(1.8);
+}
+
+

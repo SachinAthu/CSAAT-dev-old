@@ -27,6 +27,8 @@ SECRET_KEY = 'ssnd(2dzd&8che4=gw@j+c4el5xym9xzsf^_gbr!-*ip^zh7xv'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+CORS_ORIGIN_ALLOW_ALL = True
+
 ALLOWED_HOSTS = [
     '*'
 ]

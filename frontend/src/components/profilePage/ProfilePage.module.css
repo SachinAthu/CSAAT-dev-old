@@ -1,0 +1,125 @@
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+}
+
+.details h3,
+.sessions h3 {
+  font-size: 1.8rem;
+  color: rgba(0, 0, 0, 0.8);
+  margin: 10px 0 25px 0;
+}
+
+.details_div {
+  display: flex;
+  align-items: center;
+}
+
+.details_div_1 {
+  width: 135px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.details_div_2 {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 1);
+}
+
+.viewDocbtn {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-info);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.viewDocbtn:hover {
+  color: var(--color-info-dark);
+}
+
+.details_div:first-child {
+  color: red;
+}
+
+.sessions {
+    
+}
+
+.sessions_div1,
+.sessions_div2 {
+    display: flex;
+    align-items: center;
+}
+
+.sessions_div1{
+  margin-bottom: 60px;
+}
+
+.sessions_div1 span {
+    margin-right: 20px;
+    font-size: 0.85rem;
+}
+
+.sessions_div1 select {
+    height: 32px;
+    min-width: 13rem;
+}
+
+.sessions h3 {
+  margin: 40px 0 35px 0;
+}
+
+.addbtn {
+    height: 32px;
+    width: 9rem;
+    color: #fff;
+    background-color: var(--color-primary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 1px 1px;
+    margin-left: auto;
+  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .addbtn:hover{
+      background-color: var(--color-primary-dark);
+  }
+  
+  .addbtn svg{
+    fill: #fff;
+    transform: scale(0.75);
+    margin-right: 6px;
+  }
+
+  .videoplay{
+    height: auto;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+  }
+
+  .novideo{
+    width: 100%;
+    height: 30rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.novideo img{
+  width: 22rem;
+  margin-bottom: 30px;
+}
+
+

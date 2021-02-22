@@ -1,12 +1,12 @@
 import $ from "jquery";
 
-import logo from "../../logo.svg";
+import logo from "../../assets/svg/logo.svg";
 import classes from "./Header.module.css";
 
 const Header = () => {
   // Toggle .header-scrolled class to #header when page is scrolled
   $(window).scroll(function () {
-    if ($(this).scrollTop() > 100) {
+    if ($(this).scrollTop() > 140) {
       $("#app_header")
         .children("div")
         .first()
