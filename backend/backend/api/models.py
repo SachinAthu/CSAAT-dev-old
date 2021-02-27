@@ -4,6 +4,12 @@ from django.contrib.auth.models import User
 # video profile of a child
 class Profiles(models.Model):
     # has to be unique true. for development only.
+    def consent_doc_path(instance, filename):
+        return f'{instance.clinic_no}/consent_doc/{instance.consent_doc_name}'
+    
+    def __str__(self):
+        return self.name
+
     clinic_no = models.CharField(
         max_length=50, blank=False, null=False, unique=False)
     name = models.CharField(max_length=200, blank=False, null=False)
@@ -11,11 +17,8 @@ class Profiles(models.Model):
         auto_now=False, auto_now_add=False, blank=True, null=True)
     sex = models.CharField(max_length=20, blank=True, null=True)
     consent_doc = models.FileField(
-        upload_to='consent_docs', max_length=100, blank=True, null=True)
+        upload_to=consent_doc_path, max_length=100, blank=True, null=True)
     consent_doc_name = models.CharField(max_length=200, blank=True, null=True)
-
-    def __str__(self):
-        return self.name
 
 
 # video session
@@ -52,6 +55,15 @@ class CameraAngles(models.Model):
 
 # all uploaded videos
 class Videos(models.Model):
+
+    def video_upload_path(instance, filename):
+        profile = Profiles.objects.get(id=instance.profile)
+        session = Sessions.objects.get(id=instance.session)
+        return f'{profile.clinic_no}/sessions/session_{session.date}_{session.id}'
+
+    def __str__(self):
+        return self.name
+
     profile = models.ForeignKey(
         Profiles, on_delete=models.CASCADE, null=False, related_name='videos', default='')
     session = models.ForeignKey(
@@ -61,13 +73,10 @@ class Videos(models.Model):
     name = models.CharField(max_length=200, blank=False, null=False)
     description = models.CharField(max_length=1000, blank=True, null=True)
     video = models.FileField(
-        upload_to='videos', max_length=100, blank=True, null=True)
+        upload_to=video_upload_path, max_length=100, blank=True, null=True)
     filetype = models.CharField(max_length=50, blank=True, null=True)
     duration = models.CharField(max_length=50, blank=True, null=True)
     camera_angle = models.CharField(max_length=200, blank=True, null=True)
-
-    def __str__(self):
-        return self.name
 
 
 # edited video clips

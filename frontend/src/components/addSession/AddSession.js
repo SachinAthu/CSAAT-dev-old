@@ -102,7 +102,7 @@ class AddSession extends Component {
         })
         console.log("video uploaded", res.data);
       }catch(err){
-        console.log(err)
+        if(err) console.log(err)
       }
     }
     this.setState({ uploading: false });

@@ -7,13 +7,13 @@ import DataTable from "react-data-table-component";
 import classes from "./Profiles.module.css";
 import Breadcrumbs from "../breadcrumbs/Breadcrumbs";
 import AddProfile from "./addProfile/AddProfile";
-import EmptySVG from '../../assets/svg/empty.svg' 
-import {customStyles} from './DatatableStyles'
+import EmptySVG from "../../assets/svg/empty.svg";
+import { customStyles } from "./DatatableStyles";
+import DeleteConformPopup from "../deleteConfirmPopup/DeleteConformPopup";
 
 import {
   getProfiles,
   setActiveProfile,
-  deleteProfile,
 } from "../../actions/ProfileActions";
 
 class Profiles extends Component {
@@ -21,7 +21,6 @@ class Profiles extends Component {
     profiles: PropTypes.array.isRequired,
     getProfiles: PropTypes.func.isRequired,
     setActiveProfile: PropTypes.func.isRequired,
-    deleteProfile: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -30,6 +29,8 @@ class Profiles extends Component {
       searchVal: "",
       addOrEdit: false,
       editProfile: null,
+      selectedRows: [],
+      deleting: false,
     };
   }
 
@@ -37,7 +38,9 @@ class Profiles extends Component {
     this.fetchProfiles();
   }
 
+  ///////////////////////////////////////////////
   ////////////////// functions //////////////////
+  ///////////////////////////////////////////////
   fetchProfiles = () => {
     axios
       .get("http://localhost:8000/api/profiles/")
@@ -131,7 +134,7 @@ class Profiles extends Component {
 
             <button
               className={classes.removebtn}
-              onClick={this.deleteProfile.bind(this, row.id)}
+              onClick={this.deleteProfileHandler.bind(this, row)}
             >
               <svg
                 version="1.1"
@@ -140,7 +143,7 @@ class Profiles extends Component {
                 height="24"
                 viewBox="0 0 24 24"
               >
-                <title>Remove</title>
+                <title>Delete</title>
                 <path d="M18.984 3.984v2.016h-13.969v-2.016h3.469l1.031-0.984h4.969l1.031 0.984h3.469zM6 18.984v-12h12v12q0 0.797-0.609 1.406t-1.406 0.609h-7.969q-0.797 0-1.406-0.609t-0.609-1.406z"></path>
               </svg>
             </button>
@@ -174,6 +177,7 @@ class Profiles extends Component {
         paginationPerPage={10}
         paginationRowsPerPageOptions={[10, 15, 20, 25, 30]}
         customStyles={customStyles}
+        onSelectedRowsChange={this.handleRowSelect}
       />
     );
 
@@ -184,7 +188,25 @@ class Profiles extends Component {
     this.setState({ addOrEdit: false, editProfile: null });
   };
 
+  closeDeleteConfirmPopup = (res) => {
+    console.log(res)
+    if(res){
+      this.setState({selectedRows: []})
+    }
+    this.setState({ deleting: false });
+  };
+
+  /////////////////////////////////////////////////////
   ////////////////// event listeners //////////////////
+  /////////////////////////////////////////////////////
+  handleRowSelect = (state) => {
+    // You can use setState or dispatch with something like Redux so we can use the retrieved data
+    console.log("Selected Rows: ", state.selectedRows);
+    this.setState({
+      selectedRows: state.selectedRows,
+    });
+  };
+
   onSearchValChange = (e) => {
     this.setState({
       searchVal: e.target.value,
@@ -196,25 +218,29 @@ class Profiles extends Component {
     console.log(e);
   };
 
-  deleteProfile = (id) => {
+  deleteProfileHandler = (profile) => {
     // console.log(id);
 
-    axios
-      .delete(`http://localhost:8000/api/delete-profile/${id}`)
-      .then((res) => {
-        console.log(res.data);
-        this.props.deleteProfile(id);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    // open delete confirm box
+    let profiles = [...this.state.selectedRows];
+    
+    let res = false;
+    for (let i = 0; i < profiles.length; i++) {
+      if (profiles[i].id === profile.id) res = true;
+    }
+    
+    if (!res) {
+      profiles.push(profile);
+    }
+    
+    this.setState({deleting: true, selectedRows: profiles})
   };
 
   toProfileHandler = (profile) => {
     // console.log(profile);
     this.props.setActiveProfile(profile);
     this.props.history.push({
-      pathname: "/profile_detail",
+      pathname: `/${profile.id}`,
     });
   };
 
@@ -232,7 +258,7 @@ class Profiles extends Component {
   };
 
   render() {
-    const { searchVal, addOrEdit, editProfile } = this.state;
+    const { searchVal, addOrEdit, editProfile, deleting, selectedRows } = this.state;
 
     const table = this.createDataTable();
 
@@ -295,6 +321,16 @@ class Profiles extends Component {
           {addOrEdit ? (
             <AddProfile close={this.closeAddingWindow} profile={editProfile} />
           ) : null}
+
+          {deleting ? (
+            <DeleteConformPopup 
+              close={(res) => this.closeDeleteConfirmPopup(res)} 
+              many={selectedRows.length > 0 ? true : false}
+              header={"profile"}
+              msg={"By deleting a profile all referenced sessions, documents, videos will also be deleted."}
+              data={selectedRows}
+            />
+          ) : null}
         </div>
       </div>
     );
@@ -308,5 +344,4 @@ const mapStateToProps = (state) => ({
 export default connect(mapStateToProps, {
   getProfiles,
   setActiveProfile,
-  deleteProfile,
 })(Profiles);

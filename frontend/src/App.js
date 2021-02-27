@@ -6,6 +6,7 @@ import classes from "./App.module.css";
 import Header from "./components/header/Header";
 import Footer from "./components/footer/Footer";
 import Profiles from './components/profiles/Profiles'
+import ProfilePage from './components/profilePage/ProfilePage'
 
 import store from "./store";
 
@@ -37,17 +38,18 @@ const App = () => {
   return (
     <Provider store={store}>
       <div className={classes.App}>
-        <Header />
-
         <Router>
+          <Header />
+
           <main id="app_main" className={`${classes.main}`}>
             <Switch>
               <Route exact path="/" component={Profiles} />
+              <Route path="/:profile_id" component={ProfilePage} />
             </Switch>
           </main>
+  
+          <Footer />
         </Router>
-
-        <Footer />
 
         <a href="#" className={`${classes.back_to_top}`}>
           <i className={"bx bxs-up-arrow-alt"}></i>

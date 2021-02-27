@@ -1,4 +1,5 @@
 import $ from "jquery";
+import { Link } from "react-router-dom";
 
 import logo from "../../assets/svg/logo.svg";
 import classes from "./Header.module.css";
@@ -42,16 +43,16 @@ const Header = () => {
           <nav className={`${classes.nav_menu} d-none d-lg-block`}>
             <ul>
               <li>
-                <a href="#">Profiles</a>
+                <Link to="/">Profiles</Link>
               </li>
               <li>
-                <a href="#">Quick Upload</a>
+                <Link to="/">Quick Upload</Link>
               </li>
               <li>
-                <a href="#">Cameras</a>
+                <Link to="/">Cameras</Link>
               </li>
               <li>
-                <a href="#">Admin Panel</a>
+                <a href="http://127.0.0.1:8000/admin/" target="_blank">Admin Panel</a>
               </li>
               <li className={`${classes.seperater}`}>&nbsp;</li>
               <li className={`${classes.drop_down}`}>

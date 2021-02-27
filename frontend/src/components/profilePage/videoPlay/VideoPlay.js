@@ -6,7 +6,7 @@ import { Redirect } from "react-router-dom";
 
 import styles from "./VideoPlay.module.css";
 import NoVideosSVG from "./no_videos.svg";
-import Player from "../../Player/Player";
+import Player from "../../player/Player";
 
 import { deleteSession } from "../../../actions/SessionActions";
 

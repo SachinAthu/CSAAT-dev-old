@@ -4,7 +4,8 @@ import axios from "axios";
 import { connect } from "react-redux";
 
 import styles from "./ProfilePage.module.css";
-import EmptySVG from '../../assets/svg/empty.svg' 
+import EmptySVG from '../../assets/svg/empty.svg'
+import Breadcrumbs from '../breadcrumbs/Breadcrumbs'
 
 import {
   getSessions,

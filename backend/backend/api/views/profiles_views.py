@@ -2,6 +2,9 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.core.files.storage import default_storage
+import os
+from django.conf import settings
+import shutil
 
 from api.models import Profiles
 from api.serializers import ProfilesSerializer
@@ -26,9 +29,12 @@ def addProfile(request):
     serializer = ProfilesSerializer(data=request.data)
 
     if serializer.is_valid():
+    #     doc_name = serializer.objects.consent_doc_name
+    #     if doc_name:
+    #         serializer.objects.consent_doc_name = str(serializer.objects.clinic_no + '_consent_doc') 
         serializer.save()
     else:
-        print(serializer)
+        print(serializer.errors)
 
     return Response(serializer.data)
 
@@ -62,16 +68,16 @@ def deleteProfile(request, pk):
     profile = Profiles.objects.get(id=pk)
     res = ''
 
-    try:
-        profile.delete()
-        res += 'Profile record was deleted. '
-        if profile.consent_doc:
-            if default_storage.exists(profile.consent_doc.path):
-                default_storage.delete(profile.consent_doc.path)
-                res += 'Profile record was deleted. '
+    profile.delete()
+    res += 'Profile record was deleted. '
+    if profile.consent_doc:
+        if default_storage.exists(profile.consent_doc.path):
+            shutil.rmtree(os.path.join(settings.MEDIA_ROOT, profile.clinic_no), ignore_errors=True)
+            res += 'All referenced files were deleted. '
+    # try:
 
-    except:
-        res = 'error, something went wrong!'
+    # except:
+    #     res = 'error, something went wrong!'
 
     return Response(res)
 

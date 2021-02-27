@@ -42,8 +42,6 @@ def updateVideo(request, pk):
     serializer = VideosSerializer(data=request.data, instance=video)
 
     if serializer.is_valid():
-        # should create a thumbnail before save if video changed
-        ##
         serializer.save()
     else:
         print(serializer.errors)

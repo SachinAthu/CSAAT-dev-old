@@ -80,13 +80,22 @@ export class AddProfile extends Component {
     if (male.checked) sex = male.value;
     else sex = female.value;
 
+    // validation
+    if(consent_doc.type !== 'application/pdf'){
+      alert('PDF files only')
+      return
+    }
+
     const formData = new FormData();
     formData.append("clinic_no", clinic_no);
     formData.append("name", name);
     formData.append("dob", dob);
     formData.append("sex", sex);
     formData.append("consent_doc", consent_doc);
-    formData.append("consent_doc_name", consent_doc_name);
+
+    let type = ''
+    if(consent_doc.type === 'application/pdf') type = 'pdf'
+    formData.append("consent_doc_name", `consent_doc_${clinic_no}.${type}`);
 
     let url = "http://localhost:8000/api/add-profile/";
     let method = "POST";
