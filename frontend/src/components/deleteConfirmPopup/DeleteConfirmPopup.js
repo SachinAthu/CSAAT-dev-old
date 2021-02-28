@@ -28,7 +28,7 @@ const DeleteConformPopup = (props) => {
   };
 
   const deleteProfiles = async (profiles = props.data) => {
-      setDeleting(true)
+    setDeleting(true);
     for (let i = 0; i < profiles.length; i++) {
       try {
         let res = await axios.delete(
@@ -37,13 +37,35 @@ const DeleteConformPopup = (props) => {
         console.log(res.data);
         props.deleteProfile(profiles[i].id);
       } catch (err) {
-          if(err) console.log(err);
+        if (err) console.log(err);
       }
     }
 
-    setDeleting(false)
+    setDeleting(false);
     close(true);
   };
+
+  const deleteSession = (session = props.data) => {
+    setDeleting(true);
+    
+    axios
+    .delete(`http://localhost:8000/api/delete-session/${session.id}`)
+    .then((res) => {
+      console.log(res.data);
+      this.props.deleteSession(session.id);
+      setDeleting(false);
+      close(true);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
+  };
+
+  const deleteVideo = (video = props.data) => {
+    setDeleting(true)
+    setDeleting(false)
+  }
 
   /////////////////////////////////////////////////////
   ////////////////// event listeners //////////////////
@@ -54,8 +76,10 @@ const DeleteConformPopup = (props) => {
         deleteProfiles();
         break;
       case "session":
+        deleteSession();
         break;
       case "video":
+        deleteVideo();
         break;
       default:
         console.log("Invalid switch case input");

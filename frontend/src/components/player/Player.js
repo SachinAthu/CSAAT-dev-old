@@ -12,31 +12,17 @@ class Player extends Component {
   
     componentDidMount() {
     // instantiate Video.js
-    console.log(this.props.play)
-    let url = ''
-
-    if(this.props.play === true){
-      url = 'http://127.0.0.1:8000' + this.props.src
-    }else if(this.props.play === false){
-      // make a blog url from video input
-      url = URL.createObjectURL(this.props.src)
-      
-      console.log(this.props.src)
-      console.log('url', url)
-      console.log(this.props.play)
-    }
-    
-
     const videoJsOptions = {
       autoplay: false,
       controls: true,
       preload: 'auto',
-      fluid: true,
+      fluid: false,
       inactivityTimeout: 0,
       playbackRates: [0.5, 1, 1.5, 2],
+      aspectRatio:this.props.aspectRatio,
       sources: [
         {
-          src: url,
+          src: this.props.src,
           type: "video/mp4",
         },
       ],
@@ -61,7 +47,6 @@ class Player extends Component {
       <div className={styles.container}>
         <div data-vjs-player>
           <video
-            key={this.props.src}
             ref={(node) => (this.videoNode = node)}
             className="video-js vjs-theme-forest "
           ></video>

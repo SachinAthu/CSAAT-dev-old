@@ -7,6 +7,7 @@ import Header from "./components/header/Header";
 import Footer from "./components/footer/Footer";
 import Profiles from './components/profiles/Profiles'
 import ProfilePage from './components/profilePage/ProfilePage'
+import AddSession from './components/addSession/AddSession'
 
 import store from "./store";
 
@@ -44,6 +45,7 @@ const App = () => {
           <main id="app_main" className={`${classes.main}`}>
             <Switch>
               <Route exact path="/" component={Profiles} />
+              <Route path="/:profile_id/add_session" component={AddSession} />
               <Route path="/:profile_id" component={ProfilePage} />
             </Switch>
           </main>

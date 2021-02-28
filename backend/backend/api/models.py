@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 class Profiles(models.Model):
     # has to be unique true. for development only.
     def consent_doc_path(instance, filename):
-        return f'{instance.clinic_no}/consent_doc/{instance.consent_doc_name}'
+        return f'{instance.clinic_no}/consent_doc/{instance.consent_doc_name}.pdf'
     
     def __str__(self):
         return self.name
@@ -59,7 +59,16 @@ class Videos(models.Model):
     def video_upload_path(instance, filename):
         profile = Profiles.objects.get(id=instance.profile)
         session = Sessions.objects.get(id=instance.session)
-        return f'{profile.clinic_no}/sessions/session_{session.date}_{session.id}'
+        # get the camera name
+        camera = Cameras.objects.get(id=instance.camera)
+
+        type = ''
+        if 'mp4' in instance.filetype:
+            type = 'mp4'
+        else:
+            type = 'mp4'
+
+        return f'{profile.clinic_no}/sessions/session_{session.date}_{session.id}/{camera.name}.{type}'
 
     def __str__(self):
         return self.name

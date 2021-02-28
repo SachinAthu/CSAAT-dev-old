@@ -9,18 +9,19 @@ import Breadcrumbs from "../breadcrumbs/Breadcrumbs";
 import AddProfile from "./addProfile/AddProfile";
 import EmptySVG from "../../assets/svg/empty.svg";
 import { customStyles } from "./DatatableStyles";
-import DeleteConformPopup from "../deleteConfirmPopup/DeleteConformPopup";
+import DeleteConfirmPopup from "../deleteConfirmPopup/DeleteConfirmPopup";
 
-import {
-  getProfiles,
-  setActiveProfile,
-} from "../../actions/ProfileActions";
+import { getProfiles, setActiveProfile } from "../../actions/ProfileActions";
+import { deleteSessions } from "../../actions/SessionActions";
+import { deleteVideos } from "../../actions/VideoActions";
 
 class Profiles extends Component {
   static propTypes = {
     profiles: PropTypes.array.isRequired,
     getProfiles: PropTypes.func.isRequired,
     setActiveProfile: PropTypes.func.isRequired,
+    deleteVideos: PropTypes.func.isRequired,
+    deleteSessions: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -36,6 +37,8 @@ class Profiles extends Component {
 
   componentDidMount() {
     this.fetchProfiles();
+    this.props.deleteSessions();
+    this.props.deleteVideos();
   }
 
   ///////////////////////////////////////////////
@@ -189,9 +192,9 @@ class Profiles extends Component {
   };
 
   closeDeleteConfirmPopup = (res) => {
-    console.log(res)
-    if(res){
-      this.setState({selectedRows: []})
+    console.log(res);
+    if (res) {
+      this.setState({ selectedRows: [] });
     }
     this.setState({ deleting: false });
   };
@@ -223,17 +226,17 @@ class Profiles extends Component {
 
     // open delete confirm box
     let profiles = [...this.state.selectedRows];
-    
+
     let res = false;
     for (let i = 0; i < profiles.length; i++) {
       if (profiles[i].id === profile.id) res = true;
     }
-    
+
     if (!res) {
       profiles.push(profile);
     }
-    
-    this.setState({deleting: true, selectedRows: profiles})
+
+    this.setState({ deleting: true, selectedRows: profiles });
   };
 
   toProfileHandler = (profile) => {
@@ -258,13 +261,23 @@ class Profiles extends Component {
   };
 
   render() {
-    const { searchVal, addOrEdit, editProfile, deleting, selectedRows } = this.state;
+    const {
+      searchVal,
+      addOrEdit,
+      editProfile,
+      deleting,
+      selectedRows,
+    } = this.state;
 
     const table = this.createDataTable();
 
     return (
       <div className={`${classes.container1}`}>
-        <Breadcrumbs heading={"Children Profiles"} sub_links={null} />
+        <Breadcrumbs
+          heading={"Children Profiles"}
+          sub_links={null}
+          current={null}
+        />
 
         <div className={`container ${classes.container2}`}>
           <div className={classes.search_container}>
@@ -317,21 +330,23 @@ class Profiles extends Component {
           ) : (
             <div className={`${classes.table}`}>{table}</div>
           )}
-
-          {addOrEdit ? (
-            <AddProfile close={this.closeAddingWindow} profile={editProfile} />
-          ) : null}
-
-          {deleting ? (
-            <DeleteConformPopup 
-              close={(res) => this.closeDeleteConfirmPopup(res)} 
-              many={selectedRows.length > 0 ? true : false}
-              header={"profile"}
-              msg={"By deleting a profile all referenced sessions, documents, videos will also be deleted."}
-              data={selectedRows}
-            />
-          ) : null}
         </div>
+
+        {addOrEdit ? (
+          <AddProfile close={this.closeAddingWindow} profile={editProfile} />
+        ) : null}
+
+        {deleting ? (
+          <DeleteConfirmPopup
+            close={(res) => this.closeDeleteConfirmPopup(res)}
+            many={selectedRows.length > 0 ? true : false}
+            header={"profile"}
+            msg={
+              "By deleting a profile all referenced sessions, documents, videos will also be deleted."
+            }
+            data={selectedRows}
+          />
+        ) : null}
       </div>
     );
   }
@@ -344,4 +359,6 @@ const mapStateToProps = (state) => ({
 export default connect(mapStateToProps, {
   getProfiles,
   setActiveProfile,
+  deleteVideos,
+  deleteSessions,
 })(Profiles);

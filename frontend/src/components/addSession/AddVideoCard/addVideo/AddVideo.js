@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import axios from "axios";
 
 import styles from "./AddVideo.module.css";
-import DragDropField from "../../../DragDropField/DragDropField";
+import DragDropField from "../../../dragDropField/DragDropField";
 import BtnSpinner from '../../../spinners/btn/BtnSpinner'
 
 import {addVideo, updateVideo} from '../../../../actions/VideoActions'
@@ -137,7 +137,7 @@ class AddVideo extends Component {
       const { name, camera, camera_angle, description, video, duration } = this.state;
       const videoObj = {
         id: this.props.card_id,
-        profile: this.props.profile,
+        profile: this.props.profile.id,
         session: this.props.session ? this.props.session.id : null,
         camera: camera,
         name: name,

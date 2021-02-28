@@ -3,10 +3,10 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import axios from "axios";
 
-import styles from "./AddVideoCard.module.css";
+import classes from "./AddVideoCard.module.css";
 import { deleteVideo } from "../../../actions/VideoActions";
 import AddVideo from "./addVideo/AddVideo";
-import Player from "../../Player/Player";
+import Player from "../../player/Player";
 
 class AddVideoCard extends Component {
   static propTypes = {
@@ -28,13 +28,12 @@ class AddVideoCard extends Component {
   };
 
   editHandler = (video) => {
-    console.log(video)
+    console.log(video);
     this.setState({ adding: true });
   };
 
-  removeHandler = (video, video_div_id) => {
+  removeHandler = (video) => {
     // console.log(video)
-    // document.getElementById(video_div_id).innerHTML = '';
     this.props.deleteVideo(video);
   };
 
@@ -80,37 +79,58 @@ class AddVideoCard extends Component {
 
     let cardContent;
     if (video) {
-      const video_div_id = `video_div_${video.id}`;
-
       cardContent = (
-        <div className={styles.card_content}>
-          <div id={video_div_id} className={styles.videoplay}>
-            <Player
-              key={video.video}
-              src={video.video}
-              play={false}
-            />
+        <div className={classes.card_content}>
+          <div className={classes.videoplay}>
+            <svg
+              version="1.1"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="28"
+              viewBox="0 0 24 28"
+            >
+              <title>Play</title>
+              <path d="M12 2c6.625 0 12 5.375 12 12s-5.375 12-12 12-12-5.375-12-12 5.375-12 12-12zM18 14.859c0.313-0.172 0.5-0.5 0.5-0.859s-0.187-0.688-0.5-0.859l-8.5-5c-0.297-0.187-0.688-0.187-1-0.016-0.313 0.187-0.5 0.516-0.5 0.875v10c0 0.359 0.187 0.688 0.5 0.875 0.156 0.078 0.328 0.125 0.5 0.125s0.344-0.047 0.5-0.141z"></path>
+            </svg>
           </div>
 
-          <div className={styles.info}>
-            <div className={styles.info_1}>
-              <span className={styles.info_1_1}>{video.name}</span>
-              <span className={styles.info_1_2}>{video.duration}</span>
+          <div className={classes.info}>
+            <div className={classes.info_1}>
+              <span className={classes.info_1_1}>{video.name}</span>
+              <span className={classes.info_1_2}>{video.duration}</span>
             </div>
 
-            <div className={styles.info_2}>
+            <div className={classes.info_2}>
               <button
                 onClick={this.editHandler.bind(this, video)}
-                className={styles.editbtn}
+                className={classes.editbtn}
               >
-                Edit
+                <svg
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
+                  <title>Edit</title>
+                  <path d="M20.719 7.031l-1.828 1.828-3.75-3.75 1.828-1.828q0.281-0.281 0.703-0.281t0.703 0.281l2.344 2.344q0.281 0.281 0.281 0.703t-0.281 0.703zM3 17.25l11.063-11.063 3.75 3.75-11.063 11.063h-3.75v-3.75z"></path>
+                </svg>
               </button>
 
               <button
-                onClick={this.removeHandler.bind(this, video, video_div_id)}
-                className={styles.removebtn}
+                onClick={this.removeHandler.bind(this, video)}
+                className={classes.removebtn}
               >
-                Remove
+                <svg
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
+                  <title>Delete</title>
+                  <path d="M18.984 3.984v2.016h-13.969v-2.016h3.469l1.031-0.984h4.969l1.031 0.984h3.469zM6 18.984v-12h12v12q0 0.797-0.609 1.406t-1.406 0.609h-7.969q-0.797 0-1.406-0.609t-0.609-1.406z"></path>
+                </svg>
               </button>
             </div>
           </div>
@@ -118,7 +138,7 @@ class AddVideoCard extends Component {
       );
     } else {
       cardContent = (
-        <div className={styles.empty}>
+        <div className={classes.empty}>
           <button onClick={this.addHandler}>
             <svg
               version="1.1"
@@ -136,11 +156,15 @@ class AddVideoCard extends Component {
     }
 
     return (
-      <div className={styles.container}>
+      <div className={classes.container}>
         {cardContent}
 
         {adding ? (
-          <AddVideo card_id={this.props.card_id} video={this.props.video} close={this.closeAddWindow} />
+          <AddVideo
+            card_id={this.props.card_id}
+            video={this.props.video}
+            close={this.closeAddWindow}
+          />
         ) : null}
       </div>
     );
@@ -152,4 +176,6 @@ const mapStateToProps = (state) => ({
   session: state.sessionReducer.activeSession,
 });
 
-export default connect(mapStateToProps, { deleteVideo, withRef: true })(AddVideoCard);
+export default connect(mapStateToProps, { deleteVideo, withRef: true })(
+  AddVideoCard
+);

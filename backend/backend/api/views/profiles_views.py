@@ -29,10 +29,9 @@ def addProfile(request):
     serializer = ProfilesSerializer(data=request.data)
 
     if serializer.is_valid():
-    #     doc_name = serializer.objects.consent_doc_name
-    #     if doc_name:
-    #         serializer.objects.consent_doc_name = str(serializer.objects.clinic_no + '_consent_doc') 
-        serializer.save()
+        print(request.data)
+        name = f'consent_doc_{request.data["clinic_no"]}.pdf'
+        serializer.save(consent_doc_name=name)
     else:
         print(serializer.errors)
 
@@ -56,7 +55,8 @@ def updateProfile(request, pk):
         print('error, previous consent doc deletion failed!')
 
     if serializer.is_valid():
-        serializer.save()
+        name = f'consent_doc_{request.data["clinic_no"]}.pdf'
+        serializer.save(consent_doc_name=name)
     else:
         print(serializer.errors)
 
@@ -70,14 +70,14 @@ def deleteProfile(request, pk):
 
     profile.delete()
     res += 'Profile record was deleted. '
-    if profile.consent_doc:
-        if default_storage.exists(profile.consent_doc.path):
-            shutil.rmtree(os.path.join(settings.MEDIA_ROOT, profile.clinic_no), ignore_errors=True)
-            res += 'All referenced files were deleted. '
-    # try:
 
-    # except:
-    #     res = 'error, something went wrong!'
+    try:
+        if profile.consent_doc:
+            if default_storage.exists(profile.consent_doc.path):
+                shutil.rmtree(os.path.join(settings.MEDIA_ROOT, profile.clinic_no), ignore_errors=True)
+                res += 'All referenced files were deleted. '
+    except:
+        res = 'error, something went wrong!'
 
     return Response(res)
 

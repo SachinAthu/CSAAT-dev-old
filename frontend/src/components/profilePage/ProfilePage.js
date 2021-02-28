@@ -3,9 +3,9 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import { connect } from "react-redux";
 
-import styles from "./ProfilePage.module.css";
-import EmptySVG from '../../assets/svg/empty.svg'
-import Breadcrumbs from '../breadcrumbs/Breadcrumbs'
+import classes from "./ProfilePage.module.css";
+import EmptySVG from "../../assets/svg/empty.svg";
+import Breadcrumbs from "../breadcrumbs/Breadcrumbs";
 
 import {
   getSessions,
@@ -40,12 +40,15 @@ export class ProfilePage extends Component {
     this.fetchSessions();
   }
 
+  //////////////////////////////////////////////////////////////
+  //////////////////////// functions ///////////////////////////
+  //////////////////////////////////////////////////////////////
   fetchSessions = () => {
     axios
       .get(`http://localhost:8000/api/sessions/${this.props.profile.id}/`)
       .then((res) => {
         console.log(res.data);
-        if(res.data[0]){
+        if (res.data[0]) {
           this.props.getSessions(res.data);
           this.props.setActiveSession(res.data[0]);
           this.fetchVideos(res.data[0].id);
@@ -62,46 +65,6 @@ export class ProfilePage extends Component {
         this.props.getVideos(res.data);
       })
       .catch((err) => console.log(err));
-  };
-
-  onChangeSelect = (e) => {
-    // console.log(e.target.value)
-    this.fetchVideos(e.target.value);
-    const session = this.props.sessions.filter(
-      (s, i) => s.id == e.target.value
-    );
-    this.props.setActiveSession(session);
-  };
-
-  addSessionHandler = () => {
-    // clear redux videos
-    this.props.deleteVideos()
-
-    // navigate to add session component
-    this.props.history.push("/add_session");
-
-    // add session
-    // axios("http://localhost:8000/api/add-session/", {
-    //   method: "POST",
-    //   data: {
-    //     datetime: null,
-    //     profile: this.props.profile.id,
-    //     user: null
-    //   },
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // })
-    //   .then((res) => {
-    //     // console.log(res.data)
-
-        
-
-    //     // change active session
-    //     this.props.addSession(res.data);
-    //     this.props.setActiveSession(res.data);
-    //   })
-    //   .catch((err) => console.log(err));
   };
 
   getTime = (datetime) => {
@@ -133,12 +96,32 @@ export class ProfilePage extends Component {
     return time;
   };
 
+  //////////////////////////////////////////////////////////////////
+  ///////////////////// event listeners ////////////////////////////
+  //////////////////////////////////////////////////////////////////
+  onChangeSelectHandler = (e) => {
+    // console.log(e.target.value)
+    this.fetchVideos(e.target.value);
+    const session = this.props.sessions.filter(
+      (s, i) => s.id == e.target.value
+    );
+    this.props.setActiveSession(session);
+  };
+
+  addSessionHandler = () => {
+    // clear redux videos
+    this.props.deleteVideos();
+
+    // navigate to add session component
+    this.props.history.push(`/${this.props.profile.id}/add_session`);
+  };
+
   render() {
     const profile = this.props.profile;
     const sessions = this.props.sessions;
 
     const select = (
-      <select name="sessions" id="session_list" onChange={this.onChangeSelect}>
+      <select name="sessions" id="session_list" onChange={this.onChangeSelectHandler}>
         {sessions.map((s, i) => {
           if (s.date) {
             return (
@@ -157,60 +140,25 @@ export class ProfilePage extends Component {
       </select>
     );
 
+    const sub_links = [{ name: "Profiles", link: "/" }]
+
     return (
-      <div className={styles.container}>
-        <div className={styles.details}>
-          <h3>Details</h3>
+      <div className={classes.container1}>
+        <Breadcrumbs
+          heading={"Sessions"}
+          sub_links={sub_links}
+          current={profile.name}
+        />
 
-          <div className={styles.details_div}>
-            <span className={styles.details_div_1}>Clinic No</span>
-            <span className={styles.details_div_2}>{profile.clinic_no}</span>
-          </div>
-
-          <div className={styles.details_div}>
-            <span className={styles.details_div_1}>Child Name</span>
-            <span className={styles.details_div_2}>{profile.name}</span>
-          </div>
-
-          <div className={styles.details_div}>
-            <span className={styles.details_div_1}>Date of Birth</span>
-            <span className={styles.details_div_2}>{profile.dob}</span>
-          </div>
-
-          <div className={styles.details_div}>
-            <span className={styles.details_div_1}>Gender</span>
-            <span className={styles.details_div_2}>{profile.sex}</span>
-          </div>
-
-          <div className={styles.details_div}>
-            <span className={styles.details_div_1}>Consent Document</span>
-
-            {profile.consent_doc ? (
-              <a
-                className={`${styles.viewDocbtn}`}
-                href={profile.consent_doc}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {profile.consent_doc_name}
-              </a>
-            ) : (
-              <span>-</span>
-            )}
-          </div>
-        </div>
-
-        <div className={styles.sessions}>
-          <h3>Sessions</h3>
-
-          <div className={styles.sessions_div1}>
-            <div className={styles.sessions_div2}>
+        <div className={`container ${classes.container2}`}>
+          <div className={classes.container2_1}>
+            <div className={classes.container2_1_1}>
               <span>Select the session by recorded date:</span>
               {select}
             </div>
 
             <button
-              className={`button_primary ${styles.addbtn}`}
+              className={`button_primary ${classes.addbtn}`}
               onClick={this.addSessionHandler}
             >
               <svg
@@ -227,11 +175,11 @@ export class ProfilePage extends Component {
           </div>
 
           {sessions.length > 0 ? (
-            <div className={styles.videoplay}>
+            <div className={classes.videoplay}>
               <VideoPlay />
             </div>
           ) : (
-            <div className={styles.novideo}>
+            <div className={classes.novideo}>
               <img src={EmptySVG} alt="No Sessions Image" />
               <h6>There are no Sessions available</h6>
             </div>

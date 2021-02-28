@@ -5,7 +5,8 @@ import { connect } from "react-redux";
 
 import styles from "./AddProfile.module.css";
 import DragDropField from "../../dragDropField/DragDropField";
-import BtnSpinner from '../../spinners/btn/BtnSpinner'
+import BtnSpinner from "../../spinners/btn/BtnSpinner";
+
 import { addProfile, updateProfile } from "../../../actions/ProfileActions";
 
 axios.defaults.xsrfCookieName = "csrftoken";
@@ -55,20 +56,38 @@ export class AddProfile extends Component {
     }
   }
 
-  onChange = (e) => {
+  /////////////////////////////////////////////////////////////////////
+  /////////////////////////// functions ///////////////////////////////
+  /////////////////////////////////////////////////////////////////////
+  closeWindow = () => {
+    const modal = document.getElementById("profileAddWindow");
+    const overlay = document.getElementById("profileAddWindowOverlay");
+
+    modal.classList.add(`${styles.fadeout}`);
+    overlay.classList.add(`${styles.overlay_fadeout}`);
+
+    setTimeout(() => {
+      this.props.close();
+    }, 300);
+  };
+
+  /////////////////////////////////////////////////////////////////////
+  ///////////////////////// event listners ////////////////////////////
+  /////////////////////////////////////////////////////////////////////
+  onChangeHandler = (e) => {
     this.setState({
       [e.target.name]: e.target.value,
     });
   };
 
-  onCDocChange = (file) => {
+  onCDocChangeHandler = (file) => {
     this.setState({
       consent_doc: file,
       consent_doc_name: file.name,
     });
   };
 
-  onSubmit = (e) => {
+  onSubmitHandler = (e) => {
     e.preventDefault();
 
     const { clinic_no, name, dob, consent_doc, consent_doc_name } = this.state;
@@ -81,9 +100,9 @@ export class AddProfile extends Component {
     else sex = female.value;
 
     // validation
-    if(consent_doc.type !== 'application/pdf'){
-      alert('PDF files only')
-      return
+    if (consent_doc && consent_doc.type !== "application/pdf") {
+      alert("PDF files only");
+      return;
     }
 
     const formData = new FormData();
@@ -93,8 +112,8 @@ export class AddProfile extends Component {
     formData.append("sex", sex);
     formData.append("consent_doc", consent_doc);
 
-    let type = ''
-    if(consent_doc.type === 'application/pdf') type = 'pdf'
+    let type = "";
+    if (consent_doc && consent_doc.type === "application/pdf") type = "pdf";
     formData.append("consent_doc_name", `consent_doc_${clinic_no}.${type}`);
 
     let url = "http://localhost:8000/api/add-profile/";
@@ -105,7 +124,7 @@ export class AddProfile extends Component {
       method = "PUT";
     }
 
-    this.setState({requesting: true})
+    this.setState({ requesting: true });
 
     axios(url, {
       method: method,
@@ -116,44 +135,32 @@ export class AddProfile extends Component {
     })
       .then((res) => {
         console.log(res.data);
-        this.setState({requesting: false})
+        this.setState({ requesting: false });
         if (this.state.editing) {
           this.props.updateProfile(res.data);
         } else {
           this.props.addProfile(res.data);
         }
-        this.close();
+        this.closeWindow();
       })
       .catch((err) => {
-        this.setState({requesting: false})
-        console.log(err)
+        this.setState({ requesting: false });
+        console.log(err);
       });
   };
 
-  close = () => {
-    const modal = document.getElementById("profileAddWindow");
-    const overlay = document.getElementById("profileAddWindowOverlay");
-
-    modal.classList.add(`${styles.fadeout}`);
-    overlay.classList.add(`${styles.overlay_fadeout}`);
-
-    setTimeout(() => {
-      this.props.close();
-    }, 300);
-  };
-
-  resetForm = () => {
+  resetFormHandler = () => {
     const p = this.props.profile;
     const male = document.getElementById("profile_add_form_m");
     const female = document.getElementById("profile_add_form_f");
 
-    if(p){
+    if (p) {
       this.setState({
         clinic_no: p.clinic_no ? p.clinic_no : "",
         name: p.name ? p.name : "",
         dob: p.dob ? p.dob : "",
         consent_doc: null,
-        consent_doc_name: p.consent_doc_name ? p.consent_doc_name : '',
+        consent_doc_name: p.consent_doc_name ? p.consent_doc_name : "",
       });
       if (p.sex.toLowerCase() === "male") {
         male.checked = true;
@@ -162,14 +169,13 @@ export class AddProfile extends Component {
         female.checked = true;
         male.checked = false;
       }
-     
-    }else{
+    } else {
       this.setState({
         clinic_no: "",
         name: "",
         dob: "",
         consent_doc: null,
-        consent_doc_name: '',
+        consent_doc_name: "",
       });
       male.checked = false;
       female.checked = false;
@@ -184,13 +190,16 @@ export class AddProfile extends Component {
       consent_doc,
       consent_doc_name,
       editing,
-      requesting,      
+      requesting,
     } = this.state;
 
     return (
       <Fragment>
         <div className={styles.container} id="profileAddWindow">
-          <button onClick={() => this.close()} className={styles.closebtn}>
+          <button
+            onClick={() => this.closeWindow()}
+            className={styles.closebtn}
+          >
             <svg
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
@@ -205,7 +214,7 @@ export class AddProfile extends Component {
 
           <h4>{editing ? "Edit Profile" : "New Profile"}</h4>
 
-          <form className={styles.form} onSubmit={this.onSubmit}>
+          <form className={styles.form} onSubmit={this.onSubmitHandler}>
             <div className={styles.formgroup}>
               <label htmlFor="profile_add_form_clinic_no">CLINIC NO</label>
               <input
@@ -213,7 +222,7 @@ export class AddProfile extends Component {
                 name="clinic_no"
                 id="profile_add_form_clinic_no"
                 value={clinic_no}
-                onChange={this.onChange}
+                onChange={this.onChangeHandler}
               />
             </div>
 
@@ -224,7 +233,7 @@ export class AddProfile extends Component {
                 name="name"
                 id="profile_add_form_name"
                 value={name}
-                onChange={this.onChange}
+                onChange={this.onChangeHandler}
               />
             </div>
 
@@ -235,7 +244,7 @@ export class AddProfile extends Component {
                 name="dob"
                 id="profile_add_form_dob"
                 value={dob}
-                onChange={this.onChange}
+                onChange={this.onChangeHandler}
               />
             </div>
 
@@ -267,7 +276,7 @@ export class AddProfile extends Component {
               <DragDropField
                 file={consent_doc}
                 filename={consent_doc_name}
-                onChange={this.onCDocChange}
+                onChange={this.onCDocChangeHandler}
               />
             </div>
 
@@ -275,7 +284,7 @@ export class AddProfile extends Component {
               <button
                 type="button"
                 className={`.button_reset ${styles.resetbtn}`}
-                onClick={this.resetForm}
+                onClick={this.resetFormHandler}
               >
                 Reset
               </button>
@@ -285,7 +294,7 @@ export class AddProfile extends Component {
                 className={`.button_primary ${styles.submitbtn}`}
               >
                 {requesting ? <BtnSpinner /> : null}
-                
+
                 {editing ? "EDIT" : "ADD"}
               </button>
             </div>

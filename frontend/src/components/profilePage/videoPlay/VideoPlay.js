@@ -7,13 +7,14 @@ import { Redirect } from "react-router-dom";
 import styles from "./VideoPlay.module.css";
 import NoVideosSVG from "./no_videos.svg";
 import Player from "../../player/Player";
+import DeleteConfirmPopup from "../../deleteConfirmPopup/DeleteConfirmPopup";
 
 import { deleteSession } from "../../../actions/SessionActions";
 
 class VideoPlay extends Component {
   static propTypes = {
     videos: PropTypes.array,
-    session: PropTypes.object,
+    activeSession: PropTypes.object,
     deleteSession: PropTypes.func.isRequired,
   };
 
@@ -21,13 +22,14 @@ class VideoPlay extends Component {
     super(props);
     this.state = {
       addSession: false,
+      deleting: false,
     };
   }
 
-  componentDidMount() {}
 
-  loadVideos = () => {};
-
+  ///////////////////////////////////////////////////////////////////////
+  //////////////////////////// functions ////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////
   getTime = (datetime) => {
     const day = datetime.slice(0, 10);
     let h = parseInt(datetime.slice(11, 13));
@@ -57,18 +59,20 @@ class VideoPlay extends Component {
     return time;
   };
 
+  closeDeleteConfirmPopup = (res) => {
+    console.log(res);
+    this.setState({ deleting: false });
+  };
+
+
+  ////////////////////////////////////////////////////////////////////////
+  /////////////////////// event listener /////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////
   deleteSessionHandler = (id) => {
     console.log(id);
-
-    axios
-      .delete(`http://localhost:8000/api/delete-session/${id}`)
-      .then((res) => {
-        console.log(res.data);
-        this.props.deleteSession(id);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    // open delete confirm box
+    this.setState({deleting: true})
+   
   };
 
   editSessionHandler = () => {
@@ -76,14 +80,9 @@ class VideoPlay extends Component {
   };
 
   render() {
-    if(this.state.addSession){
-      return <Redirect to="/add_session/" />
-    }
-   
-
-    const session = this.props.session;
+    const activeSession = this.props.activeSession;
     const videos = this.props.videos;
-    console.log(session);
+    console.log(activeSession);
 
     let video_list = [];
 
@@ -98,8 +97,8 @@ class VideoPlay extends Component {
     return (
       <div className={styles.container}>
         <div className={styles.container_1}>
-          {session.date ? (
-            <span className={styles.date}>{session.date}</span>
+          {activeSession.date ? (
+            <span className={styles.date}>{activeSession.date}</span>
           ) : (
             <span className={styles.date}>No date & time mentioned</span>
           )}
@@ -114,7 +113,7 @@ class VideoPlay extends Component {
 
             <button
               className={styles.removebtn}
-              onClick={this.deleteSessionHandler.bind(this, session.id)}
+              onClick={this.deleteSessionHandler.bind(this, activeSession.id)}
             >
               Remove
             </button>
@@ -126,11 +125,11 @@ class VideoPlay extends Component {
             {video_list.map((video, index) => (
               <div className={styles.player} key={index}>
                 {video ? (
-                  <Player src={video.video} play={true} />
+                  <Player src={video.video} />
                 ) : (
                   <div
                     className={styles.empty_video}
-                    onClick={this.editSessionHandler.bind(this, session.id)}
+                    onClick={this.editSessionHandler.bind(this, activeSession.id)}
                   >
                     <svg
                       version="1.1"
@@ -151,11 +150,23 @@ class VideoPlay extends Component {
           <div className={styles.novideo}>
             <img src={NoVideosSVG} alt="No Videos Image" />
             <h6>No available videos to load</h6>
-            <button onClick={this.editSessionHandler.bind(this, session.id)}>
+            <button onClick={this.editSessionHandler.bind(this, activeSession.id)}>
               Add Videos
             </button>
           </div>
         )}
+
+        {this.state.deleting ? (
+          <DeleteConfirmPopup
+            close={(res) => this.closeDeleteConfirmPopup(res)}
+            many={false}
+            header={"session"}
+            msg={
+              "By deleting a session all referenced videos will also be deleted."
+            }
+            data={activeSession}
+          />
+        ) : null}
       </div>
     );
   }
@@ -163,7 +174,7 @@ class VideoPlay extends Component {
 
 const mapStateToProps = (state) => ({
   videos: state.videoReducer.videos,
-  session: state.sessionReducer.activeSession,
+  activeSession: state.sessionReducer.activeSession,
 });
 
 export default connect(mapStateToProps, { deleteSession })(VideoPlay);

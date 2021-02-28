@@ -3,8 +3,9 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import axios from "axios";
 
-import styles from "./AddSession.module.css";
+import classes from "./AddSession.module.css";
 import BtnSpinner from "../spinners/btn/BtnSpinner";
+import Breadcrumbs from "../breadcrumbs/Breadcrumbs";
 
 import AddVideoCard from "./AddVideoCard/AddVideoCard";
 import {
@@ -36,12 +37,9 @@ class AddSession extends Component {
     };
   }
 
-  onDateChange = (e) => {
-    this.setState({
-      date: e.target.value,
-    });
-  };
-
+  //////////////////////////////////////////////////////////////
+  //////////////////////// functions ///////////////////////////
+  //////////////////////////////////////////////////////////////
   submitSession = (e) => {
     e.preventDefault();
 
@@ -92,22 +90,31 @@ class AddSession extends Component {
       formData.append("camera_angle", vids[i].camera_angle);
       formData.append("duration", vids[i].duration);
 
-      try{
+      try {
         let res = await axios(`http://localhost:8000/api/add-video/`, {
           method: "POST",
           data: formData,
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        })
+        });
         console.log("video uploaded", res.data);
-      }catch(err){
-        if(err) console.log(err)
+      } catch (err) {
+        if (err) console.log(err);
       }
     }
     this.setState({ uploading: false });
-    this.props.history.push("/");
+    this.props.history.push(`/${this.props.profile.id}`);
   }
+
+  //////////////////////////////////////////////////////////////
+  //////////////////////  event listeners //////////////////////
+  //////////////////////////////////////////////////////////////
+  onDateChangeHandler = (e) => {
+    this.setState({
+      date: e.target.value,
+    });
+  };
 
   // completeUpload = () => {
   //   const count = this.state.uploadedVideoCount;
@@ -122,65 +129,67 @@ class AddSession extends Component {
   // };
 
   render() {
-    const { videos } = this.props;
+    const { videos, profile } = this.props;
 
     // if all videos uploaded navigate to ProfilePage
     // if (this.state.allUploaded) {
     //   this.props.history.push("/profile_detail");
     // }
 
+    const sub_links = [
+      { name: "Profiles", link: "/" },
+      { name: `${profile.name}`, link: `/${profile.id}` },
+    ];
+
+    // prepare videos card list
+    let video_cards = [];
+    for (let i = 0; i < videos.length; i++) {
+      const card = (
+        <AddVideoCard
+          card_id={videos[i] ? videos[i].id : `card_id_${Math.random()}`}
+          video={videos[i] ? videos[i] : null}
+        />
+      );
+      video_cards.push(card);
+    }
+
+    if (videos.length < 4) {
+      const card = <AddVideoCard card_id={Math.random()} video={null} />;
+      video_cards.push(card);
+    }
+
     return (
-      <div className={styles.container}>
-        <h3>New Session</h3>
+      <div className={classes.container1}>
+        <Breadcrumbs
+          heading={"New Session"}
+          sub_links={sub_links}
+          current={"new session"}
+        />
 
-        <form className={styles.form} onSubmit={this.submitSession}>
-          <label>Recorded Date</label>
-          <input
-            type="date"
-            name="recorded_date"
-            onChange={this.onDateChange}
-          />
-          <button type="submit" className={styles.submitbtn}>
-            {this.state.uploading ? <BtnSpinner /> : null}
-            CONFIRM ALL
-          </button>
-        </form>
-
-        {this.state.uploading ? (
-          <div className={styles.uploading_div}></div>
-        ) : null}
-
-        <div className={styles.videoCards}>
-          <div className={styles.videoCard}>
-            <AddVideoCard
-              card_id={videos[0] ? videos[0].id : `card_id_${Math.random()}`}
-              video={videos[0] ? videos[0] : null}
-              completeUpload={this.completeUpload}
+        <div className={`container ${classes.container2}`}>
+          <form className={classes.form} onSubmit={this.submitSession}>
+            <label>Recorded Date</label>
+            <input
+              type="date"
+              name="recorded_date"
+              onChange={this.onDateChangeHandler}
             />
-          </div>
+            <button type="submit" className={classes.submitbtn}>
+              {this.state.uploading ? <BtnSpinner /> : null}
+              CONFIRM ALL
+            </button>
+          </form>
 
-          <div className={styles.videoCard}>
-            <AddVideoCard
-              card_id={videos[1] ? videos[1].id : `card_id_${Math.random()}`}
-              video={videos[1] ? videos[1] : null}
-              completeUpload={this.completeUpload}
-            />
-          </div>
+          {this.state.uploading ? (
+            <div className={classes.uploading_div}></div>
+          ) : null}
 
-          <div className={styles.videoCard}>
-            <AddVideoCard
-              card_id={videos[2] ? videos[2].id : `card_id_${Math.random()}`}
-              video={videos[2] ? videos[2] : null}
-              completeUpload={this.completeUpload}
-            />
-          </div>
-
-          <div className={styles.videoCard}>
-            <AddVideoCard
-              card_id={videos[3] ? videos[3].id : `card_id_${Math.random()}`}
-              video={videos[3] ? videos[3] : null}
-              completeUpload={this.completeUpload}
-            />
+          <div className={classes.videoCards}>
+            {video_cards.map((card, index) => (
+              <div className={classes.videoCard} key={index}>
+                {card}
+              </div>
+            ))}
           </div>
         </div>
       </div>

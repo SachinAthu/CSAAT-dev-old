@@ -4,6 +4,7 @@ import {
     SET_ACTIVE_SESSION,
     UPDATE_SESSION,
     DELETE_SESSION,
+    DELETE_SESSIONS,
   } from "./Types";
   
   // get all sessions for a profile
@@ -46,6 +47,13 @@ export const deleteSession = (id) => (dispatch, getState) => {
     dispatch({
         type: DELETE_SESSION,
         data: id
+    })
+} 
+
+// delete sessions
+export const deleteSessions = () => (dispatch, getState) => {
+    dispatch({
+        type: DELETE_SESSIONS,
     })
 } 
 
