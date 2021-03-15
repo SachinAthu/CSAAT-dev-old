@@ -1,6 +1,5 @@
 .main {
-  height: 100rem;
-  margin-top: 72px;
+  min-height: 80vh;
 }
 
 .back_to_top {

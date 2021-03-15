@@ -62,3 +62,10 @@ def cameraAngles(request):
     camera_angle_list = CameraAngles.objects.all().order_by('name')
     serializer = CameraAngleSerializer(camera_angle_list, many=True)
     return Response(serializer.data)
+
+# get spesific camera angle
+@api_view(['GET'])
+def cameraAngle(request, pk):
+    camera_angle = CameraAngles.objects.get(id=pk)
+    serializer = CameraAngleSerializer(camera_angle, many=False)
+    return Response(serializer.data)

@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.core.files.storage import default_storage
 
-from api.models import Videos, Sessions
+from api.models import Videos, Sessions, Cameras, CameraAngles
 from api.serializers import VideosSerializer
 
 
@@ -28,7 +28,24 @@ def addVideo(request):
     serializer = VideosSerializer(data=request.data)
 
     if serializer.is_valid():
-        serializer.save()
+        # set video name
+        camera = Cameras.objects.get(id=request.data['camera'])
+        camera_angle = CameraAngles.objects.get(id=request.data['camera_angle'])
+        name = f'video_{camera.name}_{camera_angle.name}'
+        
+        #set file extension
+        file_type = request.data['file_type']
+        file_extension = ''
+        if not file_type == None: 
+            t = file_type.split('/')[1]
+            if t == 'mp4':
+                file_extension = '.mp4'
+            elif t == 'x-matroska':
+                file_extension = '.mkv'
+            else:
+                file_extension = '.mp4'
+
+        serializer.save(name=name, camera_name=camera.name, camera_angle_name=camera_angle.name, file_extension=file_extension)
     else:
         print(serializer.data)
         print(serializer.errors)
@@ -42,8 +59,29 @@ def updateVideo(request, pk):
     serializer = VideosSerializer(data=request.data, instance=video)
 
     if serializer.is_valid():
-        # should create a thumbnail before save if video changed
-        ##
+        # set video name
+        camera = Cameras.objects.get(id=request.data['camera'])
+        camera_angle = CameraAngles.objects.get(id=request.data['camera_angle'])
+        name = f'video_{camera.name}_{camera_angle.name}'
+        
+        
+
+        # #set file extension
+        # file_type = request.data['file_type']
+        # file_extension = ''
+        # t = file_type.split('/')[1]
+        # if t == 'mp4':
+        #     file_extension = '.mp4'
+        # elif t == 'x-matroska':
+        #     file_extension = '.mkv'
+        # else:
+        #     file_extension = '.mp4'
+
+        # serializer.save(name=name, camera_name=camera.name, camera_angle_name=camera_angle.name, file_extension=file_extension)
+
+ 
+
+        print(request.data)
         serializer.save()
     else:
         print(serializer.errors)

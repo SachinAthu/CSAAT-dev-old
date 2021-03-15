@@ -7,14 +7,41 @@ export const DELETE_PROFILE = 'DELETE_PROFILE';
 export const FETCH_SESSIONS = 'FETCH_SESSIONS';
 export const ADD_SESSION = 'ADD_SESSION';
 export const SET_ACTIVE_SESSION = 'SET_ACTIVE_SESSION';
+export const SET_ACTIVE_SESSION_FIRST = 'SET_ACTIVE_SESSION_FIRST';
+export const UPDATE_ACTIVE_SESSION = 'UPDATE_ACTIVE_SESSION';
 export const UPDATE_SESSION = 'UPDATE_SESSION';
 export const DELETE_SESSION = 'DELETE_SESSION';
+export const DELETE_SESSIONS = 'DELETE_SESSIONS';
+export const DELETE_ACTIVE_SESSION = 'DELETE_ACTIVE_SESSION';
 
 export const FETCH_VIDEOS = 'FETCH_VIDEOS';
 export const ADD_VIDEO = 'ADD_VIDEO';
 export const UPDATE_VIDEO = 'UPDATE_VIDEO';
 export const DELETE_VIDEO = 'DELETE_VIDEO';
 export const DELETE_VIDEOS = 'DELETE_VIDEOS';
+
+// video play controls
+export const TOOGLE_PLAY_MODE = 'TOOGLE_PLAY_MODE';
+export const PLAY_ALL = 'PLAY_ALL';
+export const PAUSE_ALL = 'PAUSE_ALL';
+export const STOP_ALL = 'STOP_ALL';
+export const SET_PERCENT = 'SET_PERCENT';
+export const SET_PERCENT_TIMELINE = 'SET_PERCENT_TIMELINE';
+export const SET_TOTAL_TIME = 'SET_TOTAL_TIME';
+
+// play modes
+export const PLAY_MODES = {
+    SINGLE: 'SINGLE',
+    ALL: 'ALL'
+}
+
+// play status
+export const PLAY_STATUS = {
+    PLAY: 'PLAY',
+    PAUSE: 'PAUSE',
+    STOP: 'STOP'
+}
+
 
 export const FETCH_CAMERAS = 'FETCH_CAMERAS';
 export const FETCH_CAMERA_ANGLES = 'FETCH_CAMERA_ANGLES';
