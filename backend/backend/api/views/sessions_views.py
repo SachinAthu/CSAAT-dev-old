@@ -5,7 +5,7 @@ import os
 from django.conf import settings
 import shutil
 
-from api.models import Sessions, Videos
+from api.models import Sessions, Videos, Profiles
 from api.serializers import SessionsSerializer
 
 # get all sessions for a profile
@@ -61,18 +61,17 @@ def updateSession(request, pk):
 @api_view(['DELETE'])
 def deleteSession(request, pk):
     session = Sessions.objects.get(id=pk)
-
-    # delete all the videos for this session
-    videos = Videos.objects.filter(session=pk)
+    profile = Profiles.objects.get(id=session.profile.id)
+    print(profile.clinic_no)
 
     res = ''
     
     try:
-        shutil.rmtree(os.path.join(settings.MEDIA_ROOT, f'session_{session.date}_{session.id}'), ignore_errors=True)
+        shutil.rmtree(os.path.join(settings.MEDIA_ROOT, profile.clinic_no, f'sessions/session_{session.id}'), ignore_errors=True)
         res += 'All Videos were deleted(records, files)'
 
         session.delete()
-        res = 'Session was deleted'
+        res += 'Session was deleted'
     
     except:
         res = 'error, something went wrong!'

@@ -4,9 +4,11 @@ import { connect } from "react-redux";
 import axios from "axios";
 
 import classes from "./AddVideoCard.module.css";
-import { deleteVideo } from "../../../actions/VideoActions";
 import AddVideo from "./addVideo/AddVideo";
+import DeleteConfirmPopup from "../../deleteConfirmPopup/DeleteConfirmPopup";
 import Player from "../../player/Player";
+
+import { deleteVideo } from "../../../actions/VideoActions";
 
 class AddVideoCard extends Component {
   static propTypes = {
@@ -20,9 +22,32 @@ class AddVideoCard extends Component {
     super(props);
     this.state = {
       adding: false,
+      deleting: false,
     };
   }
 
+  ////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////// functions ////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////
+  closeAddWindow = () => {
+    this.setState({ adding: false });
+  };
+
+  closeDeleteConfirmPopup = (res) => {
+    // console.log(res);
+    this.setState({ deleting: false });
+  };
+
+  convertSec = (sec) => {
+    let measuredTime = new Date(null);
+    measuredTime.setSeconds(parseInt(sec)); // specify value of SECONDS
+    let MHSTime = measuredTime.toISOString().substr(11, 8);
+    return MHSTime
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////// event handlers ///////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////
   addHandler = () => {
     this.setState({ adding: true });
   };
@@ -34,44 +59,8 @@ class AddVideoCard extends Component {
 
   removeHandler = (video) => {
     // console.log(video)
-    this.props.deleteVideo(video);
+    this.setState({ deleting: true });
   };
-
-  closeAddWindow = () => {
-    this.setState({ adding: false });
-  };
-
-  // uploadVideo = () => {
-  //   if (!this.props.video) return;
-
-  //   this.setState({ uploading: true });
-
-  //   const video = this.props.video;
-
-  //   let formData = new FormData();
-  //   formData.append("profile", this.props.profile.id);
-  //   formData.append("session", this.props.session.id);
-  //   formData.append("camera", video.camera);
-  //   formData.append("name", video.name);
-  //   formData.append("description", video.description);
-  //   formData.append("video", video.video);
-  //   formData.append("type", video.type);
-  //   formData.append("camera_angle", video.camera_angle);
-  //   formData.append("duration", video.duration);
-
-  //   axios(`http://localhost:8000/api/add-video/`, {
-  //     method: "POST",
-  //     data: formData,
-  //     headers: {
-  //       "Content-Type": "multipart/form-data",
-  //     },
-  //   })
-  //     .then((res) => {
-  //       console.log("video uploaded", res.data);
-  //       this.props.completeUpload();
-  //     })
-  //     .catch((err) => console.log(err));
-  // };
 
   render() {
     const { adding } = this.state;
@@ -79,10 +68,11 @@ class AddVideoCard extends Component {
 
     let cardContent;
     if (video) {
+      // this.getCameraAngle()
       cardContent = (
         <div className={classes.card_content}>
           <div className={classes.videoplay}>
-            <svg
+            {/* <svg
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -91,13 +81,31 @@ class AddVideoCard extends Component {
             >
               <title>Play</title>
               <path d="M12 2c6.625 0 12 5.375 12 12s-5.375 12-12 12-12-5.375-12-12 5.375-12 12-12zM18 14.859c0.313-0.172 0.5-0.5 0.5-0.859s-0.187-0.688-0.5-0.859l-8.5-5c-0.297-0.187-0.688-0.187-1-0.016-0.313 0.187-0.5 0.516-0.5 0.875v10c0 0.359 0.187 0.688 0.5 0.875 0.156 0.078 0.328 0.125 0.5 0.125s0.344-0.047 0.5-0.141z"></path>
-            </svg>
+            </svg> */}
+            <Player
+              key={Math.random()}
+              video={video}
+              width={270}
+              height={190}
+              fluid={false}
+              autoplay={true}
+              controls={false}
+              muted={true}
+              loop={true}
+            />
           </div>
 
           <div className={classes.info}>
             <div className={classes.info_1}>
-              <span className={classes.info_1_1}>{video.name}</span>
-              <span className={classes.info_1_2}>{video.duration}</span>
+              <span className={classes.info_1_1}>
+                Duration: {this.convertSec(video.duration)}
+              </span>
+              <span className={classes.info_1_2}>
+                Camera: {video.camera_name}
+              </span>
+              <span className={classes.info_1_2}>
+                Camera angle: {video.camera_angle_name}
+              </span>
             </div>
 
             <div className={classes.info_2}>
@@ -164,6 +172,16 @@ class AddVideoCard extends Component {
             card_id={this.props.card_id}
             video={this.props.video}
             close={this.closeAddWindow}
+          />
+        ) : null}
+
+        {this.state.deleting ? (
+          <DeleteConfirmPopup
+            close={(res) => this.closeDeleteConfirmPopup(res)}
+            many={false}
+            header={"video"}
+            msg={"Video file will also be deleted from database."}
+            data={video ? video.id : null}
           />
         ) : null}
       </div>

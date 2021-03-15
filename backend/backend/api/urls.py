@@ -40,4 +40,5 @@ urlpatterns = [
     path('delete-video-clips/', deleteVideoClips, name='delete-video-clips'),
 
     path('camera-angles/', cameraAngles, name='camera-angles'),
+    path('camera-angle/<str:pk>', cameraAngle, name='camera-angle'),
 ]

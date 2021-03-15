@@ -3,7 +3,7 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  padding: 10px 10px 25px 10px;
+  padding: 10px 10px 10px 10px;
   box-shadow: 0 0 20px 2px rgba(0, 0, 0, 0.1);
   border-radius: 3px;
   background-color: #fff;
@@ -146,6 +146,83 @@
 .submitbtn:hover {
     background-color: var(--color-primary-dark);
   }
+
+  .error_div{
+    text-align: center;
+  }
+  
+  .error_div > span{
+    color: red;
+    font-size: 1rem;
+    font-weight: 400;
+  }
+  
+  .result_div{
+    text-align: center;
+    margin: 10px 0;
+  }
+  
+  .result_div > span{
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .success{
+    color: var(--color-green);
+  }
+
+  .fail{
+    color: var(--color-danger);;
+  }
+
+  .progress{
+    padding: 12px 10px;
+    margin: 8px 0;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+
+  .progress_1{
+    margin-bottom: 10px;
+  }
+
+  .progress_1 > span{
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .progress_2{
+    display: flex;
+    align-items: center;
+  }
+
+  .progressBar{
+    flex: 95%;
+    height: 20px;
+  }
+
+  .cancelBtn{
+    flex: 5%;
+    margin-left: 5px;
+
+  }
+
+  .cancelBtn > button{
+    border-radius: 50%;
+    padding: 1px;
+  }
+
+  .cancelBtn > button > svg{
+    fill: var(--color-danger);
+    transform: scale(1);
+
+  }
+
 
 @keyframes fadein {
   0% {

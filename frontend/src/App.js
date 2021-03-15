@@ -45,8 +45,8 @@ const App = () => {
           <main id="app_main" className={`${classes.main}`}>
             <Switch>
               <Route exact path="/" component={Profiles} />
-              <Route path="/:profile_id/add_session" component={AddSession} />
-              <Route path="/:profile_id" component={ProfilePage} />
+              <Route path="/:profile_id/:session_id" render={(props) => <AddSession {...props} />} />
+              <Route path="/:profile_id" render={(props) => <ProfilePage {...props} />} /> 
             </Switch>
           </main>
   

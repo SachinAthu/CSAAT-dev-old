@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 import classes from "./ProfilePage.module.css";
 import EmptySVG from "../../assets/svg/empty.svg";
 import Breadcrumbs from "../breadcrumbs/Breadcrumbs";
+import BtnSpinner from "../spinners/btn/BtnSpinner";
 
 import {
   getSessions,
@@ -33,6 +34,7 @@ export class ProfilePage extends Component {
     super(props);
     this.state = {
       updating: false,
+      loadingNewBtn: false,
     };
   }
 
@@ -47,7 +49,7 @@ export class ProfilePage extends Component {
     axios
       .get(`http://localhost:8000/api/sessions/${this.props.profile.id}/`)
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         if (res.data[0]) {
           this.props.getSessions(res.data);
           this.props.setActiveSession(res.data[0]);
@@ -61,7 +63,7 @@ export class ProfilePage extends Component {
     axios
       .get(`http://localhost:8000/api/videos/${id}/`)
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         this.props.getVideos(res.data);
       })
       .catch((err) => console.log(err));
@@ -105,15 +107,39 @@ export class ProfilePage extends Component {
     const session = this.props.sessions.filter(
       (s, i) => s.id == e.target.value
     );
-    this.props.setActiveSession(session);
+    this.props.setActiveSession(session[0]);
   };
 
   addSessionHandler = () => {
     // clear redux videos
     this.props.deleteVideos();
 
-    // navigate to add session component
-    this.props.history.push(`/${this.props.profile.id}/add_session`);
+    // create a new session and set created session as the active session
+    axios(`http://localhost:8000/api/add-session/`, {
+      method: "POST",
+      data: {
+        date: null,
+        profile: this.props.profile.id,
+        user: null,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
+        console.log("session created", res.data);
+        this.setState({ uploading: false });
+        this.props.addSession(res.data);
+        this.props.setActiveSession(res.data);
+
+        // navigate to add session component
+        this.props.history.push({
+          pathname: `/${this.props.profile.id}/${res.data.id}`,
+          state: {isNew: true}
+        });
+      })
+      .catch((err) => console.log(err));
+
   };
 
   render() {
@@ -161,22 +187,14 @@ export class ProfilePage extends Component {
               className={`button_primary ${classes.addbtn}`}
               onClick={this.addSessionHandler}
             >
-              <svg
-                version="1.1"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-              >
-                <path d="M5 13h6v6c0 0.552 0.448 1 1 1s1-0.448 1-1v-6h6c0.552 0 1-0.448 1-1s-0.448-1-1-1h-6v-6c0-0.552-0.448-1-1-1s-1 0.448-1 1v6h-6c-0.552 0-1 0.448-1 1s0.448 1 1 1z"></path>
-              </svg>
-              Session
+              {this.state.loadingNewBtn ? <BtnSpinner /> : null}
+              New Session
             </button>
           </div>
 
           {sessions.length > 0 ? (
             <div className={classes.videoplay}>
-              <VideoPlay />
+              <VideoPlay history={this.props.history}/>
             </div>
           ) : (
             <div className={classes.novideo}>

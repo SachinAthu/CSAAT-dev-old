@@ -7,6 +7,8 @@ import classes from "./DeleteConfirmPopup.module.css";
 import BtnSpinner from "../spinners/btn/BtnSpinner";
 
 import { deleteProfile } from "../../actions/ProfileActions";
+import { deleteSession, setActiveSessionFirst } from "../../actions/SessionActions"
+import { deleteVideo } from '../../actions/VideoActions'
 
 const DeleteConformPopup = (props) => {
   const [deleting, setDeleting] = useState(false);
@@ -36,35 +38,55 @@ const DeleteConformPopup = (props) => {
         );
         console.log(res.data);
         props.deleteProfile(profiles[i].id);
+        close(true);
       } catch (err) {
-        if (err) console.log(err);
+        if (err) console.log('Profile deletion failed', err);
       }
     }
 
     setDeleting(false);
-    close(true);
   };
 
-  const deleteSession = (session = props.data) => {
+  const deleteSession = async (sessionId = props.data) => {
+    // console.log(props.data)
     setDeleting(true);
     
-    axios
-    .delete(`http://localhost:8000/api/delete-session/${session.id}`)
-    .then((res) => {
+    try{
+      const res = await axios.delete(`http://localhost:8000/api/delete-session/${sessionId}`)
       console.log(res.data);
-      this.props.deleteSession(session.id);
-      setDeleting(false);
-      close(true);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+      
+      // delete session from redux store
+      props.deleteSession(sessionId);
 
+      // set the active session to first session on the session list
+      // props.setActiveSessionFirst()
+      close(true);
+
+    }catch(err){
+      if(err) console.log('Session deletion failed', err)
+    }
+
+    setDeleting(false);
+    
   };
 
-  const deleteVideo = (video = props.data) => {
+  const deleteVideo = async (videoId = props.data) => {
     setDeleting(true)
+
+    try{
+      const res = await axios.delete(`http://localhost:8000/api/delete-video/${videoId}`)
+      console.log("Video deleted", res.data);
+      
+      // remove from redux store
+      props.deleteVideo(videoId);
+      close(true);
+
+    }catch(err){
+      if(err) console.log("Video deletion failed", err)
+    }
+    
     setDeleting(false)
+
   }
 
   /////////////////////////////////////////////////////
@@ -156,12 +178,13 @@ const DeleteConformPopup = (props) => {
 };
 
 DeleteConformPopup.propTypes = {
-  profiles: PropTypes.array.isRequired,
   deleteProfile: PropTypes.func.isRequired,
+  deleteSession: PropTypes.func.isRequired,
+  deleteVideo: PropTypes.func.isRequired,
+  setActiveSessionFirst: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
-  profiles: state.profileReducer.profiles,
 });
 
-export default connect(mapStateToProps, { deleteProfile })(DeleteConformPopup);
+export default connect(mapStateToProps, { deleteProfile, deleteSession, deleteVideo, setActiveSessionFirst })(DeleteConformPopup);

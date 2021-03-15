@@ -5,6 +5,9 @@ import {
   UPDATE_SESSION,
   DELETE_SESSION,
   DELETE_SESSIONS,
+  DELETE_ACTIVE_SESSION,
+  UPDATE_ACTIVE_SESSION,
+  SET_ACTIVE_SESSION_FIRST,
 } from "../actions/Types";
 
 const initialState = {
@@ -34,7 +37,7 @@ export default function (state = initialState, action) {
 
       tempSessions.forEach((s, i) => {
         if (s.id === updatedSession.id) {
-          s.datetime = updatedSession.datetime;
+          s.date = updatedSession.date;
           s.profile = updatedSession.profile;
           s.user = updatedSession.user;
         }
@@ -51,18 +54,57 @@ export default function (state = initialState, action) {
         activeSession: action.data,
       };
 
-    case DELETE_SESSION:
+    case SET_ACTIVE_SESSION_FIRST:
       return {
         ...state,
-        sessions: state.sessions.filter(
-          (session) => session.id !== action.data
-        ),
+        activeSession: [...state.sessions][0],
+      };
+
+    case UPDATE_ACTIVE_SESSION:
+      console.log(action.data);
+      const tempSessions2 = [...state.sessions];
+      const updatedSession2 = action.data;
+
+      tempSessions2.forEach((s, i) => {
+        if (s.id === updatedSession2.id) {
+          s.date = updatedSession2.date;
+        }
+      });
+
+      return {
+        ...state,
+        activeSession: action.data,
+        sessions: tempSessions2,
+      };
+
+    case DELETE_SESSION:
+      const ts = [...state.sessions]
+      const fts = ts.filter(
+        (session) => session.id !== action.data
+      )
+      
+      let as = {}
+      if(fts.length <= 0){
+        as = {}
+      }else{
+        as = fts[0]
+      }
+      return {
+        ...state,
+        sessions: fts,
+        activeSession: as
       };
 
     case DELETE_SESSIONS:
       return {
         ...state,
         sessions: [],
+      };
+
+    case DELETE_ACTIVE_SESSION:
+      return {
+        ...state,
+        activeSession: {},
       };
 
     default:
