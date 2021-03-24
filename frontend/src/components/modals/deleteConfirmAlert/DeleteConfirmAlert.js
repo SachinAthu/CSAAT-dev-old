@@ -3,12 +3,13 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import { connect } from "react-redux";
 
-import classes from "./DeleteConfirmPopup.module.css";
-import BtnSpinner from "../spinners/btn/BtnSpinner";
+import classes from "./DeleteConfirmAlert.module.css";
+import BtnSpinner from "../../spinners/btn/BtnSpinner";
+import ModalFrame from '../modalFrame/ModalFrame'
 
-import { deleteProfile } from "../../actions/ProfileActions";
-import { deleteSession, setActiveSessionFirst } from "../../actions/SessionActions"
-import { deleteVideo } from '../../actions/VideoActions'
+import { deleteProfile } from "../../../actions/ProfileActions";
+import { deleteSession, setActiveSessionFirst } from "../../../actions/SessionActions"
+import { deleteVideo } from '../../../actions/VideoActions'
 
 const DeleteConformPopup = (props) => {
   const [deleting, setDeleting] = useState(false);
@@ -16,19 +17,6 @@ const DeleteConformPopup = (props) => {
   ///////////////////////////////////////////////
   ////////////////// functions //////////////////
   ///////////////////////////////////////////////
-
-  const close = (res) => {
-    const modal = document.getElementById("deleteConfirmWindow");
-    const overlay = document.getElementById("deleteConfirmWindowOverlay");
-
-    modal.classList.add(`${classes.fadeout}`);
-    overlay.classList.add(`${classes.overlay_fadeout}`);
-
-    setTimeout(() => {
-      props.close(res);
-    }, 300);
-  };
-
   const deleteProfiles = async (profiles = props.data) => {
     setDeleting(true);
     for (let i = 0; i < profiles.length; i++) {
@@ -38,7 +26,6 @@ const DeleteConformPopup = (props) => {
         );
         console.log(res.data);
         props.deleteProfile(profiles[i].id);
-        close(true);
       } catch (err) {
         if (err) console.log('Profile deletion failed', err);
       }
@@ -60,7 +47,6 @@ const DeleteConformPopup = (props) => {
 
       // set the active session to first session on the session list
       // props.setActiveSessionFirst()
-      close(true);
 
     }catch(err){
       if(err) console.log('Session deletion failed', err)
@@ -79,7 +65,6 @@ const DeleteConformPopup = (props) => {
       
       // remove from redux store
       props.deleteVideo(videoId);
-      close(true);
 
     }catch(err){
       if(err) console.log("Video deletion failed", err)
@@ -109,21 +94,8 @@ const DeleteConformPopup = (props) => {
   };
 
   return (
-    <Fragment>
+    <ModalFrame close={props.close}>
       <div className={classes.container} id="deleteConfirmWindow">
-        <button onClick={() => close(false)} className={classes.closebtn}>
-          <svg
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-          >
-            <title>Close</title>
-            <path d="M18.984 6.422l-5.578 5.578 5.578 5.578-1.406 1.406-5.578-5.578-5.578 5.578-1.406-1.406 5.578-5.578-5.578-5.578 1.406-1.406 5.578 5.578 5.578-5.578z"></path>
-          </svg>
-        </button>
-
         <div className={classes.header}>
           <h3>Delete {props.header}?</h3>
           <span>
@@ -156,7 +128,7 @@ const DeleteConformPopup = (props) => {
           <button
             type="button"
             className={`.button_reset ${classes.cancelbtn}`}
-            onClick={() => close(false)}
+            onClick={() => props.close()}
           >
             Cancel
           </button>
@@ -171,9 +143,7 @@ const DeleteConformPopup = (props) => {
           </button>
         </div>
       </div>
-
-      <div className={classes.overlay} id="deleteConfirmWindowOverlay"></div>
-    </Fragment>
+    </ModalFrame>
   );
 };
 

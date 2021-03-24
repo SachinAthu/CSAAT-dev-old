@@ -5,11 +5,11 @@ import { connect } from "react-redux";
 import DataTable from "react-data-table-component";
 
 import classes from "./Profiles.module.css";
-import Breadcrumbs from "../breadcrumbs/Breadcrumbs";
-import AddProfile from "./addProfile/AddProfile";
+import Breadcrumbs from "../layout/breadcrumbs/Breadcrumbs";
+import AddProfile from "../modals/addProfile/AddProfile";
 import EmptySVG from "../../assets/svg/empty.svg";
 import { customStyles } from "./DatatableStyles";
-import DeleteConfirmPopup from "../deleteConfirmPopup/DeleteConfirmPopup";
+import DeleteConfirmPopup from "../modals/deleteConfirmAlert/DeleteConfirmAlert";
 
 import { getProfiles, setActiveProfile } from "../../actions/ProfileActions";
 import { deleteSessions, deleteActiveSession } from "../../actions/SessionActions";

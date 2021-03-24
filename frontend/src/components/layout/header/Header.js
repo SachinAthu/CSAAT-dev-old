@@ -1,7 +1,7 @@
 import $ from "jquery";
 import { Link } from "react-router-dom";
 
-import logo from "../../assets/svg/logo.svg";
+import logo from "../../../assets/svg/logo.svg";
 import classes from "./Header.module.css";
 
 const Header = () => {
@@ -44,9 +44,6 @@ const Header = () => {
             <ul>
               <li>
                 <Link to="/">Profiles</Link>
-              </li>
-              <li>
-                <Link to="/">Quick Upload</Link>
               </li>
               <li>
                 <Link to="/">Cameras</Link>

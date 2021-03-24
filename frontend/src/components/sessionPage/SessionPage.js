@@ -3,10 +3,10 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import axios from "axios";
 
-import classes from "./AddSession.module.css";
-import Breadcrumbs from "../breadcrumbs/Breadcrumbs";
+import classes from "./SessionPage.module.css";
+import Breadcrumbs from "../layout/breadcrumbs/Breadcrumbs";
 
-import AddVideoCard from "./AddVideoCard/AddVideoCard";
+import AddVideoCard from "./sessionVideoCard/SessionVideoCard";
 import {
   updateSession,
   updateActiveSession,
@@ -46,6 +46,7 @@ class AddSession extends Component {
   //////////////////////////////////////////////////////////////
   //////////////////////  event listeners //////////////////////
   //////////////////////////////////////////////////////////////
+  // trigger when uploaded date field value changes and update uploaded date immediatly
   onDateChangeHandler = (e) => {
     this.setState({date: e.target.value})
     if(e.target.value === '') return

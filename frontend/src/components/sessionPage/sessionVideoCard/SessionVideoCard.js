@@ -1,11 +1,10 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import axios from "axios";
 
-import classes from "./AddVideoCard.module.css";
-import AddVideo from "./addVideo/AddVideo";
-import DeleteConfirmPopup from "../../deleteConfirmPopup/DeleteConfirmPopup";
+import classes from "./SessionVideoCard.module.css";
+import AddVideo from "../../modals/addVideo/AddVideo";
+import DeleteConfirmPopup from "../../modals/deleteConfirmAlert/DeleteConfirmAlert";
 import Player from "../../player/Player";
 
 import { deleteVideo } from "../../../actions/VideoActions";
@@ -29,15 +28,18 @@ class AddVideoCard extends Component {
   ////////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////// functions ////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////
+  // close video add popup window
   closeAddWindow = () => {
     this.setState({ adding: false });
   };
 
+  // close video delete confirmation alert box
   closeDeleteConfirmPopup = (res) => {
     // console.log(res);
     this.setState({ deleting: false });
   };
 
+  // convert seconds to HH:mm:ss format
   convertSec = (sec) => {
     let measuredTime = new Date(null);
     measuredTime.setSeconds(parseInt(sec)); // specify value of SECONDS
@@ -48,16 +50,19 @@ class AddVideoCard extends Component {
   ////////////////////////////////////////////////////////////////////////////////
   ///////////////////////////// event handlers ///////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////
+  // open the video add popup window
   addHandler = () => {
     this.setState({ adding: true });
   };
 
+  // open the video add popup window for editting
   editHandler = (video) => {
     console.log(video);
     this.setState({ adding: true });
   };
 
-  removeHandler = (video) => {
+  // open the delete alert
+  deleteHandler = (video) => {
     // console.log(video)
     this.setState({ deleting: true });
   };
@@ -126,7 +131,7 @@ class AddVideoCard extends Component {
               </button>
 
               <button
-                onClick={this.removeHandler.bind(this, video)}
+                onClick={this.deleteHandler.bind(this, video)}
                 className={classes.removebtn}
               >
                 <svg

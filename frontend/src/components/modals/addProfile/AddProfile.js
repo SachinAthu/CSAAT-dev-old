@@ -1,9 +1,10 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 import { connect } from "react-redux";
 
-import styles from "./AddProfile.module.css";
+import classes from "./AddProfile.module.css";
+import ModalFrame from '../modalFrame/ModalFrame'
 import DragDropField from "../../dragDropField/DragDropField";
 import BtnSpinner from "../../spinners/btn/BtnSpinner";
 
@@ -59,17 +60,6 @@ export class AddProfile extends Component {
   /////////////////////////////////////////////////////////////////////
   /////////////////////////// functions ///////////////////////////////
   /////////////////////////////////////////////////////////////////////
-  closeWindow = () => {
-    const modal = document.getElementById("profileAddWindow");
-    const overlay = document.getElementById("profileAddWindowOverlay");
-
-    modal.classList.add(`${styles.fadeout}`);
-    overlay.classList.add(`${styles.overlay_fadeout}`);
-
-    setTimeout(() => {
-      this.props.close();
-    }, 300);
-  };
 
   /////////////////////////////////////////////////////////////////////
   ///////////////////////// event listners ////////////////////////////
@@ -141,7 +131,6 @@ export class AddProfile extends Component {
         } else {
           this.props.addProfile(res.data);
         }
-        this.closeWindow();
       })
       .catch((err) => {
         this.setState({ requesting: false });
@@ -194,28 +183,12 @@ export class AddProfile extends Component {
     } = this.state;
 
     return (
-      <Fragment>
-        <div className={styles.container} id="profileAddWindow">
-          <button
-            onClick={() => this.closeWindow()}
-            className={styles.closebtn}
-          >
-            <svg
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-            >
-              <title>Close</title>
-              <path d="M18.984 6.422l-5.578 5.578 5.578 5.578-1.406 1.406-5.578-5.578-5.578 5.578-1.406-1.406 5.578-5.578-5.578-5.578 1.406-1.406 5.578 5.578 5.578-5.578z"></path>
-            </svg>
-          </button>
-
+      <ModalFrame close={this.props.close}>
+        <div className={classes.container}>
           <h4>{editing ? "Edit Profile" : "New Profile"}</h4>
 
-          <form className={styles.form} onSubmit={this.onSubmitHandler}>
-            <div className={styles.formgroup}>
+          <form className={classes.form} onSubmit={this.onSubmitHandler}>
+            <div className={classes.formgroup}>
               <label htmlFor="profile_add_form_clinic_no">CLINIC NO</label>
               <input
                 type="text"
@@ -226,7 +199,7 @@ export class AddProfile extends Component {
               />
             </div>
 
-            <div className={styles.formgroup}>
+            <div className={classes.formgroup}>
               <label htmlFor="profile_add_form_name">CHILD NAME</label>
               <input
                 type="text"
@@ -237,7 +210,7 @@ export class AddProfile extends Component {
               />
             </div>
 
-            <div className={styles.formgroup}>
+            <div className={classes.formgroup}>
               <label htmlFor="profile_add_form_dob">DATE OF BIRTH</label>
               <input
                 type="date"
@@ -248,7 +221,7 @@ export class AddProfile extends Component {
               />
             </div>
 
-            <div className={styles.formgroup_radio}>
+            <div className={classes.formgroup_radio}>
               <label>GENDER</label>
 
               <input
@@ -270,7 +243,7 @@ export class AddProfile extends Component {
               <label htmlFor="profile_add_form_f">Female</label>
             </div>
 
-            <div className={styles.formgroup_file}>
+            <div className={classes.formgroup_file}>
               <label>CONSENT DOCUMENT</label>
 
               <DragDropField
@@ -280,10 +253,10 @@ export class AddProfile extends Component {
               />
             </div>
 
-            <div className={styles.formgroup_btn}>
+            <div className={classes.formgroup_btn}>
               <button
                 type="button"
-                className={`.button_reset ${styles.resetbtn}`}
+                className={`.button_reset ${classes.resetbtn}`}
                 onClick={this.resetFormHandler}
               >
                 Reset
@@ -291,7 +264,7 @@ export class AddProfile extends Component {
 
               <button
                 type="submit"
-                className={`.button_primary ${styles.submitbtn}`}
+                className={`.button_primary ${classes.submitbtn}`}
               >
                 {requesting ? <BtnSpinner /> : null}
 
@@ -300,9 +273,7 @@ export class AddProfile extends Component {
             </div>
           </form>
         </div>
-
-        <div className={styles.overlay} id="profileAddWindowOverlay"></div>
-      </Fragment>
+      </ModalFrame>
     );
   }
 }

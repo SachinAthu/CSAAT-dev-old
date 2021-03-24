@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 
 import classes from "./ProfilePage.module.css";
 import EmptySVG from "../../assets/svg/empty.svg";
-import Breadcrumbs from "../breadcrumbs/Breadcrumbs";
+import Breadcrumbs from "../layout/breadcrumbs/Breadcrumbs";
 import BtnSpinner from "../spinners/btn/BtnSpinner";
 
 import {
@@ -33,6 +33,7 @@ export class ProfilePage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      adding: false,
       updating: false,
       loadingNewBtn: false,
     };
@@ -45,6 +46,7 @@ export class ProfilePage extends Component {
   //////////////////////////////////////////////////////////////
   //////////////////////// functions ///////////////////////////
   //////////////////////////////////////////////////////////////
+  // fetch all sessions from DB
   fetchSessions = () => {
     axios
       .get(`http://localhost:8000/api/sessions/${this.props.profile.id}/`)
@@ -59,6 +61,7 @@ export class ProfilePage extends Component {
       .catch((err) => console.log(err));
   };
 
+  // fetch all videos for selected session form DB
   fetchVideos = (id) => {
     axios
       .get(`http://localhost:8000/api/videos/${id}/`)
@@ -69,6 +72,7 @@ export class ProfilePage extends Component {
       .catch((err) => console.log(err));
   };
 
+  // format datetime
   getTime = (datetime) => {
     const day = datetime.slice(0, 10);
     let h = parseInt(datetime.slice(11, 13));
@@ -98,9 +102,15 @@ export class ProfilePage extends Component {
     return time;
   };
 
+  // close add session modal
+  closeAddSessionModal = () => {
+    this.setState({ adding: false })
+  }
+
   //////////////////////////////////////////////////////////////////
   ///////////////////// event listeners ////////////////////////////
   //////////////////////////////////////////////////////////////////
+  // change selected session when dropdown value change
   onChangeSelectHandler = (e) => {
     // console.log(e.target.value)
     this.fetchVideos(e.target.value);
@@ -113,6 +123,11 @@ export class ProfilePage extends Component {
   addSessionHandler = () => {
     // clear redux videos
     this.props.deleteVideos();
+
+    //open session add modal
+    this.setState({ adding: true })
+
+    return
 
     // create a new session and set created session as the active session
     axios(`http://localhost:8000/api/add-session/`, {
