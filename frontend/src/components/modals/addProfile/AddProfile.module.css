@@ -1,0 +1,108 @@
+.container {
+  padding: 10px 0 0 0;
+  width: 36rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.container h4 {
+  color: #364146;
+  margin: 10px auto 65px auto;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 10px;
+}
+
+.form input:focus {
+  outline: none;
+  outline-style: none;
+  box-shadow: none;
+}
+
+.formgroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.formgroup_radio {
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+
+.formgroup_radio_1 {
+  display: flex;
+  align-items: center;
+}
+
+.formgroup_file {
+  height: 12rem;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.formgroup_btn {
+  display: flex;
+  margin-top: 20px;
+  margin-bottom: 25px;
+}
+
+.formgroup_btn button {
+  flex: 1;
+  height: 36px;
+  color: #fff;
+}
+
+.resetbtn {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.3);
+  margin-right: 2px;
+}
+
+.resetbtn:hover {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.submitbtn {
+  color: #fff;
+  background-color: var(--color-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-left: 2px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.submitbtn:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.fieldError {
+  display: none;
+  color: var(--color-danger);
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.result {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 auto;
+  margin-bottom: 10px;
+}
+
+.success {
+  color: var(--color-green);
+}
+
+.failed {
+  color: var(--color-danger);
+}

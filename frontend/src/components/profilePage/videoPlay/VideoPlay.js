@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
-import NoVideosSVG from "./no_videos.svg";
+import NoVideosSVG from "../../../assets/svg/no_videos.svg";
 import Player from "../../player/Player";
-import DeleteConfirmPopup from "../../deleteConfirmPopup/DeleteConfirmPopup";
+import DeleteConfirmPopup from "../../modals/deleteConfirmAlert/DeleteConfirmAlert";
 import classes from "./VideoPlay.module.css";
 import ControlPanel from './controlPanel/ControlPanel'
 
@@ -28,6 +28,7 @@ class VideoPlay extends Component {
   ///////////////////////////////////////////////////////////////////////
   //////////////////////////// functions ////////////////////////////////
   ///////////////////////////////////////////////////////////////////////
+  // format date
   getTime = (datetime) => {
     const day = datetime.slice(0, 10);
     let h = parseInt(datetime.slice(11, 13));
@@ -57,6 +58,7 @@ class VideoPlay extends Component {
     return time;
   };
 
+   // close the delete confirm alert
   closeDeleteConfirmPopup = (res) => {
     // console.log(res);
     this.setState({ deleting: false });
@@ -65,16 +67,17 @@ class VideoPlay extends Component {
   ////////////////////////////////////////////////////////////////////////
   /////////////////////// event listener /////////////////////////////////
   ////////////////////////////////////////////////////////////////////////
+  // open the delete confirm alert
   deleteSessionHandler = () => {
     // open delete confirm box
     this.setState({ deleting: true });
   };
 
+  // navigate to the session detail page to edit current selected session
   editSessionHandler = () => {
     //this.setState({ addSession: true });
     this.props.history.push({
-      pathname: `/${this.props.profile.id}/${this.props.activeSession.id}`,
-      state: { isNew: false },
+      pathname: `/${this.props.profile.id}/${this.props.activeSession.id}`
     });
   };
 

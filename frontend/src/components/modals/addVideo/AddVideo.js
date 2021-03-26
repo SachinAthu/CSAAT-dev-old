@@ -4,11 +4,12 @@ import { connect } from "react-redux";
 import axios from "axios";
 
 import classes from "./AddVideo.module.css";
-import DragDropField from "../../../dragDropField/DragDropField";
-import BtnSpinner from "../../../spinners/btn/BtnSpinner";
+import ModalFrame from '../modalFrame/ModalFrame'
+import DragDropField from "../../dragDropField/DragDropField";
+import BtnSpinner from "../../spinners/btn/BtnSpinner";
 
-import { addVideo, updateVideo } from "../../../../actions/VideoActions";
-import { getCameras, getCameraAngles } from "../../../../actions/CameraActions";
+import { addVideo, updateVideo } from "../../../actions/VideoActions";
+import { getCameras, getCameraAngles } from "../../../actions/CameraActions";
 
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
@@ -63,6 +64,7 @@ class AddVideo extends Component {
   ////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////// functions ///////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////
+  // fetch camera details fromdb for the input field
   fetchCameras = () => {
     axios
       .get("http://localhost:8000/api/cameras/")
@@ -74,6 +76,7 @@ class AddVideo extends Component {
       .catch((err) => console.log(err));
   };
 
+  // fetch camera angle details fromdb for the input field
   fetchCameraAngles = () => {
     axios
       .get("http://localhost:8000/api/camera-angles/")
@@ -85,19 +88,7 @@ class AddVideo extends Component {
       .catch((err) => console.log(err));
   };
 
-  close = () => {
-    const modal = document.getElementById("videoAddWindow");
-    const overlay = document.getElementById("videoAddWindowOverlay");
-
-    modal.classList.add(`${classes.fadeout}`);
-    overlay.classList.add(`${classes.overlay_fadeout}`);
-
-    setTimeout(() => {
-      this.props.close();
-    }, 300);
-  };
-
-  // get video duration
+  // get the duration of selected video file
   getDuration = (file) => {
     const videoEl = document.getElementById("videoEl");
     const objectUrl = URL.createObjectURL(file);
@@ -114,6 +105,7 @@ class AddVideo extends Component {
     }, 100);
   };
 
+  // reset the form
   resetForm = () => {
     const v = this.props.video;
 
@@ -136,6 +128,7 @@ class AddVideo extends Component {
     }
   };
 
+  // show wether video uploading success or not by a message
   showFinalRes = (class_a, class_r, msg) => {
     const res_span = document.getElementById("videoaddedit_final_res");
     res_span.innerHTML = msg;
@@ -143,10 +136,12 @@ class AddVideo extends Component {
     res_span.classList.add(class_a);
   };
 
+  // cancel the uploading
   cancelUpload = () => {
     this.cancelTokenSource.cancel("Uploading cancelled!");
   };
 
+  // upload video
   upload = async (formData) => {
     let url = `http://localhost:8000/api/add-video/`;
     let method = "POST";
@@ -186,9 +181,6 @@ class AddVideo extends Component {
 
         // show result success
         this.setState({ loading: false, progressBar: false });
-        setTimeout(() => {
-          this.close();
-        }, 1000);
       })
       .catch((thrown) => {
         if (axios.isCancel(thrown)) {
@@ -213,6 +205,7 @@ class AddVideo extends Component {
   ////////////////////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////// event handlers ////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////
+  // trigger when form submit button clicked
   onSubmit = (e) => {
     e.preventDefault();
     const {
@@ -254,12 +247,14 @@ class AddVideo extends Component {
 
   };
 
+  // trigger when form field value change
   onChange = (e) => {
     this.setState({
       [e.target.name]: e.target.value,
     });
   };
 
+  // trigger when fileuploadfield (DragDropField) return value changed
   onVideoFieldChange = (file) => {
     this.setState({
       video: file,
@@ -280,21 +275,8 @@ class AddVideo extends Component {
     const { cameras, camera_angles } = this.props;
 
     return (
-      <Fragment>
-        <div className={classes.container} id="videoAddWindow">
-          <button onClick={() => this.close()} className={classes.closebtn}>
-            <svg
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-            >
-              <title>Close</title>
-              <path d="M18.984 6.422l-5.578 5.578 5.578 5.578-1.406 1.406-5.578-5.578-5.578 5.578-1.406-1.406 5.578-5.578-5.578-5.578 1.406-1.406 5.578 5.578 5.578-5.578z"></path>
-            </svg>
-          </button>
-
+      <ModalFrame close={this.props.close}>
+        <div className={classes.container}>
           <h4>{this.props.video ? "Edit Video" : "New Video"}</h4>
 
           <form className={classes.form} onSubmit={this.onSubmit.bind(this)}>
@@ -436,9 +418,7 @@ class AddVideo extends Component {
           id="videoEl"
           style={{ display: "none" }}
         ></video>
-
-        <div className={classes.overlay} id="videoAddWindowOverlay"></div>
-      </Fragment>
+      </ModalFrame>
     );
   }
 }

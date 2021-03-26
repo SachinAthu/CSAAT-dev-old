@@ -7,7 +7,7 @@ const Footer = () => {
         <div className={classes.copyright}>
           &copy; Copyright{" "}
           <strong>
-            <span>Scaffold</span>
+            <span>CSAAT</span>
           </strong>
           . All Rights Reserved
         </div>

@@ -5,8 +5,9 @@ import { connect } from "react-redux";
 
 import classes from "./ProfilePage.module.css";
 import EmptySVG from "../../assets/svg/empty.svg";
-import Breadcrumbs from "../breadcrumbs/Breadcrumbs";
+import Breadcrumbs from "../layout/breadcrumbs/Breadcrumbs";
 import BtnSpinner from "../spinners/btn/BtnSpinner";
+import AddSession from '../modals/addSession/AddSession'
 
 import {
   getSessions,
@@ -19,7 +20,7 @@ import VideoPlay from "./videoPlay/VideoPlay";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
-export class ProfilePage extends Component {
+class ProfilePage extends Component {
   static propTypes = {
     profile: PropTypes.object.isRequired,
     sessions: PropTypes.array.isRequired,
@@ -33,7 +34,7 @@ export class ProfilePage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      updating: false,
+      adding: false,
       loadingNewBtn: false,
     };
   }
@@ -45,6 +46,7 @@ export class ProfilePage extends Component {
   //////////////////////////////////////////////////////////////
   //////////////////////// functions ///////////////////////////
   //////////////////////////////////////////////////////////////
+  // fetch all sessions from DB
   fetchSessions = () => {
     axios
       .get(`http://localhost:8000/api/sessions/${this.props.profile.id}/`)
@@ -59,6 +61,7 @@ export class ProfilePage extends Component {
       .catch((err) => console.log(err));
   };
 
+  // fetch all videos for selected session form DB
   fetchVideos = (id) => {
     axios
       .get(`http://localhost:8000/api/videos/${id}/`)
@@ -69,6 +72,7 @@ export class ProfilePage extends Component {
       .catch((err) => console.log(err));
   };
 
+  // format datetime
   getTime = (datetime) => {
     const day = datetime.slice(0, 10);
     let h = parseInt(datetime.slice(11, 13));
@@ -98,9 +102,15 @@ export class ProfilePage extends Component {
     return time;
   };
 
+  // close add session modal
+  closeAddSessionModal = () => {
+    this.setState({ adding: false })
+  }
+
   //////////////////////////////////////////////////////////////////
   ///////////////////// event listeners ////////////////////////////
   //////////////////////////////////////////////////////////////////
+  // change selected session when dropdown value change
   onChangeSelectHandler = (e) => {
     // console.log(e.target.value)
     this.fetchVideos(e.target.value);
@@ -111,34 +121,8 @@ export class ProfilePage extends Component {
   };
 
   addSessionHandler = () => {
-    // clear redux videos
-    this.props.deleteVideos();
-
-    // create a new session and set created session as the active session
-    axios(`http://localhost:8000/api/add-session/`, {
-      method: "POST",
-      data: {
-        date: null,
-        profile: this.props.profile.id,
-        user: null,
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => {
-        console.log("session created", res.data);
-        this.setState({ uploading: false });
-        this.props.addSession(res.data);
-        this.props.setActiveSession(res.data);
-
-        // navigate to add session component
-        this.props.history.push({
-          pathname: `/${this.props.profile.id}/${res.data.id}`,
-          state: {isNew: true}
-        });
-      })
-      .catch((err) => console.log(err));
+    //open session add modal
+    this.setState({ adding: true })
 
   };
 
@@ -203,6 +187,8 @@ export class ProfilePage extends Component {
             </div>
           )}
         </div>
+
+        {this.state.adding ? <AddSession close={this.closeAddSessionModal} /> : null}
       </div>
     );
   }

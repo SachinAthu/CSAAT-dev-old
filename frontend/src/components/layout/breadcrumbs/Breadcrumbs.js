@@ -1,6 +1,6 @@
-import { render } from "@testing-library/react";
-import { Component } from "react";
+import React, { Component } from "react";
 import { Link } from "react-router-dom";
+
 import classes from "./Breadcrumbs.module.css";
 
 class Breadcrumbs extends Component {

@@ -1,56 +1,8 @@
 .container {
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  padding: 10px 10px 10px 10px;
-  box-shadow: 0 0 20px 2px rgba(0, 0, 0, 0.1);
-  border-radius: 3px;
-  background-color: #fff;
+  padding: 10px 0 0 0;
   width: 36rem;
-  z-index: 1010;
-  animation-name: fadein;
-  animation-duration: 0.2s;
-  animation-fill-mode: both;
   display: flex;
   flex-direction: column;
-}
-
-.fadeout {
-  animation-name: fadeout;
-  animation-duration: 0.1s;
-  animation-fill-mode: both;
-}
-
-.overlay {
-  width: 100vw;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(255, 255, 255, 0.9);
-  z-index: 1000;
-  animation-name: overlay_fadein;
-  animation-duration: 0.2s;
-  animation-fill-mode: both;
-}
-
-.overlay_fadeout {
-  animation-name: overlay_fadeout;
-  animation-duration: 0.1s;
-  animation-fill-mode: both;
-}
-
-.closebtn {
-  align-self: flex-end;
-  background-color: transparent;
-}
-
-.closebtn svg {
-  fill: rgba(0, 0, 0, 0.6);
-  transform: scale(1);
 }
 
 .container h4 {
@@ -222,44 +174,3 @@
     transform: scale(1);
 
   }
-
-
-@keyframes fadein {
-  0% {
-    transform: translate(-50%, -50%) scale(0.5);
-    visibility: hidden;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1);
-    visibility: visible;
-  }
-}
-
-@keyframes fadeout {
-  0% {
-    transform: translate(-50%, -50%) scale(1);
-    visibility: visible;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(0);
-    visibility: hidden;
-  }
-}
-
-@keyframes overlay_fadein {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-@keyframes overlay_fadeout {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}

@@ -3,11 +3,11 @@ import { Provider } from "react-redux";
 import $ from "jquery";
 
 import classes from "./App.module.css";
-import Header from "./components/header/Header";
-import Footer from "./components/footer/Footer";
+import Header from "./components/layout/header/Header";
+import Footer from "./components/layout/footer/Footer";
 import Profiles from './components/profiles/Profiles'
 import ProfilePage from './components/profilePage/ProfilePage'
-import AddSession from './components/addSession/AddSession'
+import AddSession from './components/sessionPage/SessionPage'
 
 import store from "./store";
 
