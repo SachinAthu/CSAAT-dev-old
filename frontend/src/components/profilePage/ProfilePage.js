@@ -7,6 +7,7 @@ import classes from "./ProfilePage.module.css";
 import EmptySVG from "../../assets/svg/empty.svg";
 import Breadcrumbs from "../layout/breadcrumbs/Breadcrumbs";
 import BtnSpinner from "../spinners/btn/BtnSpinner";
+import AddSession from '../modals/addSession/AddSession'
 
 import {
   getSessions,
@@ -19,7 +20,7 @@ import VideoPlay from "./videoPlay/VideoPlay";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
-export class ProfilePage extends Component {
+class ProfilePage extends Component {
   static propTypes = {
     profile: PropTypes.object.isRequired,
     sessions: PropTypes.array.isRequired,
@@ -34,7 +35,6 @@ export class ProfilePage extends Component {
     super(props);
     this.state = {
       adding: false,
-      updating: false,
       loadingNewBtn: false,
     };
   }
@@ -121,39 +121,8 @@ export class ProfilePage extends Component {
   };
 
   addSessionHandler = () => {
-    // clear redux videos
-    this.props.deleteVideos();
-
     //open session add modal
     this.setState({ adding: true })
-
-    return
-
-    // create a new session and set created session as the active session
-    axios(`http://localhost:8000/api/add-session/`, {
-      method: "POST",
-      data: {
-        date: null,
-        profile: this.props.profile.id,
-        user: null,
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => {
-        console.log("session created", res.data);
-        this.setState({ uploading: false });
-        this.props.addSession(res.data);
-        this.props.setActiveSession(res.data);
-
-        // navigate to add session component
-        this.props.history.push({
-          pathname: `/${this.props.profile.id}/${res.data.id}`,
-          state: {isNew: true}
-        });
-      })
-      .catch((err) => console.log(err));
 
   };
 
@@ -218,6 +187,8 @@ export class ProfilePage extends Component {
             </div>
           )}
         </div>
+
+        {this.state.adding ? <AddSession close={this.closeAddSessionModal} /> : null}
       </div>
     );
   }

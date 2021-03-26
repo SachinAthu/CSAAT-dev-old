@@ -77,8 +77,7 @@ class VideoPlay extends Component {
   editSessionHandler = () => {
     //this.setState({ addSession: true });
     this.props.history.push({
-      pathname: `/${this.props.profile.id}/${this.props.activeSession.id}`,
-      state: { isNew: false },
+      pathname: `/${this.props.profile.id}/${this.props.activeSession.id}`
     });
   };
 

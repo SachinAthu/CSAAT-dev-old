@@ -92,7 +92,7 @@ class AddSession extends Component {
         <Breadcrumbs
           heading={this.props.isNew ? "New Session" : "Edit Session"}
           sub_links={sub_links}
-          current={this.props.isNew ? "new session" : "edit session" }
+          current="Session Details"
         />
 
         <div className={`container ${classes.container2}`}>
