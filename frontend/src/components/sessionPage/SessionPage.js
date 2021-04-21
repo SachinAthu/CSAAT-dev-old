@@ -4,22 +4,26 @@ import { connect } from "react-redux";
 import axios from "axios";
 
 import classes from "./SessionPage.module.css";
-import Breadcrumbs from "../layout/breadcrumbs/Breadcrumbs";
+import Breadcrumbs from "../layouts/breadcrumbs/Breadcrumbs";
+import SessionVideoCard from "./sessionVideoCard/SessionVideoCard";
+import SessionAudioCard from './sessionAudioCard/SessionAudioCard'
 
-import AddVideoCard from "./sessionVideoCard/SessionVideoCard";
 import {
   updateSession,
   updateActiveSession,
 } from "../../actions/SessionActions";
+import { CHILD_TYPES } from '../../actions/Types'
 
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
-class AddSession extends Component {
+class SessionPage extends Component {
   static propTypes = {
-    profile: PropTypes.object.isRequired,
+    activeChild: PropTypes.object.isRequired,
+    childType: PropTypes.string.isRequired,
     activeSession: PropTypes.object,
     videos: PropTypes.array,
+    audio: PropTypes.object,
     updateSession: PropTypes.func.isRequired,
     updateActiveSession: PropTypes.func.isRequired,
   };
@@ -69,30 +73,40 @@ class AddSession extends Component {
   };
 
   render() {
-    const { videos, profile } = this.props;
+    const { videos, audio, activeChild } = this.props;
     const sub_links = [
-      { name: "Profiles", link: "/" },
-      { name: `${profile.name}`, link: `/${profile.id}` },
+      { name: "Home", link: "/" },
+      {
+        name: this.props.childType == CHILD_TYPES.TYPICAL ? "Typical Children" : "Atypical Children",
+        link: this.props.childType == CHILD_TYPES.TYPICAL ? "/t_children" : "/at_children",
+      },
+      {
+        name: activeChild.name,
+        link:  this.props.childType === CHILD_TYPES.TYPICAL
+        ? `/t_children/${activeChild.id}`
+        : `/at_children/${activeChild.id}`,
+      }
     ];
 
     // prepare videos card list
     let video_cards = [];
     for (let i = 0; i < videos.length; i++) {
-      const card = <AddVideoCard video={videos[i] ? videos[i] : null} />;
+      const card = <SessionVideoCard video={videos[i] ? videos[i] : null} />;
       video_cards.push(card);
     }
 
     if (videos.length < 4) {
-      const card = <AddVideoCard video={null} />;
+      const card = <SessionVideoCard video={null} />;
       video_cards.push(card);
     }
 
     return (
       <div className={classes.container1}>
         <Breadcrumbs
-          heading={this.props.isNew ? "New Session" : "Edit Session"}
+          heading={"Session Details"}
           sub_links={sub_links}
           current="Session Details"
+          state={{childType: this.props.childType}}
         />
 
         <div className={`container ${classes.container2}`}>
@@ -118,6 +132,12 @@ class AddSession extends Component {
               </div>
             ))}
           </div>
+
+          <h2 className={classes.audioHead}>Session Audio</h2>
+
+          <div className={classes.audioCard}>
+              <SessionAudioCard />
+          </div>
         </div>
       </div>
     );
@@ -125,12 +145,14 @@ class AddSession extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  profile: state.profileReducer.activeProfile,
+  activeChild: state.childReducer.activeChild, 
+  childType: state.childReducer.childType,
   activeSession: state.sessionReducer.activeSession,
   videos: state.videoReducer.videos,
+  audio: state.audioReducer.audio,
 });
 
 export default connect(mapStateToProps, {
   updateSession,
   updateActiveSession,
-})(AddSession);
+})(SessionPage);

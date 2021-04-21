@@ -1,12 +1,14 @@
 import { combineReducers } from "redux"
-import ProfileReducer from './ProfileReducer'
+import ChildReducer from './ChildReducer'
 import SessionReducer from './SessionReducer'
 import VideoReducer from './VideoReducer'
+import AudioReducer from './AudioReducer'
 import CameraReducer from './CameraReducer'
 
 export default combineReducers({
-    profileReducer: ProfileReducer,
+    childReducer: ChildReducer,
     sessionReducer: SessionReducer,
     videoReducer: VideoReducer,
     cameraReducer: CameraReducer,
+    audioReducer: AudioReducer,
 })

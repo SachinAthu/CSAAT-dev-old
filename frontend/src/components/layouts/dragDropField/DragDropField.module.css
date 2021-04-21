@@ -1,0 +1,56 @@
+.dropbox {
+  position: relative;
+  height: 36px;
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+  outline: none;
+  outline-style: none;
+  border-radius: 3px;
+  opacity: 100%;
+  transition: all 0.5s ease;
+  padding: 0 0 0 17px;
+
+  display: flex;
+  align-items: center;
+}
+
+.dropbox_dragging {
+  opacity: 75%;
+}
+
+.dropbox > label{
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 36px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+  color: #fff;
+  padding: 0 25px;
+  font-weight: 600;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dropbox > input {
+  height: 36px;
+  width: 30%;
+}
+
+.dropbox span {
+  color: var(--color-input);
+  font-size: 0.75rem;
+  font-weight: 400;
+  margin: 2px 0;
+  transition: all 0.5s ease;
+}
+
+.filefield {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: collapse;
+}

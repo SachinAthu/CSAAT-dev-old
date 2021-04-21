@@ -5,10 +5,11 @@ import { connect } from "react-redux";
 
 import classes from "./AddSession.module.css";
 import ModalFrame from "../modalFrame/ModalFrame";
-import BtnSpinner from "../../spinners/btn/BtnSpinner";
+import BtnSpinner from "../../layouts/spinners/btn/BtnSpinner";
 
 import { addSession, setActiveSession } from "../../../actions/SessionActions";
 import { deleteVideos } from "../../../actions/VideoActions";
+import { CHILD_TYPES } from '../../../actions/Types'
 
 function AddSession(props) {
   const [rDate, setRDate] = useState("");
@@ -37,18 +38,9 @@ function AddSession(props) {
     errorField.style.display = "none";
   };
 
-  const showRes = (r) => {
-    const resSpan = document.getElementById("session_add_result");
-
-    if (r) {
-      resSpan.innerHTML = "Session created!";
-      resSpan.classList.remove(`${classes.failed}`);
-      resSpan.classList.add(`${classes.success}`);
-    } else {
-      resSpan.innerHTML = "Session creation failed!";
-      resSpan.classList.remove(`${classes.success}`);
-      resSpan.classList.add(`${classes.failed}`);
-    }
+  const showFailed = () => {
+    const resSpan = document.getElementById("session_add_failed");
+    resSpan.innerHTML = "Session creation failed!";
   };
 
   //////////////////////////////////////////////////////////////////
@@ -75,11 +67,18 @@ function AddSession(props) {
     setLoading(true);
 
     // create a new session and set created session as the active session
-    axios(`http://localhost:8000/api/add-session/`, {
+    let url = ""
+    if(props.childType === CHILD_TYPES.TYPICAL){
+      url = "http://localhost:8000/api/add-t-session/"
+    }else{
+      url = "http://localhost:8000/api/add-at-session/"
+    }
+
+    axios(url, {
       method: "POST",
       data: {
         date: rDate,
-        profile: props.activeProfile.id,
+        child: props.activeChild.id,
         user: null,
       },
       headers: {
@@ -88,7 +87,6 @@ function AddSession(props) {
     })
       .then((res) => {
         console.log("session created", res.data);
-        showRes(true);
         setLoading(false);
         props.addSession(res.data);
         props.setActiveSession(res.data);
@@ -106,7 +104,7 @@ function AddSession(props) {
       })
       .catch((err) => {
         console.log(err);
-        showError(false)
+        showFailed()
       });
 
     setLoading(false);
@@ -143,7 +141,7 @@ function AddSession(props) {
           </div>
         </form>
 
-        <span id="session_add_result" className={classes.result}></span>
+        <span id="session_add_failed" className={classes.failed}></span>
       </div>
     </ModalFrame>
   );
@@ -156,7 +154,8 @@ AddSession.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-  activeProfile: state.profileReducer.activeProfile,
+  activeChild: state.childReducer.activeChild,
+  childType: state.childReducer.childType,
 });
 
 export default connect(mapStateToProps, {

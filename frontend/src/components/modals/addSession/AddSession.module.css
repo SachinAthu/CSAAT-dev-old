@@ -56,17 +56,11 @@
   font-weight: 400;
 }
 
-.result{
+.failed{
   font-size: 1rem;
   font-weight: 600;
+  color: var(--color-danger);
   margin: 0 auto;
 }
 
-.success{
-  color: var(--color-green);
-}
-
-.failed{
-  color: var(--color-danger);
-}
 

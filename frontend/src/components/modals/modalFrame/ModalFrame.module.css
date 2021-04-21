@@ -11,16 +11,10 @@
   width: auto;
   z-index: 1010;
   animation-name: fadein;
-  animation-duration: 0.2s;
+  animation-duration: 0.1s;
   animation-fill-mode: both;
   display: flex;
   flex-direction: column;
-}
-
-.fadeout {
-  animation-name: fadeout;
-  animation-duration: 0.1s;
-  animation-fill-mode: both;
 }
 
 .overlay {
@@ -31,15 +25,9 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(0, 0, 0, 0.5);
   z-index: 1000;
   animation-name: overlay_fadein;
-  animation-duration: 0.2s;
-  animation-fill-mode: both;
-}
-
-.overlay_fadeout {
-  animation-name: overlay_fadeout;
   animation-duration: 0.1s;
   animation-fill-mode: both;
 }
@@ -65,31 +53,11 @@
   }
 }
 
-@keyframes fadeout {
-  0% {
-    transform: translate(-50%, -50%) scale(1);
-    visibility: visible;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(0);
-    visibility: hidden;
-  }
-}
-
 @keyframes overlay_fadein {
   0% {
     opacity: 0;
   }
   100% {
     opacity: 1;
-  }
-}
-
-@keyframes overlay_fadeout {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
   }
 }

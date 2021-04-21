@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.core.files.storage import default_storage
 
-from api.models import Videos, Sessions, Cameras, CameraAngles
+from api.models import Videos, Sessions, Cameras, CameraAngles, TypicalChild, AntypicalChild
 from api.serializers import VideosSerializer
 
 
@@ -22,16 +22,19 @@ def sessionVideos(request, pk):
     serializer = VideosSerializer(video_list, many=True)
     return Response(serializer.data)
 
-# add video
+# add typical child video
 @api_view(['POST'])
-def addVideo(request):
+def addTVideo(request):
     serializer = VideosSerializer(data=request.data)
 
     if serializer.is_valid():
         # set video name
         camera = Cameras.objects.get(id=request.data['camera'])
         camera_angle = CameraAngles.objects.get(id=request.data['camera_angle'])
-        name = f'video_{camera.name}_{camera_angle.name}'
+        child = TypicalChild.objects.get(id=request.data['tChild'])
+        session = Sessions.objects.get(id=request.data['session'])
+
+        name = f'{child.unique_no}_{session.id}_{camera.name}'
         
         #set file extension
         file_type = request.data['file_type']
@@ -47,14 +50,46 @@ def addVideo(request):
 
         serializer.save(name=name, camera_name=camera.name, camera_angle_name=camera_angle.name, file_extension=file_extension)
     else:
-        print(serializer.data)
         print(serializer.errors)
 
     return Response(serializer.data)
 
-# edit a video
+# add antypical child video
+@api_view(['POST'])
+def addATVideo(request):
+    serializer = VideosSerializer(data=request.data)
+
+    if serializer.is_valid():
+        # set video name
+        camera = Cameras.objects.get(id=request.data['camera'])
+        camera_angle = CameraAngles.objects.get(id=request.data['camera_angle'])
+        child = TypicalChild.objects.get(id=request.data['atChild'])
+        session = Sessions.objects.get(id=request.data['session'])
+
+        name = f'{child.clinic_no}_{session.id}_{camera.name}'
+        
+        #set file extension
+        file_type = request.data['file_type']
+        file_extension = ''
+        if not file_type == None: 
+            t = file_type.split('/')[1]
+            if t == 'mp4':
+                file_extension = '.mp4'
+            elif t == 'x-matroska':
+                file_extension = '.mkv'
+            else:
+                file_extension = '.mp4'
+
+        serializer.save(name=name, camera_name=camera.name, camera_angle_name=camera_angle.name, file_extension=file_extension)
+    else:
+        print(serializer.errors)
+
+    return Response(serializer.data)
+
+# edit typical child video
 @api_view(['PUT'])
-def updateVideo(request, pk):
+def updateTVideo(request, pk):
+    print(request.data)
     video = Videos.objects.get(id=pk)
     serializer = VideosSerializer(data=request.data, instance=video)
 
@@ -62,9 +97,10 @@ def updateVideo(request, pk):
         # set video name
         camera = Cameras.objects.get(id=request.data['camera'])
         camera_angle = CameraAngles.objects.get(id=request.data['camera_angle'])
-        name = f'video_{camera.name}_{camera_angle.name}'
-        
-        
+        child = TypicalChild.objects.get(id=request.data['tChild'])
+        session = Sessions.objects.get(id=request.data['session'])
+
+        name = f'{child.unique_no}_{session.id}_{camera.name}'
 
         # #set file extension
         # file_type = request.data['file_type']
@@ -77,10 +113,21 @@ def updateVideo(request, pk):
         # else:
         #     file_extension = '.mp4'
 
-        # serializer.save(name=name, camera_name=camera.name, camera_angle_name=camera_angle.name, file_extension=file_extension)
 
- 
+        serializer.save()
+        serializer.save(name=name, camera_name=camera.name, camera_angle_name=camera_angle.name, file_extension=file_extension)
+    else:
+        print(serializer.errors)
 
+    return Response(serializer.data)
+
+# edit antypical child video
+@api_view(['PUT'])
+def updateATVideo(request, pk):
+    video = Videos.objects.get(id=pk)
+    serializer = VideosSerializer(data=request.data, instance=video)
+
+    if serializer.is_valid():
         print(request.data)
         serializer.save()
     else:
@@ -96,11 +143,11 @@ def deleteVideo(request, pk):
 
     try:
         video.delete()
-        res += 'Video record was deleted. '
+        res += 'video record was deleted. '
         if video.video:
             if default_storage.exists(video.video.path):
                 default_storage.delete(video.video.path)
-                res += 'Video file was deleted. '
+                res += 'video file was deleted. '
     except:
         res = 'error, something went wrong!'
 
@@ -118,10 +165,7 @@ def deleteVideos(request):
             if v.video:
                 if default_storage.exists(v.video.path):
                     default_storage.delete(v.video.path)
-            if v.thumbnail:
-                if default_storage.exists(v.thumbnail.path):
-                    default_storage.delete(v.thumbnail.path)
-        res = 'All Videos were deleted(records, files)'
+        res = 'all Videos were deleted(records, files)'
     except:
         res = 'error, something went wrong!'
 

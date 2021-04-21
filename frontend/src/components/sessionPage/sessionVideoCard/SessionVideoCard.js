@@ -5,16 +5,13 @@ import { connect } from "react-redux";
 import classes from "./SessionVideoCard.module.css";
 import AddVideo from "../../modals/addVideo/AddVideo";
 import DeleteConfirmPopup from "../../modals/deleteConfirmAlert/DeleteConfirmAlert";
-import Player from "../../player/Player";
+import VideoPlayer from "../../videoPlayer/VideoPlayer";
 
-import { deleteVideo } from "../../../actions/VideoActions";
-
-class AddVideoCard extends Component {
+class SessionVideoCard extends Component {
   static propTypes = {
-    profile: PropTypes.object.isRequired,
+    activeChild: PropTypes.object.isRequired,
     session: PropTypes.object,
     uploading: PropTypes.bool,
-    deleteVideo: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -68,7 +65,7 @@ class AddVideoCard extends Component {
   };
 
   render() {
-    const { adding } = this.state;
+    const { adding, deleting } = this.state;
     const { video } = this.props;
 
     let cardContent;
@@ -77,33 +74,16 @@ class AddVideoCard extends Component {
       cardContent = (
         <div className={classes.card_content}>
           <div className={classes.videoplay}>
-            {/* <svg
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="28"
-              viewBox="0 0 24 28"
-            >
-              <title>Play</title>
-              <path d="M12 2c6.625 0 12 5.375 12 12s-5.375 12-12 12-12-5.375-12-12 5.375-12 12-12zM18 14.859c0.313-0.172 0.5-0.5 0.5-0.859s-0.187-0.688-0.5-0.859l-8.5-5c-0.297-0.187-0.688-0.187-1-0.016-0.313 0.187-0.5 0.516-0.5 0.875v10c0 0.359 0.187 0.688 0.5 0.875 0.156 0.078 0.328 0.125 0.5 0.125s0.344-0.047 0.5-0.141z"></path>
-            </svg> */}
-            <Player
+            <VideoPlayer
               key={Math.random()}
               video={video}
-              width={270}
-              height={190}
-              fluid={false}
-              autoplay={true}
-              controls={false}
-              muted={true}
-              loop={true}
             />
           </div>
 
           <div className={classes.info}>
             <div className={classes.info_1}>
               <span className={classes.info_1_1}>
-                Duration: {this.convertSec(video.duration)}
+                Duration: {video.duration ? this.convertSec(video.duration) : 0}
               </span>
               <span className={classes.info_1_2}>
                 Camera: {video.camera_name}
@@ -153,16 +133,11 @@ class AddVideoCard extends Component {
       cardContent = (
         <div className={classes.empty}>
           <button onClick={this.addHandler}>
-            <svg
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-            >
-              <title>Add Video</title>
-              <path d="M5 13h6v6c0 0.552 0.448 1 1 1s1-0.448 1-1v-6h6c0.552 0 1-0.448 1-1s-0.448-1-1-1h-6v-6c0-0.552-0.448-1-1-1s-1 0.448-1 1v6h-6c-0.552 0-1 0.448-1 1s0.448 1 1 1z"></path>
-            </svg>
+          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+            <title>Add Video</title>
+            <path d="M12 12l10 7-10 7v-14z"></path>
+            <path d="M28.681 7.159c-0.694-0.947-1.662-2.053-2.724-3.116s-2.169-2.030-3.116-2.724c-1.612-1.182-2.393-1.319-2.841-1.319h-15.5c-1.378 0-2.5 1.121-2.5 2.5v27c0 1.378 1.122 2.5 2.5 2.5h23c1.378 0 2.5-1.122 2.5-2.5v-19.5c0-0.448-0.137-1.23-1.319-2.841zM24.543 5.457c0.959 0.959 1.712 1.825 2.268 2.543h-4.811v-4.811c0.718 0.556 1.584 1.309 2.543 2.268zM28 29.5c0 0.271-0.229 0.5-0.5 0.5h-23c-0.271 0-0.5-0.229-0.5-0.5v-27c0-0.271 0.229-0.5 0.5-0.5 0 0 15.499-0 15.5 0v7c0 0.552 0.448 1 1 1h7v19.5z"></path>
+          </svg>
           </button>
         </div>
       );
@@ -174,18 +149,17 @@ class AddVideoCard extends Component {
 
         {adding ? (
           <AddVideo
-            card_id={this.props.card_id}
             video={this.props.video}
             close={this.closeAddWindow}
           />
         ) : null}
 
-        {this.state.deleting ? (
+        {deleting ? (
           <DeleteConfirmPopup
             close={(res) => this.closeDeleteConfirmPopup(res)}
             many={false}
+            type="video"
             header={"video"}
-            msg={"Video file will also be deleted from database."}
             data={video ? video.id : null}
           />
         ) : null}
@@ -195,10 +169,10 @@ class AddVideoCard extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  profile: state.profileReducer.activeProfile,
+  activeChild: state.childReducer.activeChild,
   session: state.sessionReducer.activeSession,
 });
 
-export default connect(mapStateToProps, { deleteVideo, withRef: true })(
-  AddVideoCard
+export default connect(mapStateToProps)(
+  SessionVideoCard
 );
