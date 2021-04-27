@@ -1,6 +1,4 @@
 import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
 
 import classes from "./SessionAudioCard.module.css";
 import AddAudio from "../../modals/addAudio/AddAudio";
@@ -8,12 +6,6 @@ import DeleteConfirmPopup from "../../modals/deleteConfirmAlert/DeleteConfirmAle
 import AudioPlayer from "../../modals/audioPlayer/AudioPlayer";
 
 class SessionAudioCard extends Component {
-  static propTypes = {
-    activeChild: PropTypes.object.isRequired,
-    activeSession: PropTypes.object,
-    audio: PropTypes.object,
-  };
-
   constructor(props) {
     super(props);
     this.state = {
@@ -82,8 +74,8 @@ class SessionAudioCard extends Component {
     let cardContent;
     if (this.props.audio) {
       cardContent = (
-        <div className={classes.card_content} onClick={this.openAudioPlayer}>
-          <div className={classes.audioplay}>
+        <div className={classes.card_content}>
+          <div className={classes.audioplay} onClick={this.openAudioPlayer}>
             <svg
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
@@ -182,10 +174,4 @@ class SessionAudioCard extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  activeChild: state.childReducer.activeChild,
-  activeSession: state.sessionReducer.activeSession,
-  audio: state.audioReducer.audio,
-});
-
-export default connect(mapStateToProps)(SessionAudioCard);
+export default SessionAudioCard;

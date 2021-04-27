@@ -8,12 +8,10 @@ import DeleteConfirmPopup from "../../modals/deleteConfirmAlert/DeleteConfirmAle
 import classes from "./VideoPlay.module.css";
 import ControlPanel from './controlPanel/ControlPanel'
 
-import { CHILD_TYPES } from '../../../actions/Types'
+import { CHILD_TYPES, CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD, CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION, CSAAT_VIDEO_UPLOAD_CHILDTYPE } from '../../../actions/Types'
 
 class VideoPlay extends Component {
   static propTypes = {
-    activeChild: PropTypes.object,
-    childType: PropTypes.string.isRequired,
     videos: PropTypes.array,
     activeSession: PropTypes.object,
   };
@@ -78,10 +76,13 @@ class VideoPlay extends Component {
   editSessionHandler = () => {
     //this.setState({ addSession: true });
     let path = ''
-    if(this.props.childType === CHILD_TYPES.TYPICAL){
-      path = `/t_children/${this.props.activeChild.id}/${this.props.activeSession.id}`
+    const activeChild = localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD)
+    const activeSession = localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION)
+
+    if(localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE) === CHILD_TYPES.TYPICAL){
+      path = `/t_children/${activeChild}/${activeSession}`
     }else{
-      path = `/at_children/${this.props.activeChild.id}/${this.props.activeSession.id}`
+      path = `/at_children/${activeChild}/${activeSession}`
     }
     this.props.history.push({
       pathname: path
@@ -89,11 +90,7 @@ class VideoPlay extends Component {
   };
 
   render() {
-    // console.log(this.props)
-    const activeSession = this.props.activeSession;
     const videos = this.props.videos;
-    // console.log(activeSession);
-
     let video_list = [];
 
     for (let i = 0; i < 4; i++) {
@@ -107,8 +104,8 @@ class VideoPlay extends Component {
     return (
       <div className={classes.container}>
         <div className={classes.container_1}>
-          {activeSession ? (
-            <span className={classes.date}>{activeSession.date}</span>
+          {this.props.activeSession ? (
+            <span className={classes.date}>{this.props.activeSession.date}</span>
           ) : (
             <span className={classes.date}>No date & time mentioned</span>
           )}
@@ -132,7 +129,7 @@ class VideoPlay extends Component {
 
             <button
               className={classes.removebtn}
-              onClick={this.deleteSessionHandler.bind(this, activeSession.id)}
+              onClick={this.deleteSessionHandler.bind(this, localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION))}
             >
               <svg
                 version="1.1"
@@ -197,7 +194,7 @@ class VideoPlay extends Component {
             many={false}
             header={"session"}
             type={"session"}
-            data={activeSession.id}
+            data={localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION)}
           />
         ) : null}
       </div>
@@ -206,8 +203,6 @@ class VideoPlay extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  activeChild: state.childReducer.activeChild,
-  childType: state.childReducer.childType,
   videos: state.videoReducer.videos,
   activeSession: state.sessionReducer.activeSession,
 });

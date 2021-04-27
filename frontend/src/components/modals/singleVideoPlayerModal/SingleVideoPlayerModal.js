@@ -12,7 +12,7 @@ class SingleVideoPlayerModal extends Component {
 
     render() {
         return (
-            <ModalFrame close={this.props.close}>
+            <ModalFrame player={true} close={this.props.close}>
                 <div className={classes.container}>
                     <VideoJSPlayer video={this.props.video}/>
                 </div>

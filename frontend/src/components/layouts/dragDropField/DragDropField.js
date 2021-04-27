@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import styles from './DragDropField.module.css'
+import classes from './DragDropField.module.css'
 
 class DragDropField extends Component {
 
@@ -78,8 +78,10 @@ class DragDropField extends Component {
         const {filename} = this.props
 
         return (
-            <div className={dragging ? `${styles.dropbox} ${styles.dropbox_dragging}` : styles.dropbox} 
-            ref={this.dropRef}>
+            <div className={dragging ? `${classes.dropbox} ${classes.dropbox_dragging}` : classes.dropbox} 
+              ref={this.dropRef}
+              style={{ border: this.props.error ? '1px solid var(--color-danger)' : '1px solid rgba(0, 0, 0, 0.1)'}}
+            >
                 {filename ? <span>{filename}</span> : null}
 
                 <input
@@ -87,7 +89,7 @@ class DragDropField extends Component {
                   name="consent_doc"
                   id={this.props.id}
                   onChange={this.onChange}
-                  className={styles.filefield}
+                  className={classes.filefield}
                 />
 
                 <label htmlFor={this.props.id}>Browse</label>

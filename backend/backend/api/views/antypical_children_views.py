@@ -5,6 +5,10 @@ from django.core.files.storage import default_storage
 import os
 from django.conf import settings
 import shutil
+from rest_framework.pagination import PageNumberPagination
+from rest_framework import filters
+from rest_framework import generics
+
 
 from api.models import AntypicalChild
 from api.serializers import AntypicalChildSerializer
@@ -12,9 +16,21 @@ from api.serializers import AntypicalChildSerializer
 # get all children
 @api_view(['GET'])
 def atChildren(request):
-    child_list = AntypicalChild.objects.all().order_by('-id')
-    serializer = AntypicalChildSerializer(child_list, many=True)
-    return Response(serializer.data)
+    paginator = PageNumberPagination()
+    paginator.page_size = 20
+
+    atChildren_objects = AntypicalChild.objects.all().order_by('-id')
+    result_page = paginator.paginate_queryset(atChildren_objects, request)
+    serializer = AntypicalChildSerializer(result_page, many=True)
+    return paginator.get_paginated_response(serializer.data)
+
+# filter values
+class AntypicalChildrenListAPIView(generics.ListAPIView):
+    queryset = AntypicalChild.objects.all().order_by('-id')
+    serializer_class = AntypicalChildSerializer
+
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['clinic_no', 'name', 'dob', 'gender']
 
 # get specific child
 @api_view(['GET'])

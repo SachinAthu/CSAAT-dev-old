@@ -7,20 +7,22 @@ import classes from "./AddVideo.module.css";
 import ModalFrame from "../modalFrame/ModalFrame";
 import DragDropField from "../../layouts/dragDropField/DragDropField";
 import BtnSpinner from "../../layouts/spinners/btn/BtnSpinner";
-import { BASE_URL } from '../../../config'
+import { BASE_URL } from "../../../config";
 
 import { addVideo, updateVideo } from "../../../actions/VideoActions";
 import { getCameras, getCameraAngles } from "../../../actions/CameraActions";
-import { CHILD_TYPES } from "../../../actions/Types";
+import {
+  CHILD_TYPES,
+  CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD,
+  CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION,
+  CSAAT_VIDEO_UPLOAD_CHILDTYPE,
+} from "../../../actions/Types";
 
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
 class AddVideo extends Component {
   static propTypes = {
-    activeChild: PropTypes.object.isRequired,
-    childType: PropTypes.string.isRequired,
-    activeSession: PropTypes.object,
     cameras: PropTypes.array,
     camera_angles: PropTypes.array,
     getCameras: PropTypes.func.isRequired,
@@ -41,6 +43,7 @@ class AddVideo extends Component {
       loading: false,
       progress: 0,
       progressBar: false,
+      videoFieldError: false,
     };
     const cancelToken = axios.CancelToken;
     this.cancelTokenSource = cancelToken.source();
@@ -57,10 +60,15 @@ class AddVideo extends Component {
         camera: vid.camera,
         camera_angle: vid.camera_angle,
         description: vid.description,
-        video: vid.video,
-        name: vid.name,
         duration: vid.duration,
       });
+
+      const cameraField = document.getElementById("video_add_form_camera");
+      const cameraAngleField = document.getElementById(
+        "video_add_form_camera_angle"
+      );
+      cameraField.value = vid.camera;
+      cameraAngleField.value = vid.camera_angle;
     }
   }
 
@@ -74,7 +82,6 @@ class AddVideo extends Component {
       .then((res) => {
         // console.log(res.data);
         this.props.getCameras(res.data);
-        this.setState({ camera: res.data[0].id });
       })
       .catch((err) => console.log(err));
   };
@@ -86,7 +93,6 @@ class AddVideo extends Component {
       .then((res) => {
         // console.log(res.data);
         this.props.getCameraAngles(res.data);
-        this.setState({ camera_angle: res.data[0].id });
       })
       .catch((err) => console.log(err));
   };
@@ -129,6 +135,19 @@ class AddVideo extends Component {
         name: "",
       });
     }
+
+    const errorFields = document.getElementsByClassName(
+      `${classes.fieldError}`
+    );
+    for (let i = 0; i < errorFields.length; i++) {
+      errorFields[i].innerHTML = "";
+      errorFields[i].style.display = "none";
+    }
+    const formGroups = document.getElementsByClassName(`${classes.formgroup}`);
+    for (let i = 0; i < formGroups.length; i++) {
+      formGroups[i].children[1].classList.remove(`${classes.errorBorder}`);
+    }
+    this.setState({ videoFieldError: false })
   };
 
   // cancel the uploading
@@ -136,27 +155,27 @@ class AddVideo extends Component {
     this.cancelTokenSource.cancel("Uploading cancelled!");
   };
 
-  
-  checkSelectField = (inputVal, errorField, errorText) => {
+  checkSelectField = (inputVal, field, errorField, errorText) => {
+    console.log(inputVal);
     if (
-      inputVal == null ||
-      inputVal === "" ||
-      inputVal === "Select the camera.." || inputVal === "Select the camera angel.."
-      ) {
-        this.showError(errorField, errorText);
-        return false;
-      } else {
-      this.removeError(errorField);
+      !inputVal ||
+      inputVal === "Select the camera.." ||
+      inputVal === "Select the camera angle.."
+    ) {
+      this.showError(field, errorField, errorText);
+      return false;
+    } else {
+      this.removeError(field, errorField);
       return true;
     }
   };
-  
+
   checkVideoField = (file, errorField) => {
     if (!file || file === "") {
-      this.showError(errorField, "Video is required");
+      this.showError(null, errorField, "Video is required");
       return false;
     } else if (file.type.toLowerCase() !== "video/mp4") {
-      this.showError(errorField, "Video must be .mp4");
+      this.showError(null, errorField, "Video must be .mp4");
       return false;
     } else {
       this.removeError(errorField);
@@ -166,65 +185,88 @@ class AddVideo extends Component {
 
   checkAllFields = () => {
     const { camera, camera_angle, description, video } = this.state;
-    
+
     // camera
+    const camera_f = document.getElementById("video_add_form_camera");
     const camera_e = document.getElementById("video_add_form_camera_error");
-    const r1 = this.checkSelectField(camera, camera_e, "Camera is required");
-    
+    const r1 = this.checkSelectField(
+      camera,
+      camera_f,
+      camera_e,
+      "Camera is required"
+    );
+
     // camera_angle
+    const camera_angle_f = document.getElementById(
+      "video_add_form_camera_angle"
+    );
     const camera_angle_e = document.getElementById(
       "video_add_form_camera_angle_error"
-      );
-      const r2 = this.checkSelectField(
-        camera_angle,
-        camera_angle_e,
-        "Camera angle is required"
-        );
-        
-        // video
-        const video_e = document.getElementById("video_add_form_video_error");
-        const r3 = this.checkVideoField(video, video_e, "Video must be .mp4");
-        
-        if (r1 && r2 && r3) {
-          return true;
-        } else {
-          return false;
-        }
-        
-      };
-      
-      showError = (errorField, errorText) => {
-        errorField.style.display = "block";
-        errorField.innerHTML = errorText;
-      };
-      
-  removeError = (errorField) => {
+    );
+    const r2 = this.checkSelectField(
+      camera_angle,
+      camera_angle_f,
+      camera_angle_e,
+      "Camera angle is required"
+    );
+
+    // video
+    const video_e = document.getElementById("video_add_form_video_error");
+    const r3 = this.checkVideoField(video, video_e, "Video must be .mp4");
+
+    if (!r3) {
+      this.setState({ videoFieldError: true });
+    } else {
+      this.setState({ videoFieldError: false });
+    }
+
+    if (r1 && r2 && r3) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  showError = (field, errorField, errorText) => {
+    errorField.style.display = "block";
+    errorField.innerHTML = errorText;
+    if (field) {
+      field.classList.add(`${classes.errorBorder}`);
+    }
+  };
+
+  removeError = (field, errorField) => {
     errorField.innerHTML = "";
     errorField.style.display = "none";
+    if (field) {
+      field.classList.remove(`${classes.errorBorder}`);
+    }
   };
-  
+
   showFailed = (msg) => {
     const resSpan = document.getElementById("video_add_failed");
     resSpan.innerHTML = msg;
   };
-  
+
   // upload video
   upload = async (formData) => {
-    let url = ""
+    let url = "";
     let method = "";
-    if(this.props.childType === CHILD_TYPES.TYPICAL){
+    if (
+      localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE) === CHILD_TYPES.TYPICAL
+    ) {
       if (this.props.video) {
         url = `${BASE_URL}/update-t-video/${this.props.video.id}/`;
         method = "PUT";
-      }else{
+      } else {
         url = `${BASE_URL}/add-t-video/`;
         method = "POST";
       }
-    }else{
+    } else {
       if (this.props.video) {
         url = `${BASE_URL}/update-at-video/${this.props.video.id}/`;
         method = "PUT";
-      }else{
+      } else {
         url = `${BASE_URL}/add-at-video/`;
         method = "POST";
       }
@@ -254,7 +296,7 @@ class AddVideo extends Component {
         }
 
         this.setState({ loading: false, progressBar: false });
-        this.props.close()
+        this.props.close();
       })
       .catch((thrown) => {
         if (axios.isCancel(thrown)) {
@@ -282,44 +324,40 @@ class AddVideo extends Component {
       video,
       duration,
     } = this.state;
-    // console.log(video)
-    // return
-    
+
     // validation
-    const r =this.checkAllFields()
-    if(!r) return
+    const r = this.checkAllFields();
+    if (!r) return;
 
     this.setState({ loading: true, progressBar: true });
 
     let formData = new FormData();
-    if(this.props.childType === CHILD_TYPES.TYPICAL){
-      formData.append("tChild", this.props.activeChild.id);
-    }else{
-      formData.append("atChild", this.props.activeChild.id);
+    const activeChild = localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD);
+
+    if (
+      localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE) === CHILD_TYPES.TYPICAL
+    ) {
+      formData.append("tChild", activeChild);
+    } else {
+      formData.append("atChild", activeChild);
     }
-    formData.append("session", this.props.activeSession.id);
+    formData.append(
+      "session",
+      localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION)
+    );
     formData.append("description", description);
     formData.append("camera", camera);
     formData.append("camera_angle", camera_angle);
+    formData.append("name", name);
+    formData.append("video", video);
+    formData.append("file_type", video.type);
 
-    if(video){
-      formData.append("name", name);
-      
-    }
-
-    if (typeof video != "string") {
-      formData.append("video", video);
-      formData.append("file_type", video.type);
-
-      // get duration
-      this.getDuration(video);
-      setTimeout(() => {
-        formData.append("duration", this.state.duration);
-        this.upload(formData);
-      }, 200);
-    } else {
+    // get duration
+    this.getDuration(video);
+    setTimeout(() => {
+      formData.append("duration", this.state.duration);
       this.upload(formData);
-    }
+    }, 200);
   };
 
   // trigger when form field value change
@@ -327,24 +365,38 @@ class AddVideo extends Component {
     switch (e.target.name) {
       case "camera":
         console.log(e.target.value);
+        var field = document.getElementById("video_add_form_camera");
         var errorField = document.getElementById("video_add_form_camera_error");
-        this.checkSelectField(e.target.value, errorField, "Camera is required");
+        this.checkSelectField(
+          e.target.value,
+          field,
+          errorField,
+          "Camera is required"
+        );
         break;
 
       case "camera_angle":
+        var field = document.getElementById("video_add_form_camera_angle");
         var errorField = document.getElementById(
           "video_add_form_camera_angle_error"
         );
-        this.checkSelectField(
+        var r = this.checkSelectField(
           e.target.value,
+          field,
           errorField,
           "Camera angle is required"
         );
+        if (!r) {
+          this.setState({ videoFieldError: true });
+        } else {
+          this.setState({ videoFieldError: false });
+        }
         break;
 
       default:
         return;
     }
+    console.log(e.target.value);
     this.setState({
       [e.target.name]: e.target.value,
     });
@@ -388,9 +440,7 @@ class AddVideo extends Component {
                     id="video_add_form_camera"
                     onChange={this.onChange}
                   >
-                    <option defaultChecked={true} value={null}>
-                      Select the camera..
-                    </option>
+                    <option defaultChecked={true}>Select the camera..</option>
                     {cameras.map((c, i) => (
                       <option key={i} value={c.id}>
                         {c.name}
@@ -456,6 +506,7 @@ class AddVideo extends Component {
                 file={video}
                 filename={name}
                 onChange={this.onVideoFieldChange}
+                error={this.state.videoFieldError}
               />
 
               <span

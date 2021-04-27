@@ -18,22 +18,20 @@ import {
 } from "../../actions/SessionActions";
 import { getVideos, deleteVideos } from "../../actions/VideoActions";
 import { getAudio } from '../../actions/AudioActions'
-import { CHILD_TYPES } from '../../actions/Types'
+import { CHILD_TYPES, CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD, CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD_NAME, CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION, CSAAT_VIDEO_UPLOAD_CHILDTYPE } from '../../actions/Types'
 
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
 class ChildPage extends Component {
   static propTypes = {
-    activeChild: PropTypes.object.isRequired,
-    childType: PropTypes.string.isRequired,
     sessions: PropTypes.array.isRequired,
     getSessions: PropTypes.func.isRequired,
     addSession: PropTypes.func.isRequired,
-    setActiveSession: PropTypes.func.isRequired,
     getVideos: PropTypes.func.isRequired,
     deleteVideos: PropTypes.func.isRequired,
     getAudio: PropTypes.func.isRequired,
+    setActiveSession: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -53,12 +51,12 @@ class ChildPage extends Component {
   //////////////////////////////////////////////////////////////
   // fetch all sessions from DB
   fetchSessions = () => {
+    const activeChild = localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD)
     let url = ""
-    if(this.props.childType === CHILD_TYPES.TYPICAL){
-      url = `${BASE_URL}/t-sessions/${this.props.activeChild.id}/`
-      console.log(url)
+    if(localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE) === CHILD_TYPES.TYPICAL){
+      url = `${BASE_URL}/t-sessions/${activeChild}/`
     }else{
-      url = `${BASE_URL}/at-sessions/${this.props.activeChild.id}/`
+      url = `${BASE_URL}/at-sessions/${activeChild}/`
     }
     axios
       .get(url)
@@ -66,7 +64,8 @@ class ChildPage extends Component {
         // console.log(res.data);
         if (res.data[0]) {
           this.props.getSessions(res.data);
-          this.props.setActiveSession(res.data[0]);
+          this.props.setActiveSession(res.data[0])
+          localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION, res.data[0].id)
           this.fetchVideos(res.data[0].id);
           this.fetchAudio(res.data[0].id);
         }
@@ -142,6 +141,7 @@ class ChildPage extends Component {
       (s, i) => s.id == e.target.value
     );
     this.props.setActiveSession(session[0]);
+    localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION, session[0].id)
   };
 
   addSessionHandler = () => {
@@ -150,8 +150,7 @@ class ChildPage extends Component {
   };
 
   render() {
-    const activeChild = this.props.activeChild;
-    const sessions = this.props.sessions;
+    const { sessions } = this.props;
 
     const select = (
       <select
@@ -177,14 +176,15 @@ class ChildPage extends Component {
       </select>
     );
 
+    const childType = localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE)
     const sub_links = [
       { name: "Home", link: "/" },
       {
         name:
-          this.props.childType === CHILD_TYPES.TYPICAL
+          childType === CHILD_TYPES.TYPICAL
             ? "Typical Children"
             : "Atypical Children",
-        link: this.props.childType === CHILD_TYPES.TYPICAL
+        link: childType === CHILD_TYPES.TYPICAL
         ? "/t_children"
         : "/at_children",
       },
@@ -195,8 +195,8 @@ class ChildPage extends Component {
         <Breadcrumbs
           heading={"Sessions"}
           sub_links={sub_links}
-          current={activeChild.name}
-          state={{childType: this.props.childType}}
+          current={localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD_NAME)}
+          state={null}
         />
 
         <div className={`container ${classes.container2}`}>
@@ -236,16 +236,14 @@ class ChildPage extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  activeChild: state.childReducer.activeChild,
-  childType: state.childReducer.childType,
   sessions: state.sessionReducer.sessions,
 });
 
 export default connect(mapStateToProps, {
   getSessions,
   addSession,
-  setActiveSession,
   getVideos,
   deleteVideos,
   getAudio,
+  setActiveSession,
 })(ChildPage);

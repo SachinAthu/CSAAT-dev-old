@@ -5,6 +5,9 @@ from django.core.files.storage import default_storage
 import os
 from django.conf import settings
 import shutil
+from rest_framework.pagination import PageNumberPagination
+from rest_framework import filters
+from rest_framework import generics
 
 from api.models import TypicalChild
 from api.serializers import TypicalChildSerializer
@@ -12,9 +15,21 @@ from api.serializers import TypicalChildSerializer
 # get all children
 @api_view(['GET'])
 def tChildren(request):
-    child_list = TypicalChild.objects.all().order_by('-id')
-    serializer = TypicalChildSerializer(child_list, many=True)
-    return Response(serializer.data)
+    paginator = PageNumberPagination()
+    paginator.page_size = 20
+
+    tChildren_objects = TypicalChild.objects.all().order_by('-id')
+    result_page = paginator.paginate_queryset(tChildren_objects, request)
+    serializer = TypicalChildSerializer(result_page, many=True)
+    return paginator.get_paginated_response(serializer.data)
+
+# filter values
+class TypicalChildrenListAPIView(generics.ListAPIView):
+    queryset = TypicalChild.objects.all().order_by('-id')
+    serializer_class = TypicalChildSerializer
+
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['unique_no', 'sequence_no', 'name', 'dob', 'gender']
 
 # get specific child
 @api_view(['GET'])

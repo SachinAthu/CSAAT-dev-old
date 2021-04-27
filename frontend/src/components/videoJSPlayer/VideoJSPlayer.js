@@ -15,10 +15,7 @@ import {
 class VideoJSPlayer extends Component {
   static propTypes = {
     playState: PropTypes.string,
-    currentTime: PropTypes.number,
     tooglePlayMode: PropTypes.func.isRequired,
-    setPercent: PropTypes.func.isRequired,
-    setTotalTime: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -54,20 +51,9 @@ class VideoJSPlayer extends Component {
       }
     );
 
-    if (this.props.first) {
-      var duration = this.props.video.duration;
-      this.player.ready(() => {
-        this.player.on("timeupdate", () => {
-          setInterval(() => {
-            var t = Math.round(parseFloat(this.player.currentTime()));
-            var l = parseFloat(duration);
-            var p = Math.round((t / l) * 100);
-            // console.log(p)
-            this.props.setPercent(p, t);
-          }, 1000);
-        });
-      });
-    }
+      
+
+   
   }
 
   // destroy player on unmount

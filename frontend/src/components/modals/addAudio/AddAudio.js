@@ -10,16 +10,13 @@ import BtnSpinner from "../../layouts/spinners/btn/BtnSpinner";
 import DragDropField from "../../layouts/dragDropField/DragDropField";
 
 import { addAudio, updateAudio } from "../../../actions/AudioActions";
-import { CHILD_TYPES } from "../../../actions/Types";
+import { CHILD_TYPES, CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD, CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION, CSAAT_VIDEO_UPLOAD_CHILDTYPE } from "../../../actions/Types";
 
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
 class AddAudio extends Component {
   static propTypes = {
-    childType: PropTypes.string.isRequired,
-    activeChild: PropTypes.object.isRequired,
-    activeSession: PropTypes.object.isRequired,
     addAudio: PropTypes.func.isRequired,
     updateAudio: PropTypes.func.isRequired,
   };
@@ -37,6 +34,7 @@ class AddAudio extends Component {
       loading: false,
       progress: 0,
       progressBar: false,
+      audioFieldError: false,
     };
     const cancelToken = axios.CancelToken;
     this.cancelTokenSource = cancelToken.source();
@@ -56,6 +54,9 @@ class AddAudio extends Component {
         duration: a.duration ? a.duration : "",
       });
     }
+    this.childType = localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE)
+    this.activeChild = localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD)
+    this.activeSession = localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION)
   }
 
   ////////////////////////////////////////////////////////////////////
@@ -138,6 +139,7 @@ class AddAudio extends Component {
       r2 = this.checkAudioType(audio, errorF, "Invalid audio format");
     }
     if (!r1 || !r2) {
+      this.setState({audioFieldError: true})
       return;
     }
 
@@ -145,7 +147,7 @@ class AddAudio extends Component {
 
     let url = "";
     let method = "";
-    if (this.props.childType === CHILD_TYPES.TYPICAL) {
+    if (this.childType === CHILD_TYPES.TYPICAL) {
       if (this.state.editing) {
         url = `${BASE_URL}/update-t-audio/${id}/`;
         method = "PUT";
@@ -164,12 +166,12 @@ class AddAudio extends Component {
     }
 
     let formData = new FormData();
-    if (this.props.childType === CHILD_TYPES.TYPICAL) {
-      formData.append("tChild", this.props.activeChild.id);
+    if (this.childType === CHILD_TYPES.TYPICAL) {
+      formData.append("tChild", this.activeChild);
     } else {
-      formData.append("atChild", this.props.activeChild.id);
+      formData.append("atChild", this.activeChild);
     }
-    formData.append("session", this.props.activeSession.id);
+    formData.append("session", this.activeSession);
     formData.append("name", name);
     formData.append("audio", audio);
     formData.append("file_type", audio.type);
@@ -221,7 +223,14 @@ class AddAudio extends Component {
     var errorF = document.getElementById("audio_add_form_audio_error");
     var r = this.checkFieldEmpty(file, errorF, "Audio file is required");
     if (r) {
-      this.checkAudioType(file, errorF, "Invalid audio format");
+      var r2 = this.checkAudioType(file, errorF, "Invalid audio format");
+      if(!r2) {
+        this.setState({audioFieldError: true})
+      }else {
+        this.setState({audioFieldError: false})
+      }
+    }else {
+      this.setState({audioFieldError: true})
     }
 
     this.setState({
@@ -237,7 +246,13 @@ class AddAudio extends Component {
       file_type: "",
       file_extension: "",
       duration: "",
+      audioFieldError: false,
     });
+    const errorFields = document.getElementsByClassName(`${classes.fieldError}`)
+    for(let i = 0; i < errorFields.length; i++) {
+      errorFields[i].innerHTML = "";
+      errorFields[i].style.display = "none";
+    }
   };
 
   render() {
@@ -257,6 +272,7 @@ class AddAudio extends Component {
                 file={audio}
                 filename={name}
                 onChange={this.onAudioChangeHandler}
+                error={this.state.audioFieldError}
               />
 
               <span
@@ -338,10 +354,5 @@ class AddAudio extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  childType: state.childReducer.childType,
-  activeChild: state.childReducer.activeChild,
-  activeSession: state.sessionReducer.activeSession,
-});
 
-export default connect(mapStateToProps, { addAudio, updateAudio })(AddAudio);
+export default connect(null, { addAudio, updateAudio })(AddAudio);

@@ -3,6 +3,7 @@
   width: 34rem;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 
 .container h4 {
@@ -87,6 +88,10 @@
   color: var(--color-danger);
   font-size: 0.8rem;
   font-weight: 400;
+}
+
+.errorBorder {
+  border: 1px solid var(--color-danger) !important;
 }
 
 .failed {

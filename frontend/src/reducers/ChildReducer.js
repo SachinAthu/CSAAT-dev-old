@@ -3,23 +3,43 @@ import {
   ADD_CHILD,
   UPDATE_CHILD,
   DELETE_CHILD,
-  SET_ACTIVE_CHILD,
-  SET_ACTIVE_CHILD_TYPE,
   CHILD_TYPES,
+  DELETE_CHILDREN,
+  CSAAT_VIDEO_UPLOAD_CHILDTYPE,
 } from "../actions/Types";
 
 const initialState = {
   children: [],
-  activeChild: {},
-  childType: "",
 };
+
+function isDuplicate(arr, c) {
+  for(let i = 0; i < arr.length; i++) {
+    if(c.id === arr[i].id){
+      return true
+    }
+  }
+  return false
+}
 
 export default function (state = initialState, action) {
   switch (action.type) {
     case FETCH_CHILDREN:
+      var children = [...state.children];
+      
+      if (children.length > 0) {
+        const d = [...action.data];
+        for (let i = 0; i < d.length; i++) {
+          if(!isDuplicate(children, d[i])){
+            children.push(d[i]);
+          }
+        }
+      } else {
+        children = action.data;
+      }
+
       return {
         ...state,
-        children: action.data,
+        children: children,
       };
 
     case ADD_CHILD:
@@ -34,11 +54,11 @@ export default function (state = initialState, action) {
       const tempChildren = [...state.children];
       const updatedChild = action.data;
 
-      console.log(action.data)
+      console.log(action.data);
 
       tempChildren.forEach((c, i) => {
         if (c.id === updatedChild.id) {
-          if (state.childType === CHILD_TYPES.TYPICAL) {
+          if (localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE) === CHILD_TYPES.TYPICAL) {
             c.unique_no = updatedChild.unique_no;
             c.sequence_no = updatedChild.sequence_no;
           } else {
@@ -54,7 +74,7 @@ export default function (state = initialState, action) {
         }
       });
 
-      console.log(tempChildren)
+      console.log(tempChildren);
 
       return {
         ...state,
@@ -67,16 +87,10 @@ export default function (state = initialState, action) {
         children: state.children.filter((child) => child.id !== action.data),
       };
 
-    case SET_ACTIVE_CHILD:
+    case DELETE_CHILDREN:
       return {
         ...state,
-        activeChild: action.data,
-      };
-
-    case SET_ACTIVE_CHILD_TYPE:
-      return {
-        ...state,
-        childType: action.data,
+        children: [],
       };
 
     default:

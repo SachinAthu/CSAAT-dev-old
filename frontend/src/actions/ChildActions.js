@@ -3,8 +3,7 @@ import {
   ADD_CHILD,
   UPDATE_CHILD,
   DELETE_CHILD,
-  SET_ACTIVE_CHILD,
-  SET_ACTIVE_CHILD_TYPE,
+  DELETE_CHILDREN,
 } from "./Types";
 
 // get all Children
@@ -41,20 +40,9 @@ export const deleteChild = (id) => (dispatch, getState) => {
     });
 };
 
-// set active child
-export const setActiveChild = (child) => (dispatch, getState) => {
-  // console.log(child)
+// delete all Children
+export const deleteChildren = () => (dispatch, getState) => {
   dispatch({
-    type: SET_ACTIVE_CHILD,
-    data: child,
+      type: DELETE_CHILDREN,
   });
 };
-
-// set active child type
-export const setActiveChildType = (type) => (dispatch, getState) => {
-    // console.log(type)
-    dispatch({
-      type: SET_ACTIVE_CHILD_TYPE,
-      data: type,
-    });
-  };

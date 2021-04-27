@@ -45,6 +45,9 @@ const Header = (props) => {
           <nav className={`${classes.nav_menu} d-none d-lg-block`}>
             <ul>
               <li>
+                <Link to="/">CSAAT Home</Link>
+              </li>
+              <li>
                 <Link to="/">Home</Link>
               </li>
               <li>

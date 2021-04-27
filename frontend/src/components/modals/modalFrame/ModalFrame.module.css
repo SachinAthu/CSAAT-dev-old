@@ -17,6 +17,11 @@
   flex-direction: column;
 }
 
+.container_play{
+  background-color: transparent;
+  box-shadow: none;
+}
+
 .overlay {
   width: 100vw;
   height: 100vh;
@@ -37,9 +42,13 @@
   background-color: transparent;
 }
 
-.closebtn svg {
+.closebtn_svg {
   fill: rgba(0, 0, 0, 0.6);
   transform: scale(1);
+}
+
+.closebtn_play_svg{
+  fill: rgba(255, 255, 255, 0.8);
 }
 
 @keyframes fadein {

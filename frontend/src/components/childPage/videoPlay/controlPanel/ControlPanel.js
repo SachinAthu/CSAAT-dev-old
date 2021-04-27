@@ -39,7 +39,9 @@ class ControlPanel extends Component {
     const el = document.getElementById(
       this.state.maxVideo.id + this.state.maxVideo.name
     );
-    el.removeEventListener("timeupdate", this.timeUpdateListener);
+    if(el){
+      el.removeEventListener("timeupdate", this.timeUpdateListener);
+    }
   }
 
   /////////////////////////////////////////////////////////////////////////////

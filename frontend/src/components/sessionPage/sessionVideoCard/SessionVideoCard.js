@@ -1,6 +1,4 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import React, { Component } from "react";
 
 import classes from "./SessionVideoCard.module.css";
 import AddVideo from "../../modals/addVideo/AddVideo";
@@ -8,12 +6,6 @@ import DeleteConfirmPopup from "../../modals/deleteConfirmAlert/DeleteConfirmAle
 import VideoPlayer from "../../videoPlayer/VideoPlayer";
 
 class SessionVideoCard extends Component {
-  static propTypes = {
-    activeChild: PropTypes.object.isRequired,
-    session: PropTypes.object,
-    uploading: PropTypes.bool,
-  };
-
   constructor(props) {
     super(props);
     this.state = {
@@ -168,11 +160,4 @@ class SessionVideoCard extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  activeChild: state.childReducer.activeChild,
-  session: state.sessionReducer.activeSession,
-});
-
-export default connect(mapStateToProps)(
-  SessionVideoCard
-);
+export default SessionVideoCard;

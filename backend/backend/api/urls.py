@@ -6,6 +6,7 @@ urlpatterns = [
     path('', welcome, name='welcome'),
 
     path('t-children/', tChildren, name='t-children'),
+    path('t-f-children/', TypicalChildrenListAPIView.as_view(), name='t-f-children'),
     path('t-child/<str:pk>/', tChild, name='t-child'),
     path('add-t-child/', addTChild, name='add-t-child'),
     path('update-t-child/<str:pk>/', updateTChild, name='update-t-child'),
@@ -13,6 +14,7 @@ urlpatterns = [
     path('delete-t-children/', deleteTChildren, name='delete-t-children'),
 
     path('at-children/', atChildren, name='t-children'),
+    path('at-f-children/', AntypicalChildrenListAPIView.as_view(), name='at-f-children'),
     path('at-child/<str:pk>/', atChild, name='at-child'),
     path('add-at-child/', addATChild, name='add-at-child'),
     path('update-at-child/<str:pk>/', updateATChild, name='update-at-child'),
@@ -25,7 +27,7 @@ urlpatterns = [
     path('at-sessions/<str:pk>/', atSessions, name='at-sessions'),
     path('add-t-session/', addTSession, name='add-t-session'),
     path('add-at-session/', addATSession, name='add-at-session'),
-    path('update-session/<str:pk>', updateSession, name='update-session'),
+    path('update-session/<str:pk>/', updateSession, name='update-session'),
     path('delete-session/<str:pk>/', deleteSession, name='delete-session'),
 
     path('videos/', allVideos, name='videos'),

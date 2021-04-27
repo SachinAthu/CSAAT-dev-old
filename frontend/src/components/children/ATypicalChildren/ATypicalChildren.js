@@ -4,89 +4,121 @@ import axios from "axios";
 import { connect } from "react-redux";
 import DataTable from "react-data-table-component";
 
-import classes from "./Children.module.css";
-import Breadcrumbs from "../layouts/breadcrumbs/Breadcrumbs";
-import AddChild from "../modals/addChild/AddChild";
-import EmptySVG from "../../assets/svg/empty.svg";
-import { customStyles } from "./DatatableStyles";
-import DeleteConfirmPopup from "../modals/deleteConfirmAlert/DeleteConfirmAlert";
-import { BASE_URL } from '../../config'
+import classes from "../Children.module.css";
+import Breadcrumbs from "../../layouts/breadcrumbs/Breadcrumbs";
+import AddChild from "../../modals/addChild/AddChild";
+import EmptySVG from "../../../assets/svg/empty.svg";
+import { customStyles } from "../DatatableStyles";
+import DeleteConfirmPopup from "../../modals/deleteConfirmAlert/DeleteConfirmAlert";
+import { BASE_URL } from "../../../config";
 
 import {
   getChildren,
-  setActiveChild,
-  setActiveChildType,
-} from "../../actions/ChildActions";
+  deleteChildren,
+} from "../../../actions/ChildActions";
 import {
   deleteSessions,
-  deleteActiveSession,
-} from "../../actions/SessionActions";
-import { deleteVideos } from "../../actions/VideoActions";
-import { CHILD_TYPES } from "../../actions/Types";
+} from "../../../actions/SessionActions";
+import { deleteVideos } from "../../../actions/VideoActions";
+import { CHILD_TYPES, CSAAT_VIDEO_UPLOAD_CHILDTYPE, CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD, CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD_NAME, CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION } from "../../../actions/Types";
 
 class Children extends Component {
   static propTypes = {
     children: PropTypes.array.isRequired,
-    childType: PropTypes.string,
     getChildren: PropTypes.func.isRequired,
-    setActiveChild: PropTypes.func.isRequired,
-    setActiveChildType: PropTypes.func.isRequired,
     deleteVideos: PropTypes.func.isRequired,
     deleteSessions: PropTypes.func.isRequired,
-    deleteActiveSession: PropTypes.func.isRequired,
+    deleteChildren: PropTypes.func.isRequired,
   };
 
   constructor(props) {
     super(props);
     this.state = {
-      searchVal: "",
       addOrEdit: false,
       editChild: null,
       selectedRows: [],
       deleting: false,
+      count: 0,
+      nextLink: null,
+      prevLink: null,
+      isSearching: false
     };
+    this.afterReloadFetch = false;
   }
 
   componentDidMount() {
-    const childT = this.props.location.state.childType
-    // set child type
-    this.props.setActiveChildType(childT);
-
-    this.fetchChildren(childT);
+    // clear redux store values
+    this.props.deleteChildren();
     this.props.deleteSessions();
-    this.props.deleteActiveSession();
     this.props.deleteVideos();
+    localStorage.removeItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION)
+
+    // store child type on localstorage
+    localStorage.setItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE, CHILD_TYPES.ANTYPICAL);
+    // fetch atypical children
+    this.fetchChildren();
+
+    document.addEventListener("scroll", this.trackScrolling);
+
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const childT = this.props.location.state.childType
-    if (
-      prevProps.location.state.childType !== childT
-    ) {
-      // set child type
-      this.props.setActiveChildType(childT);
-
-      this.fetchChildren(childT);
-      this.props.deleteSessions();
-      this.props.deleteActiveSession();
-      this.props.deleteVideos();
-    }
+  componentWillUnmount() {
+    document.removeEventListener("scroll", this.trackScrolling);
   }
+
 
   ///////////////////////////////////////////////
   ////////////////// functions //////////////////
   ///////////////////////////////////////////////
-  fetchChildren = (childT) => {
-    let url = ""
-    if(childT == CHILD_TYPES.TYPICAL){
-      url = `${BASE_URL}/t-children/`
-    }else{
-      url = `${BASE_URL}/at-children/`
+  // set on scroll event
+  trackScrolling = () => {
+    // console.log(window.innerHeight + window.scrollY, document.body.offsetHeight)
+    let lastScrollTop = 0;
+    const el = document.getElementById('atypical_children_table')
+    let st = window.pageYOffset || document.documentElement.scrollTop;
+
+    if (
+      st > lastScrollTop &&
+      el.getBoundingClientRect().bottom <= window.innerHeight
+    ) {
+      // console.log('bottom')
+      // fetch more records
+      if (!this.state.isSearching) {
+        this.fetchChildren();
+      }
     }
+    lastScrollTop = st <= 0 ? 0 : st;
+  };
+
+  fetchChildren = () => {
+    let url = "";
+
+    if (this.state.nextLink) {
+      url = this.state.nextLink
+    } else {
+      url = `${BASE_URL}/at-children/`;
+    }
+
     axios
       .get(url)
       .then((res) => {
-        // console.log(res.data)
+        // console.log(res.data.results)
+        const data = res.data;
+        this.props.getChildren(data.results);
+        this.setState({
+          count: data.count,
+          prevLink: data.previous,
+          nextLink: data.next,
+        });
+      })
+      .catch((err) => console.log(err));
+  };
+
+  filterChildren = (val) => {
+    axios
+      .get(`${BASE_URL}/at-f-children/?search=${val}`)
+      .then((res) => {
+        // console.log(res.data);
         this.props.getChildren(res.data);
       })
       .catch((err) => console.log(err));
@@ -94,29 +126,13 @@ class Children extends Component {
 
   createDataTable = () => {
     const children = this.props.children;
-    const childT = this.props.location.state.childType
 
-    let columns1 = []
-    if(childT === CHILD_TYPES.TYPICAL){
-      columns1.push({
-        name: "UNIQUE NO",
-        selector: "unique_no",
-        sortable: true,
-      })
-      columns1.push({
-        name: "SEQUENCE NO",
-        selector: "sequence_no",
-        sortable: true,
-      })
-    }else{
-      columns1.push({
+    let columns = [
+      {
         name: "CLIENT NO",
         selector: "clinic_no",
         sortable: true,
-      })
-    }
-
-    let columns2 = [
+      },
       {
         name: "CHILD NAME",
         selector: "name",
@@ -229,8 +245,6 @@ class Children extends Component {
       },
     ];
 
-    const columns3 = columns1.concat(columns2)
-
     let data = [];
     for (let i = 0; i < children.length; i++) {
       let child = {
@@ -240,26 +254,20 @@ class Children extends Component {
         gender: children[i].gender,
         cdoc: children[i].cdoc,
         dgform: children[i].dgform,
+        clinic_no: children[i].clinic_no,
       };
-      if(childT === CHILD_TYPES.TYPICAL){
-        child.unique_no = children[i].unique_no
-        child.sequence_no = children[i].sequence_no
-      }else{
-        child.clinic_no = children[i].clinic_no
-      }
-      
       data.push(child);
     }
 
     let dataTable = (
       <DataTable
-        columns={columns3}
+        columns={columns}
         data={data}
         highlightOnHover={true}
         responsive={true}
         selectableRows={true}
         selectableRowsHighlight={true}
-        pagination={true}
+        pagination={false}
         paginationPerPage={10}
         paginationRowsPerPageOptions={[10, 15, 20, 25, 30]}
         customStyles={customStyles}
@@ -294,15 +302,22 @@ class Children extends Component {
   };
 
   onSearchValChange = (e) => {
-    this.setState({
-      searchVal: e.target.value,
-    });
+    const val = e.target.value;
+
+    this.setState({ count: 0, prevLink: null, nextLink: null });
+    this.props.deleteChildren();
+
+    if (val === "") {
+      // load all data
+      this.setState({ isSearching: false });
+      this.fetchChildren();
+    } else {
+      // load filtered data
+      this.setState({ isSearching: true });
+      this.filterChildren(val);
+    }
   };
 
-  search = (e) => {
-    e.preventDefault();
-    console.log(e);
-  };
 
   deleteChildHandler = (child) => {
     // console.log(id);
@@ -324,15 +339,10 @@ class Children extends Component {
 
   toChildHandler = (child) => {
     // console.log(child);
-    this.props.setActiveChild(child);
-    let path = ''
-    if(this.props.childType === CHILD_TYPES.TYPICAL){
-      path = `t_children/${child.id}`
-    }else{
-      path = `at_children/${child.id}`
-    }
+    localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD, child.id)
+    localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD_NAME, child.name)
     this.props.history.push({
-      pathname: path,
+      pathname: `/at_children/${child.id}`,
     });
   };
 
@@ -359,14 +369,14 @@ class Children extends Component {
     } = this.state;
 
     const table = this.createDataTable();
-    const sub_links = [{ name: "Home", link: "/" }]
+    const sub_links = [{ name: "Home", link: "/" }];
 
     return (
       <div className={`${classes.container1}`}>
         <Breadcrumbs
-          heading={this.props.childType === CHILD_TYPES.TYPICAL ? "Typical Children" : "Atypical Children" }
+          heading='Atypical Children'
           sub_links={sub_links}
-          current={this.props.childType === CHILD_TYPES.TYPICAL ? "Typical Children" : "Atypical Children"}
+          current='Atypical Children'
           state={null}
         />
 
@@ -379,21 +389,7 @@ class Children extends Component {
                 placeholder="Search children..."
                 type="text"
                 onChange={this.onSearchValChange}
-                value={searchVal}
               />
-
-              <button type="submit">
-                <svg
-                  version="1.1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                >
-                  <title>Search</title>
-                  <path d="M9.516 14.016q1.875 0 3.188-1.313t1.313-3.188-1.313-3.188-3.188-1.313-3.188 1.313-1.313 3.188 1.313 3.188 3.188 1.313zM15.516 14.016l4.969 4.969-1.5 1.5-4.969-4.969v-0.797l-0.281-0.281q-1.781 1.547-4.219 1.547-2.719 0-4.617-1.875t-1.898-4.594 1.898-4.617 4.617-1.898 4.594 1.898 1.875 4.617q0 0.984-0.469 2.227t-1.078 1.992l0.281 0.281h0.797z"></path>
-                </svg>
-              </button>
             </form>
 
             <button
@@ -410,7 +406,7 @@ class Children extends Component {
               <h6>There are no records available</h6>
             </div>
           ) : (
-            <div className={`${classes.table}`}>{table}</div>
+            <div id="atypical_children_table" className={`${classes.table}`}>{table}</div>
           )}
         </div>
 
@@ -434,14 +430,11 @@ class Children extends Component {
 
 const mapStateToProps = (state) => ({
   children: state.childReducer.children,
-  childType: state.childReducer.childType,
 });
 
 export default connect(mapStateToProps, {
   getChildren,
-  setActiveChild,
-  setActiveChildType,
   deleteVideos,
   deleteSessions,
-  deleteActiveSession,
+  deleteChildren,
 })(Children);

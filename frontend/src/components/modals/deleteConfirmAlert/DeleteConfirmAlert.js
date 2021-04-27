@@ -14,12 +14,13 @@ import {
   setActiveSessionFirst,
 } from "../../../actions/SessionActions";
 import { deleteVideo } from "../../../actions/VideoActions";
-import { CHILD_TYPES } from "../../../actions/Types";
+import { CHILD_TYPES, CSAAT_VIDEO_UPLOAD_CHILDTYPE } from "../../../actions/Types";
 import { deleteAudio } from "../../../actions/AudioActions";
 
 const DeleteConformPopup = (props) => {
   const [deleting, setDeleting] = useState(false);
   const [isError, setIsError] = useState(false);
+  const childType = localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE)
 
   ///////////////////////////////////////////////
   ////////////////// functions //////////////////
@@ -28,7 +29,7 @@ const DeleteConformPopup = (props) => {
     setDeleting(true);
 
     let url = "";
-    if (props.childType === CHILD_TYPES.TYPICAL) {
+    if (childType === CHILD_TYPES.TYPICAL) {
       url = `${BASE_URL}/8000/delete-t-child`;
     } else {
       url = `${BASE_URL}/8000/delete-at-child`;
@@ -71,7 +72,6 @@ const DeleteConformPopup = (props) => {
       // delete session from redux store
       props.deleteSession(sessionId);
 
-      // showRes(true, "Session record deleted!");
       // set the active session to first session on the session list
       // props.setActiveSessionFirst()
     } catch (err) {
@@ -155,6 +155,7 @@ const DeleteConformPopup = (props) => {
         break;
       case "video":
         deleteVideo();
+        break;
       case "audio":
         deleteAudio();
         break;
@@ -200,7 +201,6 @@ const DeleteConformPopup = (props) => {
 };
 
 DeleteConformPopup.propTypes = {
-  childType: PropTypes.string.isRequired,
   deleteChild: PropTypes.func.isRequired,
   deleteSession: PropTypes.func.isRequired,
   deleteVideo: PropTypes.func.isRequired,
@@ -208,11 +208,7 @@ DeleteConformPopup.propTypes = {
   deleteAudio: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => ({
-  childType: state.childReducer.childType,
-});
-
-export default connect(mapStateToProps, {
+export default connect(null, {
   deleteChild,
   deleteSession,
   deleteVideo,

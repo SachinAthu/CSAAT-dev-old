@@ -7,25 +7,27 @@ import classes from "./SessionPage.module.css";
 import Breadcrumbs from "../layouts/breadcrumbs/Breadcrumbs";
 import SessionVideoCard from "./sessionVideoCard/SessionVideoCard";
 import SessionAudioCard from './sessionAudioCard/SessionAudioCard'
+import { BASE_URL } from '../../config'
 
 import {
   updateSession,
   updateActiveSession,
 } from "../../actions/SessionActions";
-import { CHILD_TYPES } from '../../actions/Types'
+import { getVideos } from '../../actions/VideoActions'
+import { getAudio } from '../../actions/AudioActions'
+import { CHILD_TYPES, CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD, CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD_NAME, CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION, CSAAT_VIDEO_UPLOAD_CHILDTYPE } from '../../actions/Types'
 
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
 class SessionPage extends Component {
   static propTypes = {
-    activeChild: PropTypes.object.isRequired,
-    childType: PropTypes.string.isRequired,
-    activeSession: PropTypes.object,
     videos: PropTypes.array,
     audio: PropTypes.object,
     updateSession: PropTypes.func.isRequired,
     updateActiveSession: PropTypes.func.isRequired,
+    getVideos: PropTypes.func.isRequired,
+    getAudio: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -38,14 +40,45 @@ class SessionPage extends Component {
   }
 
   componentDidMount(){
-    if(this.props.activeSession.date){
-      this.setState({date: this.props.activeSession.date})
-    }
+    this.getActiveSession()
+    this.fetchVideos()
+    this.fetchAudio()
   }
 
+  
   //////////////////////////////////////////////////////////////
   //////////////////////// functions ///////////////////////////
   //////////////////////////////////////////////////////////////
+  getActiveSession = () => {
+    axios.get(`${BASE_URL}/session/${localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION)}/`)
+    .then(res => {
+      this.setState({ date: res.data.date })
+    })
+    .catch(err => {
+      console.log('active session fetching failed', err)
+    })
+  }
+  
+  fetchVideos = () => {
+    axios.get(`${BASE_URL}/videos/${localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION)}/`)
+    .then(res => {
+      this.props.getVideos(res.data)
+    })
+    .catch(err => {
+      console.log('videos fetching failed', err)
+    })
+  }
+
+  fetchAudio = () => {
+    axios.get(`${BASE_URL}/audio/${localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION)}/`)
+    .then(res => {
+      this.props.getAudio(res.data[0])
+    })
+    .catch(err => {
+      console.log('audios fetching failed', err)
+    })
+  }
+
 
   //////////////////////////////////////////////////////////////
   //////////////////////  event listeners //////////////////////
@@ -56,7 +89,7 @@ class SessionPage extends Component {
     if(e.target.value === '') return
 
     // update the session date
-    axios(`http://localhost:8000/api/update-session/${this.props.activeSession.id}`, {
+    axios(`http://localhost:8000/api/update-session/${localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION)}/`, {
       method: "PUT",
       data: {
         "date": e.target.value
@@ -73,18 +106,22 @@ class SessionPage extends Component {
   };
 
   render() {
-    const { videos, audio, activeChild } = this.props;
+    const { videos, audio } = this.props;
+    const childType = localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE)
+    const activeChild = localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD)
+    const activeChildName = localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD_NAME)
+
     const sub_links = [
       { name: "Home", link: "/" },
       {
-        name: this.props.childType == CHILD_TYPES.TYPICAL ? "Typical Children" : "Atypical Children",
-        link: this.props.childType == CHILD_TYPES.TYPICAL ? "/t_children" : "/at_children",
+        name: childType == CHILD_TYPES.TYPICAL ? "Typical Children" : "Atypical Children",
+        link: childType == CHILD_TYPES.TYPICAL ? "/t_children" : "/at_children",
       },
       {
-        name: activeChild.name,
-        link:  this.props.childType === CHILD_TYPES.TYPICAL
-        ? `/t_children/${activeChild.id}`
-        : `/at_children/${activeChild.id}`,
+        name: activeChildName,
+        link:  childType === CHILD_TYPES.TYPICAL
+        ? `/t_children/${activeChild}`
+        : `/at_children/${activeChild}`,
       }
     ];
 
@@ -106,7 +143,7 @@ class SessionPage extends Component {
           heading={"Session Details"}
           sub_links={sub_links}
           current="Session Details"
-          state={{childType: this.props.childType}}
+          state={null}
         />
 
         <div className={`container ${classes.container2}`}>
@@ -136,7 +173,7 @@ class SessionPage extends Component {
           <h2 className={classes.audioHead}>Session Audio</h2>
 
           <div className={classes.audioCard}>
-              <SessionAudioCard />
+              <SessionAudioCard audio={this.props.audio} />
           </div>
         </div>
       </div>
@@ -145,9 +182,6 @@ class SessionPage extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  activeChild: state.childReducer.activeChild, 
-  childType: state.childReducer.childType,
-  activeSession: state.sessionReducer.activeSession,
   videos: state.videoReducer.videos,
   audio: state.audioReducer.audio,
 });
@@ -155,4 +189,6 @@ const mapStateToProps = (state) => ({
 export default connect(mapStateToProps, {
   updateSession,
   updateActiveSession,
+  getVideos,
+  getAudio,
 })(SessionPage);
