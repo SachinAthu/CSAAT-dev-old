@@ -1,13 +1,12 @@
 import {
     FETCH_SESSIONS,
     ADD_SESSION,
-    SET_ACTIVE_SESSION,
     UPDATE_SESSION,
     DELETE_SESSION,
     DELETE_SESSIONS,
-    DELETE_ACTIVE_SESSION,
-    UPDATE_ACTIVE_SESSION,
+    SET_ACTIVE_SESSION,
     SET_ACTIVE_SESSION_FIRST,
+    UPDATE_ACTIVE_SESSION,
   } from "./Types";
   
   // get all sessions for a profile
@@ -23,32 +22,6 @@ export const addSession = (session) => (dispatch, getState) => {
     // console.log(session)
     dispatch({
         type: ADD_SESSION,
-        data: session
-    })
-}
-
-// set active session
-export const setActiveSession = (session) => (dispatch, getState) => {
-    // console.log(session)
-    dispatch({
-        type: SET_ACTIVE_SESSION,
-        data: session
-    })
-}
-
-// set first session in the list as the active session
-export const setActiveSessionFirst = () => (dispatch, getState) => {
-    // console.log(session)
-    dispatch({
-        type: SET_ACTIVE_SESSION_FIRST,
-    })
-}
-
-// update active session
-export const updateActiveSession = (session) => (dispatch, getState) => {
-    // console.log(session)
-    dispatch({
-        type: UPDATE_ACTIVE_SESSION,
         data: session
     })
 }
@@ -75,12 +48,29 @@ export const deleteSessions = () => (dispatch, getState) => {
     dispatch({
         type: DELETE_SESSIONS,
     })
-} 
+}
 
-// delete active session
-export const deleteActiveSession = () => (dispatch, getState) => {
+// set active session
+export const setActiveSession = (session) => (dispatch, getState) => {
     dispatch({
-        type: DELETE_ACTIVE_SESSION,
+        type: SET_ACTIVE_SESSION,
+        data: session
     })
 } 
+
+// set the first session as the active session
+export const setActiveSessionFirst = () => (dispatch, getState) => {
+    dispatch({
+        type: SET_ACTIVE_SESSION_FIRST,
+    })
+}
+
+// update active session
+export const updateActiveSession = (session) => (dispatch, getState) => {
+    dispatch({
+        type: UPDATE_ACTIVE_SESSION,
+        data: session
+    })
+} 
+
 

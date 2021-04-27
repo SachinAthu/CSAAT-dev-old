@@ -5,50 +5,51 @@ import { connect } from "react-redux";
 
 import classes from "./AddSession.module.css";
 import ModalFrame from "../modalFrame/ModalFrame";
-import BtnSpinner from "../../spinners/btn/BtnSpinner";
+import BtnSpinner from "../../layouts/spinners/btn/BtnSpinner";
 
 import { addSession, setActiveSession } from "../../../actions/SessionActions";
 import { deleteVideos } from "../../../actions/VideoActions";
+import {
+  CHILD_TYPES,
+  CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD,
+  CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION,
+  CSAAT_VIDEO_UPLOAD_CHILDTYPE,
+} from "../../../actions/Types";
 
 function AddSession(props) {
   const [rDate, setRDate] = useState("");
   const [loading, setLoading] = useState(false);
+  const childType = localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE);
+  const activeChild = localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD);
 
   //////////////////////////////////////////////////////////////////
   //////////////////////// functions ///////////////////////////////
   //////////////////////////////////////////////////////////////////
-  const checkFieldEmpty = (inputVal, errorField, errorText) => {
+  const checkFieldEmpty = (inputVal, field, errorField, errorText) => {
     if (inputVal == null || inputVal === "") {
-      showError(errorField, errorText);
+      showError(field, errorField, errorText);
       return false;
     } else {
-      removeError(errorField);
+      removeError(field, errorField);
       return true;
     }
   };
 
-  const showError = (errorField, errorText) => {
+  const showError = (field, errorField, errorText) => {
     errorField.style.display = "block";
     errorField.innerHTML = errorText;
+    field.classList.add(`${classes.errorBorder}`)
   };
 
-  const removeError = (errorField) => {
+  const removeError = (field, errorField) => {
     errorField.innerHTML = "";
     errorField.style.display = "none";
+    field.classList.remove(`${classes.errorBorder}`)
   };
 
-  const showRes = (r) => {
-    const resSpan = document.getElementById("session_add_result");
-
-    if (r) {
-      resSpan.innerHTML = "Session created!";
-      resSpan.classList.remove(`${classes.failed}`);
-      resSpan.classList.add(`${classes.success}`);
-    } else {
-      resSpan.innerHTML = "Session creation failed!";
-      resSpan.classList.remove(`${classes.success}`);
-      resSpan.classList.add(`${classes.failed}`);
-    }
+  const showFailed = () => {
+    const resSpan = document.getElementById("session_add_failed");
+    resSpan.innerHTML = "Session creation failed!";
   };
 
   //////////////////////////////////////////////////////////////////
@@ -57,9 +58,10 @@ function AddSession(props) {
   const onChangeHandler = (e) => {
     // console.log(e.target.value)
     // validation
-    const rDate_error = document.getElementById("rDate_error");
+    const rDate_f = document.getElementById("session_add_form_date");
+    const rDate_e = document.getElementById("rDate_error");
 
-    checkFieldEmpty(e.target.value, rDate_error, "Recorded date is required");
+    checkFieldEmpty(e.target.value, rDate_f, rDate_e, "Recorded date is required");
     setRDate(e.target.value);
   };
 
@@ -67,19 +69,27 @@ function AddSession(props) {
     e.preventDefault();
 
     // validation
-    const rDate_error = document.getElementById("rDate_error");
-    const r = checkFieldEmpty(rDate, rDate_error, "Recorded date is required");
+    const rDate_f = document.getElementById("session_add_form_date");
+    const rDate_e = document.getElementById("rDate_error");
+    const r = checkFieldEmpty(rDate, rDate_f, rDate_e, "Recorded date is required");
 
     if (!r) return;
 
     setLoading(true);
 
     // create a new session and set created session as the active session
-    axios(`http://localhost:8000/api/add-session/`, {
+    let url = "";
+    if (childType === CHILD_TYPES.TYPICAL) {
+      url = "http://localhost:8000/api/add-t-session/";
+    } else {
+      url = "http://localhost:8000/api/add-at-session/";
+    }
+
+    axios(url, {
       method: "POST",
       data: {
         date: rDate,
-        profile: props.activeProfile.id,
+        child: activeChild,
         user: null,
       },
       headers: {
@@ -88,29 +98,36 @@ function AddSession(props) {
     })
       .then((res) => {
         console.log("session created", res.data);
-        showRes(true);
         setLoading(false);
         props.addSession(res.data);
         props.setActiveSession(res.data);
+        localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION, res.data.id);
 
         // clear redux videos
         props.deleteVideos();
-
-        // display message session created
-
-        // navigate to add session component
-        // props.history.push({
-        //   pathname: `/${props.profile.id}/${res.data.id}`,
-        //   state: { isNew: true },
-        // });
+        props.close();
       })
       .catch((err) => {
         console.log(err);
-        showError(false)
+        showFailed();
       });
 
     setLoading(false);
   };
+
+  const resetFormHandler = () => {
+    setRDate('')
+     // reset errors
+     const errorFields = document.getElementsByClassName(`${classes.fieldError}`)
+     for(let i = 0; i < errorFields.length; i++) {
+       errorFields[i].innerHTML = "";
+       errorFields[i].style.display = "none";
+     }
+     const formGroups = document.getElementsByClassName(`${classes.formgroup}`)
+     for(let i = 0; i < formGroups.length; i++) {
+       formGroups[i].children[1].classList.remove(`${classes.errorBorder}`)
+     }
+  }
 
   return (
     <ModalFrame close={props.close}>
@@ -132,7 +149,15 @@ function AddSession(props) {
             <span id="rDate_error" className={classes.fieldError}></span>
           </div>
 
-          <div className={classes.formgroup2}>
+          <div className={classes.formgroup_btn}>
+            <button
+              type="button"
+              className={`.button_reset ${classes.resetbtn}`}
+              onClick={resetFormHandler}
+            >
+              Reset
+            </button>
+
             <button
               type="submit"
               className={`.button_primary ${classes.submitbtn}`}
@@ -143,7 +168,7 @@ function AddSession(props) {
           </div>
         </form>
 
-        <span id="session_add_result" className={classes.result}></span>
+        <span id="session_add_failed" className={classes.failed}></span>
       </div>
     </ModalFrame>
   );
@@ -155,11 +180,7 @@ AddSession.propTypes = {
   deleteVideos: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => ({
-  activeProfile: state.profileReducer.activeProfile,
-});
-
-export default connect(mapStateToProps, {
+export default connect(null, {
   addSession,
   setActiveSession,
   deleteVideos,

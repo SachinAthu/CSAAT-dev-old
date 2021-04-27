@@ -3,23 +3,26 @@ import { Provider } from "react-redux";
 import $ from "jquery";
 
 import classes from "./App.module.css";
-import Header from "./components/layout/header/Header";
-import Footer from "./components/layout/footer/Footer";
-import Profiles from './components/profiles/Profiles'
-import ProfilePage from './components/profilePage/ProfilePage'
+import Header from "./components/layouts/header/Header";
+import Footer from "./components/layouts/footer/Footer";
+import Homepage from './components/homepage/Homepage'
+import TypicalChildren from './components/children/TypicalChildren/TypicalChildren'
+import ATypicalChildren from './components/children/ATypicalChildren/ATypicalChildren'
+import ChildPage from './components/childPage/ChildPage'
 import AddSession from './components/sessionPage/SessionPage'
 
 import store from "./store";
 
-const App = () => {
+const App = (props) => {
+
   // Back to top button
-  $(window).on('scroll', function () {
-    if ($(this).scrollTop() > 100) {
-      $(`${classes.back_to_top}`).fadeIn("slow");
-    } else {
-      $(`${classes.back_to_top}`).fadeOut("slow");
-    }
-  });
+  // $(window).on('scroll', function () {
+  //   if ($(this).scrollTop() > 100) {
+  //     $(`${classes.back_to_top}`).fadeIn("slow");
+  //   } else {
+  //     $(`${classes.back_to_top}`).fadeOut("slow");
+  //   }
+  // });
 
   $(`${classes.back_to_top}`).on('click', function () {
     $("html, body").animate(
@@ -44,9 +47,16 @@ const App = () => {
 
           <main id="app_main" className={`${classes.main}`}>
             <Switch>
-              <Route exact path="/" component={Profiles} />
-              <Route path="/:profile_id/:session_id" render={(props) => <AddSession {...props} />} />
-              <Route path="/:profile_id" render={(props) => <ProfilePage {...props} />} /> 
+              <Route path="/t_children/:child_id/:session_id" render={(props) => <AddSession {...props} />} />
+              <Route path="/at_children/:child_id/:session_id" render={(props) => <AddSession {...props} />} />
+              
+              <Route path="/t_children/:child_id" render={(props) => <ChildPage {...props} />} />
+              <Route path="/at_children/:child_id" render={(props) => <ChildPage {...props} />} /> 
+              
+              <Route exact path="/t_children" component={TypicalChildren} />
+              <Route exact path="/at_children" component={ATypicalChildren} />
+
+              <Route exact path="/" component={Homepage} />
             </Switch>
           </main>
   

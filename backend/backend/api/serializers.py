@@ -2,9 +2,14 @@ from rest_framework import serializers
 
 from .models import *
 
-class ProfilesSerializer(serializers.ModelSerializer):
+class TypicalChildSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Profiles
+        model = TypicalChild
+        fields = '__all__'
+
+class AntypicalChildSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AntypicalChild
         fields = '__all__'
 
 class SessionsSerializer(serializers.ModelSerializer):
@@ -25,6 +30,11 @@ class CameraAngleSerializer(serializers.ModelSerializer):
 class VideosSerializer(serializers.ModelSerializer):
     class Meta:
         model = Videos
+        fields = '__all__'
+
+class AudiosSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Audios
         fields = '__all__'
 
 class VideoClipsSerializer(serializers.ModelSerializer):

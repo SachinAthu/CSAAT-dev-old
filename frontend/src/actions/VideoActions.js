@@ -5,12 +5,7 @@ import {
   DELETE_VIDEO,
   DELETE_VIDEOS,
   TOOGLE_PLAY_MODE,
-  PLAY_ALL,
-  PAUSE_ALL,
-  STOP_ALL,
-  SET_PERCENT,
-  SET_TOTAL_TIME,
-  SET_PERCENT_TIMELINE,
+  TOOGLE_PLAY_STATE,
 } from "./Types";
 
 // get all videos for a session
@@ -64,50 +59,14 @@ export const tooglePlayMode = (mode) => (dispatch, getState) => {
   });
 };
 
-// play all
-export const playAll = () => (dispatch, getState) => {
+// toogle play state
+export const tooglePlayState = (state) => (dispatch, getState) => {
   dispatch({
-    type: PLAY_ALL,
+    type: TOOGLE_PLAY_STATE,
+    data: state,
   });
 };
 
-// pause all
-export const pauseAll = () => (dispatch, getState) => {
-  dispatch({
-    type: PAUSE_ALL,
-  });
-};
-
-// play all
-export const stopAll = () => (dispatch, getState) => {
-  dispatch({
-    type: STOP_ALL,
-  });
-};
-
-// set precentage of playing videos
-export const setPercent = (percent, sec) => (dispatch, getState) => {
-  dispatch({
-    type: SET_PERCENT,
-    data: {percent: percent, sec: sec},
-  });
-};
-
-// set precentage from timeline
-export const setPercentTimeline = (percent) => (dispatch, getState) => {
-  dispatch({
-    type: SET_PERCENT_TIMELINE,
-    data: percent,
-  });
-};
-
-// set total time of playing videos
-export const setTotalTime = (time) => (dispatch, getState) => {
-  dispatch({
-    type: SET_TOTAL_TIME,
-    data: time,
-  });
-};
 
 
 

@@ -1,0 +1,86 @@
+.controlPanel {
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.03);
+  border-radius: 3px;
+  margin-bottom: 3rem;
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.progressBar {
+  width: 100%;
+  margin-bottom: 4px;
+
+  display: flex;
+  align-items: center;
+}
+
+.inputRange__slider {
+  width: 100%;
+}
+
+.controlers {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.controlers > span{
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.currentTime{
+  justify-self: flex-start;
+  margin-right: auto;
+}
+
+.totalTime {
+  justify-self: flex-end;
+  margin-left: auto;
+}
+
+.playBtn,
+.pauseBtn,
+.stopBtn,
+.fullviewBtn {
+  background: transparent;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 0px;
+  transition: all 0.1s !important;
+}
+
+.playBtn:hover,
+.pauseBtn:hover,
+.stopBtn:hover,
+.fullviewBtn:hover {
+  background: rgb(255, 255, 255);
+}
+
+.playBtn > svg,
+.pauseBtn > svg,
+.stopBtn > svg,
+.fullviewBtn > svg {
+  fill: rgba(0, 0, 0, 0.55);
+}
+
+.playBtn > svg {
+  transform: scale(1.3);
+}
+
+.pauseBtn > svg {
+  transform: scale(1.3);
+}
+
+.stopBtn > svg {
+  transform: scale(1.7);
+}
+
+.fullviewBtn > svg {
+  transform: scale(1.5);
+}
