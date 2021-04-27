@@ -4,7 +4,7 @@ import classes from './Homepage.module.css'
 
 function Homepage() {
     return (
-        <div>
+        <div className={classes.container}>
             <h1 className={`container`}>Homepage</h1>
         </div>
     )

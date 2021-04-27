@@ -71,19 +71,12 @@ class TypicalChildren extends Component {
   ///////////////////////////////////////////////
   // set on scroll event
   trackScrolling = () => {
-    // console.log(window.innerHeight + window.scrollY, document.body.offsetHeight)
-    let lastScrollTop = 0;
-    const el = document.getElementById("typical_children_table");
-    let st = window.pageYOffset || document.documentElement.scrollTop;
-
-    if (st > lastScrollTop && el.getBoundingClientRect().bottom <= window.innerHeight) {
-      // console.log('bottom')
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 120) {
       // fetch more records
       if (!this.state.isSearching) {
         this.fetchChildren();
       }
     }
-    lastScrollTop = st <= 0 ? 0 : st;
   };
 
   fetchChildren = () => {
@@ -123,32 +116,32 @@ class TypicalChildren extends Component {
 
     let columns = [
       {
-        name: "UNIQUE NO",
+        name: "Unique No",
         selector: "unique_no",
         sortable: true,
       },
       {
-        name: "SEQUENCE NO",
+        name: "Sequence No",
         selector: "sequence_no",
         sortable: true,
       },
       {
-        name: "CHILD NAME",
+        name: "Child Name",
         selector: "name",
         sortable: true,
       },
       {
-        name: "DATE OF BIRTH",
+        name: "Date of Birth",
         selector: "dob",
         sortable: true,
       },
       {
-        name: "GENDER",
+        name: "Gender",
         selector: "gender",
         sortable: true,
       },
       {
-        name: "CONSENT DOCUMENT",
+        name: "Consent Document",
         sortable: false,
         cell: (row) => {
           if (row.cdoc) {
@@ -168,7 +161,7 @@ class TypicalChildren extends Component {
         },
       },
       {
-        name: "DATA GATHERING FORM",
+        name: "Data Gathering Form",
         sortable: false,
         cell: (row) => {
           if (row.dgform) {
@@ -385,7 +378,7 @@ class TypicalChildren extends Component {
               <input
                 id="searchField"
                 name="searchField"
-                placeholder="Search children..."
+                placeholder="Search children by any field..."
                 type="text"
                 onChange={this.onSearchValChange}
               />

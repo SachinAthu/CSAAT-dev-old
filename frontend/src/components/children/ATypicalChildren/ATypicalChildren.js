@@ -72,22 +72,12 @@ class Children extends Component {
   ///////////////////////////////////////////////
   // set on scroll event
   trackScrolling = () => {
-    // console.log(window.innerHeight + window.scrollY, document.body.offsetHeight)
-    let lastScrollTop = 0;
-    const el = document.getElementById('atypical_children_table')
-    let st = window.pageYOffset || document.documentElement.scrollTop;
-
-    if (
-      st > lastScrollTop &&
-      el.getBoundingClientRect().bottom <= window.innerHeight
-    ) {
-      // console.log('bottom')
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 120) {
       // fetch more records
       if (!this.state.isSearching) {
         this.fetchChildren();
       }
     }
-    lastScrollTop = st <= 0 ? 0 : st;
   };
 
   fetchChildren = () => {

@@ -9,7 +9,7 @@
   background-color: #fff;
   height: auto;
   width: auto;
-  z-index: 1010;
+  z-index: 12500;
   animation-name: fadein;
   animation-duration: 0.1s;
   animation-fill-mode: both;
@@ -31,7 +31,7 @@
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
+  z-index: 12000;
   animation-name: overlay_fadein;
   animation-duration: 0.1s;
   animation-fill-mode: both;
