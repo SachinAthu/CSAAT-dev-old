@@ -45,7 +45,6 @@ export class AddChild extends Component {
     const childType = localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE)
 
     const c = this.props.child;
-    console.log(c);
     if (c) {
       if (childType === CHILD_TYPES.TYPICAL) {
         this.setState({
@@ -542,8 +541,6 @@ export class AddChild extends Component {
       },
     })
       .then((res) => {
-        console.log(res.data);
-
         this.setState({ requesting: false });
         if (this.state.editing) {
           this.props.updateChild(res.data);
@@ -554,7 +551,6 @@ export class AddChild extends Component {
       })
       .catch((err) => {
         this.setState({ requesting: false });
-        console.log(err);
         if (method === "POST") {
           this.showFailed("Child adding failed!");
         } else {

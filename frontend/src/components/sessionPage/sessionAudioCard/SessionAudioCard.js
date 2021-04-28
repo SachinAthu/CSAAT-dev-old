@@ -4,6 +4,7 @@ import classes from "./SessionAudioCard.module.css";
 import AddAudio from "../../modals/addAudio/AddAudio";
 import DeleteConfirmPopup from "../../modals/deleteConfirmAlert/DeleteConfirmAlert";
 import AudioPlayer from "../../modals/audioPlayer/AudioPlayer";
+import ErrorBoundry from "../../ErrorBoundry";
 
 class SessionAudioCard extends Component {
   constructor(props) {
@@ -25,16 +26,19 @@ class SessionAudioCard extends Component {
 
   // close audio delete confirmation alert box
   closeDeleteConfirmPopup = (res) => {
-    // console.log(res);
     this.setState({ deleting: false });
   };
 
   // convert seconds to HH:mm:ss format
   convertSec = (sec) => {
-    let measuredTime = new Date(null);
-    measuredTime.setSeconds(parseInt(sec)); // specify value of SECONDS
-    let MHSTime = measuredTime.toISOString().substr(11, 8);
-    return MHSTime;
+    try {
+      let measuredTime = new Date(null);
+      measuredTime.setSeconds(parseInt(sec)); // specify value of SECONDS
+      let MHSTime = measuredTime.toISOString().substr(11, 8);
+      return MHSTime;
+    } catch (err) {
+      return "00:00:00";
+    }
   };
 
   openAudioPlayer = () => {
@@ -53,23 +57,14 @@ class SessionAudioCard extends Component {
     this.setState({ adding: true });
   };
 
-  // open the audio add popup window for editting
-  editHandler = (audio) => {
-    console.log(audio);
-    this.setState({ adding: true });
-  };
-
   // open the delete alert
   deleteHandler = (audio) => {
-    // console.log(audio)
     this.setState({ deleting: true });
   };
 
   render() {
     const { adding, deleting } = this.state;
     const { audio } = this.props;
-
-    console.log(this.props.audio);
 
     let cardContent;
     if (this.props.audio) {
@@ -79,11 +74,11 @@ class SessionAudioCard extends Component {
             <svg
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
-              width="32"
-              height="32"
-              viewBox="0 0 32 32"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
             >
-              <path d="M30 0h2v23c0 2.761-3.134 5-7 5s-7-2.239-7-5c0-2.761 3.134-5 7-5 1.959 0 3.729 0.575 5 1.501v-11.501l-16 3.556v15.444c0 2.761-3.134 5-7 5s-7-2.239-7-5c0-2.761 3.134-5 7-5 1.959 0 3.729 0.575 5 1.501v-19.501l18-4z"></path>
+              <path d="M15 20.016v-8.016h-6v8.016h6zM14.859 10.031q0.469 0 0.797 0.328t0.328 0.797v9.703q0 0.469-0.328 0.797t-0.797 0.328h-5.719q-0.469 0-0.797-0.328t-0.328-0.797v-9.703q0-0.469 0.328-0.82t0.797-0.352zM12 0.984q1.875 0 4.125 0.938t3.609 2.297l-1.406 1.406q-2.625-2.625-6.328-2.625t-6.328 2.625l-1.406-1.406q3.234-3.234 7.734-3.234zM6.984 7.078q2.063-2.063 5.016-2.063t5.016 2.063l-1.453 1.406q-1.453-1.453-3.563-1.453t-3.563 1.453z"></path>
             </svg>
           </div>
 
@@ -96,35 +91,10 @@ class SessionAudioCard extends Component {
 
             <div className={classes.info_2}>
               <button
-                onClick={this.editHandler.bind(this, audio)}
-                className={classes.editbtn}
-              >
-                <svg
-                  version="1.1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                >
-                  <title>Edit</title>
-                  <path d="M20.719 7.031l-1.828 1.828-3.75-3.75 1.828-1.828q0.281-0.281 0.703-0.281t0.703 0.281l2.344 2.344q0.281 0.281 0.281 0.703t-0.281 0.703zM3 17.25l11.063-11.063 3.75 3.75-11.063 11.063h-3.75v-3.75z"></path>
-                </svg>
-              </button>
-
-              <button
                 onClick={this.deleteHandler.bind(this, audio)}
                 className={classes.removebtn}
               >
-                <svg
-                  version="1.1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                >
-                  <title>Delete</title>
-                  <path d="M18.984 3.984v2.016h-13.969v-2.016h3.469l1.031-0.984h4.969l1.031 0.984h3.469zM6 18.984v-12h12v12q0 0.797-0.609 1.406t-1.406 0.609h-7.969q-0.797 0-1.406-0.609t-0.609-1.406z"></path>
-                </svg>
+                Delete
               </button>
             </div>
           </div>
@@ -137,13 +107,12 @@ class SessionAudioCard extends Component {
             <svg
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
-              width="32"
-              height="32"
-              viewBox="0 0 32 32"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
             >
               <title>Add Audio</title>
-              <path d="M28.681 7.159c-0.694-0.947-1.662-2.053-2.724-3.116s-2.169-2.030-3.116-2.724c-1.612-1.182-2.393-1.319-2.841-1.319h-15.5c-1.378 0-2.5 1.121-2.5 2.5v27c0 1.378 1.121 2.5 2.5 2.5h23c1.378 0 2.5-1.122 2.5-2.5v-19.5c0-0.448-0.137-1.23-1.319-2.841v0zM24.543 5.457c0.959 0.959 1.712 1.825 2.268 2.543h-4.811v-4.811c0.718 0.556 1.584 1.309 2.543 2.268v0zM28 29.5c0 0.271-0.229 0.5-0.5 0.5h-23c-0.271 0-0.5-0.229-0.5-0.5v-27c0-0.271 0.229-0.5 0.5-0.5 0 0 15.499-0 15.5 0v7c0 0.552 0.448 1 1 1h7v19.5z"></path>
-              <path d="M23.634 12.227c-0.232-0.19-0.536-0.266-0.83-0.207l-10 2c-0.467 0.094-0.804 0.504-0.804 0.981v7.402c-0.588-0.255-1.271-0.402-2-0.402-2.209 0-4 1.343-4 3s1.791 3 4 3 4-1.343 4-3v-7.18l8-1.6v4.183c-0.588-0.255-1.271-0.402-2-0.402-2.209 0-4 1.343-4 3s1.791 3 4 3 4-1.343 4-3v-10c0-0.3-0.134-0.583-0.366-0.773z"></path>
+              <path d="M8.016 13.031l3.984-4.031 3.984 4.031-1.406 1.406-1.594-1.594v4.172h-1.969v-4.172l-1.594 1.594zM20.016 18v-9.984h-16.031v9.984h16.031zM20.016 6q0.797 0 1.383 0.609t0.586 1.406v9.984q0 0.797-0.586 1.406t-1.383 0.609h-16.031q-0.797 0-1.383-0.609t-0.586-1.406v-12q0-0.797 0.586-1.406t1.383-0.609h6l2.016 2.016h8.016z"></path>
             </svg>
           </button>
         </div>
@@ -154,7 +123,11 @@ class SessionAudioCard extends Component {
       <div className={classes.container}>
         {cardContent}
 
-        {adding ? <AddAudio audio={audio} close={this.closeAddWindow} /> : null}
+        {adding ? (
+          <ErrorBoundry>
+            <AddAudio close={this.closeAddWindow} />
+          </ErrorBoundry>
+        ) : null}
 
         {deleting ? (
           <DeleteConfirmPopup

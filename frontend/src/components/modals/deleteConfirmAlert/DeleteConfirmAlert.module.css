@@ -1,6 +1,6 @@
 .container {
   padding: 0 10px;
-  width: 28rem;
+  width: 22rem;
   z-index: 1010;
   display: flex;
   flex-direction: column;
@@ -13,13 +13,13 @@
 }
 
 .header h3 {
-  font-size: 1.5rem;
+  font-size: 20px;
   font-weight: 600;
   margin-bottom: 25px;
 }
 
 .header span {
-  font-size: 1rem;
+  font-size: 14px;
   font-weight: 400;
 }
 
@@ -32,24 +32,25 @@
 }
 
 .cancelbtn {
-  font-size: 0.9rem;
+  font-size: 14px;
   font-weight: 600;
-  color: #fff;
-  background-color: rgba(0, 0, 0, 0.3);
-  padding: 6px 32px;
+  color: rgba(0, 0, 0, 0.8);
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  padding: 5px 20px;
   margin: 0 2px;
 }
 
 .cancelbtn:hover {
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
 .deletebtn {
   color: #fff;
   background-color: var(--color-danger-light);
-  font-size: 0.9rem;
+  font-size: 14px;
   font-weight: 600;
-  padding: 6px 32px;
+  padding: 5px 20px;
   margin: 0 2px;
 
   display: flex;

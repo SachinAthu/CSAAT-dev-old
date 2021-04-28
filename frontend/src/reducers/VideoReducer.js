@@ -1,7 +1,6 @@
 import {
   FETCH_VIDEOS,
   ADD_VIDEO,
-  UPDATE_VIDEO,
   DELETE_VIDEO,
   DELETE_VIDEOS,
   PLAY_MODES,
@@ -30,20 +29,6 @@ export default function (state = initialState, action) {
       return {
         ...state,
         videos: v,
-      };
-
-    case UPDATE_VIDEO:
-      const tempVideos = [...state.videos];
-      const updatedVideo = action.data;
-
-      tempVideos.forEach((v, i) => {
-        if (v.id === updatedVideo.id) {
-          v = updatedVideo;
-        }
-      });
-      return {
-        ...state,
-        videos: tempVideos,
       };
 
     case DELETE_VIDEO:

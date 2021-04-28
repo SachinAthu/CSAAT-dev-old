@@ -8,19 +8,25 @@ import classes from "../Children.module.css";
 import Breadcrumbs from "../../layouts/breadcrumbs/Breadcrumbs";
 import AddChild from "../../modals/addChild/AddChild";
 import EmptySVG from "../../../assets/svg/empty.svg";
-import { customStyles } from "../DatatableStyles";
+import { customStyles } from "../../DatatableStyles";
 import DeleteConfirmPopup from "../../modals/deleteConfirmAlert/DeleteConfirmAlert";
 import { BASE_URL } from "../../../config";
+import ErrorBoundry from "../../ErrorBoundry";
+import PageSpinner from '../../layouts/spinners/page/PageSpinner'
 
-import {
-  getChildren,
-  deleteChildren,
-} from "../../../actions/ChildActions";
-import {
-  deleteSessions,
-} from "../../../actions/SessionActions";
+import { getChildren, deleteChildren } from "../../../actions/ChildActions";
+import { deleteSessions } from "../../../actions/SessionActions";
 import { deleteVideos } from "../../../actions/VideoActions";
-import { CHILD_TYPES, CSAAT_VIDEO_UPLOAD_CHILDTYPE, CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD, CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD_NAME, CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION } from "../../../actions/Types";
+import { setNav } from "../../../actions/NavigationActions";
+import {
+  CHILD_TYPES,
+  CSAAT_VIDEO_UPLOAD_CHILDTYPE,
+  CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD,
+  CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD_NAME,
+  CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION,
+  NAV_LINKS,
+  CSAAT_VIDEO_UPLOAD_ACTIVE_NAV,
+} from "../../../actions/Types";
 
 class Children extends Component {
   static propTypes = {
@@ -29,6 +35,7 @@ class Children extends Component {
     deleteVideos: PropTypes.func.isRequired,
     deleteSessions: PropTypes.func.isRequired,
     deleteChildren: PropTypes.func.isRequired,
+    setNav: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -41,7 +48,8 @@ class Children extends Component {
       count: 0,
       nextLink: null,
       prevLink: null,
-      isSearching: false
+      isSearching: false,
+      loading: false
     };
     this.afterReloadFetch = false;
   }
@@ -51,7 +59,14 @@ class Children extends Component {
     this.props.deleteChildren();
     this.props.deleteSessions();
     this.props.deleteVideos();
-    localStorage.removeItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION)
+    localStorage.removeItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION);
+
+    // set navigation link
+    this.props.setNav(NAV_LINKS.NAV_ATPICAL_CHILD);
+    localStorage.setItem(
+      CSAAT_VIDEO_UPLOAD_ACTIVE_NAV,
+      NAV_LINKS.NAV_ATPICAL_CHILD
+    );
 
     // store child type on localstorage
     localStorage.setItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE, CHILD_TYPES.ANTYPICAL);
@@ -59,20 +74,21 @@ class Children extends Component {
     this.fetchChildren();
 
     document.addEventListener("scroll", this.trackScrolling);
-
   }
 
   componentWillUnmount() {
     document.removeEventListener("scroll", this.trackScrolling);
   }
 
-
   ///////////////////////////////////////////////
   ////////////////// functions //////////////////
   ///////////////////////////////////////////////
   // set on scroll event
   trackScrolling = () => {
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 120) {
+    if (
+      window.innerHeight + window.scrollY >=
+      document.body.offsetHeight - 120
+    ) {
       // fetch more records
       if (!this.state.isSearching) {
         this.fetchChildren();
@@ -82,36 +98,36 @@ class Children extends Component {
 
   fetchChildren = () => {
     let url = "";
-
     if (this.state.nextLink) {
-      url = this.state.nextLink
+      url = this.state.nextLink;
     } else {
       url = `${BASE_URL}/at-children/`;
     }
-
+    this.setState({ loading: true })
     axios
       .get(url)
       .then((res) => {
-        // console.log(res.data.results)
         const data = res.data;
         this.props.getChildren(data.results);
         this.setState({
           count: data.count,
           prevLink: data.previous,
           nextLink: data.next,
+          loading: false
         });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        this.setState({ loading: false })
+      });
   };
 
   filterChildren = (val) => {
     axios
       .get(`${BASE_URL}/at-f-children/?search=${val}`)
       .then((res) => {
-        // console.log(res.data);
         this.props.getChildren(res.data);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {});
   };
 
   createDataTable = () => {
@@ -273,7 +289,6 @@ class Children extends Component {
   };
 
   closeDeleteConfirmPopup = (res) => {
-    console.log(res);
     if (res) {
       this.setState({ selectedRows: [] });
     }
@@ -285,7 +300,6 @@ class Children extends Component {
   /////////////////////////////////////////////////////
   handleRowSelect = (state) => {
     // You can use setState or dispatch with something like Redux so we can use the retrieved data
-    console.log("Selected Rows: ", state.selectedRows);
     this.setState({
       selectedRows: state.selectedRows,
     });
@@ -308,10 +322,7 @@ class Children extends Component {
     }
   };
 
-
   deleteChildHandler = (child) => {
-    // console.log(id);
-
     // open delete confirm box
     let children = [...this.state.selectedRows];
 
@@ -328,9 +339,8 @@ class Children extends Component {
   };
 
   toChildHandler = (child) => {
-    // console.log(child);
-    localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD, child.id)
-    localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD_NAME, child.name)
+    localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD, child.id);
+    localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD_NAME, child.name);
     this.props.history.push({
       pathname: `/at_children/${child.id}`,
     });
@@ -364,9 +374,9 @@ class Children extends Component {
     return (
       <div className={`${classes.container1}`}>
         <Breadcrumbs
-          heading='Atypical Children'
+          heading="Atypical Children"
           sub_links={sub_links}
-          current='Atypical Children'
+          current="Atypical Children"
           state={null}
         />
 
@@ -396,12 +406,16 @@ class Children extends Component {
               <h6>There are no records available</h6>
             </div>
           ) : (
-            <div id="atypical_children_table" className={`${classes.table}`}>{table}</div>
+            <div id="atypical_children_table" className={`${classes.table}`}>
+              {table}
+            </div>
           )}
         </div>
 
         {addOrEdit ? (
-          <AddChild close={this.closeAddingWindow} child={editChild} />
+          <ErrorBoundry>
+            <AddChild close={this.closeAddingWindow} child={editChild} />
+          </ErrorBoundry>
         ) : null}
 
         {deleting ? (
@@ -427,4 +441,5 @@ export default connect(mapStateToProps, {
   deleteVideos,
   deleteSessions,
   deleteChildren,
+  setNav,
 })(Children);

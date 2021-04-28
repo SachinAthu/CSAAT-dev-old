@@ -34,8 +34,6 @@ urlpatterns = [
     path('videos/<str:pk>/', sessionVideos, name='session-videos'),
     path('add-t-video/', addTVideo, name='add-t-video'),
     path('add-at-video/', addATVideo, name='add-at-video'),
-    path('update-t-video/<str:pk>/', updateTVideo, name='update-t-video'),
-    path('update-at-video/<str:pk>/', updateATVideo, name='update-at-video'),
     path('delete-video/<str:pk>/', deleteVideo, name='delete-video'),
     path('delete-videos/', deleteVideos, name='delete-videos'),
 
@@ -43,8 +41,6 @@ urlpatterns = [
     path('audio/<str:pk>/', sessionAudio, name='session-audio'),
     path('add-t-audio/', addTAudio, name='add-t-audio'),
     path('add-at-audio/', addATAudio, name='add-at-audio'),
-    # path('update-t-audio/<str:pk>/', updateTAudio, name='update-t-audio'),
-    # path('update-at-audio/<str:pk>/', updateATAudio, name='update-at-audio'),
     path('delete-audio/<str:pk>/', deleteAudio, name='delete-audio'),
     path('delete-audios/', deleteAudios, name='delete-audios'),
 

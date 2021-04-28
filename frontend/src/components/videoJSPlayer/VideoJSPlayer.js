@@ -23,8 +23,6 @@ class VideoJSPlayer extends Component {
   }
 
   componentDidMount() {
-    // console.log(this.props.first)
-
     // instantiate Video.js
     const videoJsOptions = {
       autoplay: false,
@@ -47,7 +45,6 @@ class VideoJSPlayer extends Component {
       this.videoNode,
       videoJsOptions,
       function onPlayerReady() {
-        // console.log("onPlayerReady", this);
       }
     );
 
@@ -61,7 +58,6 @@ class VideoJSPlayer extends Component {
     if (this.player) {
       this.player.dispose();
     }
-    // console.log('distroy', this.props.src)
     URL.revokeObjectURL(this.url);
   }
 

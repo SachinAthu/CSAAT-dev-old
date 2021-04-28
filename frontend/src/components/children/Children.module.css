@@ -93,11 +93,10 @@
   background-color: transparent;
   border-radius: 3px;
   padding: 0 4px;
-  margin-right: 15px;
 }
 
 .viewbtn svg {
-  fill: var(--color-primary);
+  fill: rgba(0, 0, 0, 0.6);
   transform: scale(0.6);
 }
 
@@ -110,7 +109,7 @@
 }
 
 .editbtn svg {
-  fill: var(--color-green);
+  fill: rgba(0, 0, 0, 0.6);
   transform: scale(0.8);
 }
 
@@ -132,7 +131,8 @@
   background-color: rgba(208, 210, 211, 0.5);
 }
 
-.empty_table {
+.empty_table,
+.loading_div {
   width: 100%;
   height: 30rem;
   display: flex;
@@ -148,6 +148,7 @@
   margin-top: 10px;
   margin-bottom: 30px;
 }
+
 
 
 

@@ -25,15 +25,6 @@ export const addVideo = (video) => (dispatch, getState) => {
   });
 };
 
-// update a video
-export const updateVideo = (video) => (dispatch, getState) => {
-  //console.log(video)
-  dispatch({
-    type: UPDATE_VIDEO,
-    data: video,
-  });
-};
-
 // delete a video
 export const deleteVideo = (id) => (dispatch, getState) => {
   dispatch({

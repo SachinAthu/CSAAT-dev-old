@@ -18,10 +18,10 @@ class Navbar extends Component {
   }
 
   componentDidMount() {
-    if(!this.props.currentNav && !localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_NAV)) {
-        this.props.setNav(NAV_LINKS.NAV_HOME)
-        localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_NAV, NAV_LINKS.NAV_HOME)
-    }
+    // if(!this.props.currentNav && !localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_NAV)) {
+    //     this.props.setNav(NAV_LINKS.NAV_HOME)
+    //     localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_NAV, NAV_LINKS.NAV_HOME)
+    // }
 
     const el = document.getElementsByClassName(`${classes.nav}`)[0]
     const links = el.getElementsByTagName('a')
@@ -44,8 +44,6 @@ class Navbar extends Component {
   }
 
   setNav = (link) => {
-    console.log(link)
-
     let l = ''
 
     switch(link.innerText){
@@ -67,7 +65,7 @@ class Navbar extends Component {
             l = NAV_LINKS.NAV_CAMERA_ANGLES
             break
         default:
-            console.log('Invalid switch input')
+            return
     }
 
     this.props.setNav(l)
@@ -173,7 +171,7 @@ class Navbar extends Component {
             </li>
 
             <li className={ link === NAV_LINKS.NAV_CAMERAS ? classes.nav_li_selected : null}>
-              <Link to="/">
+              <Link to="/cameras">
                 <svg
                   version="1.1"
                   xmlns="http://www.w3.org/2000/svg"
@@ -188,7 +186,7 @@ class Navbar extends Component {
             </li>
 
             <li className={ link === NAV_LINKS.NAV_CAMERA_ANGLES ? classes.nav_li_selected : null}>
-              <Link to="/">
+              <Link to="/camera_angles">
                 <svg
                   version="1.1"
                   xmlns="http://www.w3.org/2000/svg"

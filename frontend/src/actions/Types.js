@@ -46,14 +46,12 @@ export const UPDATE_ACTIVE_SESSION = 'UPDATE_ACTIVE_SESSION';
 // videos
 export const FETCH_VIDEOS = 'FETCH_VIDEOS';
 export const ADD_VIDEO = 'ADD_VIDEO';
-export const UPDATE_VIDEO = 'UPDATE_VIDEO';
 export const DELETE_VIDEO = 'DELETE_VIDEO';
 export const DELETE_VIDEOS = 'DELETE_VIDEOS';
 
 // audio
 export const FETCH_AUDIO = 'FETCH_AUDIO';
 export const ADD_AUDIO = 'ADD_AUDIO';
-export const UPDATE_AUDIO = 'UPDATE_AUDIO';
 export const DELETE_AUDIO = 'DELETE_AUDIO';
 
 // video play controls

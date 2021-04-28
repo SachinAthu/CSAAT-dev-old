@@ -9,7 +9,7 @@ import DragDropField from "../../layouts/dragDropField/DragDropField";
 import BtnSpinner from "../../layouts/spinners/btn/BtnSpinner";
 import { BASE_URL } from "../../../config";
 
-import { addVideo, updateVideo } from "../../../actions/VideoActions";
+import { addVideo } from "../../../actions/VideoActions";
 import { getCameras, getCameraAngles } from "../../../actions/CameraActions";
 import {
   CHILD_TYPES,
@@ -28,7 +28,6 @@ class AddVideo extends Component {
     getCameras: PropTypes.func.isRequired,
     getCameraAngles: PropTypes.func.isRequired,
     addVideo: PropTypes.func.isRequired,
-    updateVideo: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -52,24 +51,6 @@ class AddVideo extends Component {
   componentDidMount() {
     this.fetchCameras();
     this.fetchCameraAngles();
-
-    const vid = this.props.video;
-
-    if (vid) {
-      this.setState({
-        camera: vid.camera,
-        camera_angle: vid.camera_angle,
-        description: vid.description,
-        duration: vid.duration,
-      });
-
-      const cameraField = document.getElementById("video_add_form_camera");
-      const cameraAngleField = document.getElementById(
-        "video_add_form_camera_angle"
-      );
-      cameraField.value = vid.camera;
-      cameraAngleField.value = vid.camera_angle;
-    }
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,10 +61,9 @@ class AddVideo extends Component {
     axios
       .get(`${BASE_URL}/cameras/`)
       .then((res) => {
-        // console.log(res.data);
         this.props.getCameras(res.data);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {});
   };
 
   // fetch camera angle details fromdb for the input field
@@ -91,10 +71,9 @@ class AddVideo extends Component {
     axios
       .get(`${BASE_URL}/camera-angles/`)
       .then((res) => {
-        // console.log(res.data);
         this.props.getCameraAngles(res.data);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {});
   };
 
   // get the duration of selected video file
@@ -118,23 +97,13 @@ class AddVideo extends Component {
   resetForm = () => {
     const v = this.props.video;
 
-    if (v) {
-      this.setState({
-        camera: v.camera ? v.camera : "",
-        camera_angle: v.camera_angle ? v.camera_angle : "",
-        description: v.description ? v.description : "",
-        video: v.video ? v.video : "",
-        name: v.name ? v.name : "",
-      });
-    } else {
-      this.setState({
-        camera: "",
-        camera_angle: "",
-        description: "",
-        video: "",
-        name: "",
-      });
-    }
+    this.setState({
+      camera: "",
+      camera_angle: "",
+      description: "",
+      video: "",
+      name: "",
+    });
 
     const errorFields = document.getElementsByClassName(
       `${classes.fieldError}`
@@ -156,7 +125,6 @@ class AddVideo extends Component {
   };
 
   checkSelectField = (inputVal, field, errorField, errorText) => {
-    console.log(inputVal);
     if (
       !inputVal ||
       inputVal === "Select the camera.." ||
@@ -174,11 +142,11 @@ class AddVideo extends Component {
     if (!file || file === "") {
       this.showError(null, errorField, "Video is required");
       return false;
-    } else if (file.type.toLowerCase() !== "video/mp4") {
+    } else if (file.type !== "video/mp4") {
       this.showError(null, errorField, "Video must be .mp4");
       return false;
     } else {
-      this.removeError(errorField);
+      this.removeError(null, errorField);
       return true;
     }
   };
@@ -245,35 +213,24 @@ class AddVideo extends Component {
 
   showFailed = (msg) => {
     const resSpan = document.getElementById("video_add_failed");
-    resSpan.innerHTML = msg;
+    if(resSpan){
+      resSpan.innerHTML = msg;
+    } 
   };
 
   // upload video
   upload = async (formData) => {
     let url = "";
-    let method = "";
     if (
       localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE) === CHILD_TYPES.TYPICAL
     ) {
-      if (this.props.video) {
-        url = `${BASE_URL}/update-t-video/${this.props.video.id}/`;
-        method = "PUT";
-      } else {
-        url = `${BASE_URL}/add-t-video/`;
-        method = "POST";
-      }
+      url = `${BASE_URL}/add-t-video/`;
     } else {
-      if (this.props.video) {
-        url = `${BASE_URL}/update-at-video/${this.props.video.id}/`;
-        method = "PUT";
-      } else {
-        url = `${BASE_URL}/add-at-video/`;
-        method = "POST";
-      }
+      url = `${BASE_URL}/add-at-video/`;
     }
 
     axios(url, {
-      method: method,
+      method: 'POST',
       data: formData,
       headers: {
         "Content-Type": "multipart/form-data",
@@ -288,19 +245,12 @@ class AddVideo extends Component {
       cancelToken: this.cancelTokenSource.token,
     })
       .then((res) => {
-        console.log("video uploaded", res.data);
-        if (this.props.video) {
-          this.props.updateVideo(res.data);
-        } else {
-          this.props.addVideo(res.data);
-        }
-
+        this.props.addVideo(res.data);
         this.setState({ loading: false, progressBar: false });
         this.props.close();
       })
       .catch((thrown) => {
         if (axios.isCancel(thrown)) {
-          console.log("Uploading canceled", thrown.message);
           this.showFailed("Uploading cancelled!");
         } else {
           // show result fail
@@ -364,7 +314,6 @@ class AddVideo extends Component {
   onChange = (e) => {
     switch (e.target.name) {
       case "camera":
-        console.log(e.target.value);
         var field = document.getElementById("video_add_form_camera");
         var errorField = document.getElementById("video_add_form_camera_error");
         this.checkSelectField(
@@ -396,7 +345,6 @@ class AddVideo extends Component {
       default:
         return;
     }
-    console.log(e.target.value);
     this.setState({
       [e.target.name]: e.target.value,
     });
@@ -405,7 +353,12 @@ class AddVideo extends Component {
   // trigger when fileuploadfield (DragDropField) return value changed
   onVideoFieldChange = (file) => {
     const videoE = document.getElementById("video_add_form_video_error");
-    this.checkVideoField(file, videoE);
+    var r = this.checkVideoField(file, videoE);
+    if(r) {
+      this.setState({ videoFieldError: false })
+    }else{
+      this.setState({ videoFieldError: true })
+    }
     this.setState({
       video: file,
       name: file.name,
@@ -427,7 +380,7 @@ class AddVideo extends Component {
     return (
       <ModalFrame close={this.props.close}>
         <div className={classes.container}>
-          <h4>{this.props.video ? "Edit Video" : "New Video"}</h4>
+          <h4>New Video</h4>
 
           <form className={classes.form} onSubmit={this.onSubmit.bind(this)}>
             <div className={classes.formgroup}>
@@ -571,7 +524,7 @@ class AddVideo extends Component {
                 className={`.button_primary ${classes.submitbtn}`}
               >
                 {loading ? <BtnSpinner /> : null}
-                {this.props.video ? "EDIT" : "ADD"}
+                ADD
               </button>
             </div>
           </form>
@@ -602,5 +555,4 @@ export default connect(mapStateToProps, {
   getCameras,
   getCameraAngles,
   addVideo,
-  updateVideo,
 })(AddVideo);

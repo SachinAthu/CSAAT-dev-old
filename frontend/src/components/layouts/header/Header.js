@@ -8,9 +8,7 @@ import { CHILD_TYPES } from "../../../actions/Types";
 
 const Header = (props) => {
 
-  const signout = () => {
-    console.log('signout')
-  }
+  const signout = () => {}
 
   return (
     <header id="app_header" className={classes.header}>

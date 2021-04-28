@@ -38,13 +38,11 @@ const DeleteConformPopup = (props) => {
     for (let i = 0; i < profiles.length; i++) {
       try {
         let res = await axios.delete(`${url}/${profiles[i].id}`);
-        console.log(res.data);
         props.deleteChild(profiles[i].id);
         setIsError(false)
 
       } catch (err) {
         if (err) {
-          console.log("Profile deletion failed", err);
           setDeleting(true)
           setIsError(true)
         } 
@@ -52,20 +50,16 @@ const DeleteConformPopup = (props) => {
     }
     
     setDeleting(false);
-    setTimeout(() => {
-      props.close();
-    }, 2000);
+    props.close();
   };
 
   const deleteSession = async (sessionId = props.data) => {
-    // console.log(props.data)
     setDeleting(true);
 
     try {
       const res = await axios.delete(
         `${BASE_URL}/delete-session/${sessionId}`
       );
-      console.log(res.data);
       setDeleting(false);
       setIsError(false)
 
@@ -76,15 +70,12 @@ const DeleteConformPopup = (props) => {
       // props.setActiveSessionFirst()
     } catch (err) {
       if (err){
-        console.log("Session deletion failed", err);
         setIsError(true)
       } 
     }
     
     setDeleting(false);
-    setTimeout(() => {
-      props.close();
-    }, 2000);
+    props.close();
   };
 
   const deleteVideo = async (videoId = props.data) => {
@@ -94,7 +85,6 @@ const DeleteConformPopup = (props) => {
       const res = await axios.delete(
         `${BASE_URL}/delete-video/${videoId}`
       );
-      console.log("Video deleted", res.data);
         setIsError(false)
 
       // remove from redux store
@@ -102,15 +92,12 @@ const DeleteConformPopup = (props) => {
 
     } catch (err) {
       if (err) {
-        console.log("Video deletion failed", err);
         setIsError(true)
       }
     }
     
     setDeleting(false);
-    setTimeout(() => {
-      props.close();
-    }, 2000);
+    props.close();
 
   };
 
@@ -121,7 +108,6 @@ const DeleteConformPopup = (props) => {
       const res = await axios.delete(
         `${BASE_URL}/delete-audio/${audioId}/`
       );
-      console.log("Audio deleted", res.data);
         setIsError(false)
 
       // remove from redux store
@@ -129,16 +115,12 @@ const DeleteConformPopup = (props) => {
 
     } catch (err) {
       if (err) {
-        console.log("Audio deletion failed", err);
         setIsError(true)
       }
     }
     
     setDeleting(false);
-    setTimeout(() => {
-      props.close();
-    }, 2000);
-
+    props.close();
   };
 
 
@@ -160,7 +142,7 @@ const DeleteConformPopup = (props) => {
         deleteAudio();
         break;
       default:
-        console.log("Invalid switch case input");
+        return
     }
   };
 

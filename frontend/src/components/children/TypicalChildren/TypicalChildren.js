@@ -8,19 +8,24 @@ import classes from "../Children.module.css";
 import Breadcrumbs from "../../layouts/breadcrumbs/Breadcrumbs";
 import AddChild from "../../modals/addChild/AddChild";
 import EmptySVG from "../../../assets/svg/empty.svg";
-import { customStyles } from "../DatatableStyles";
+import { customStyles } from "../../DatatableStyles";
 import DeleteConfirmPopup from "../../modals/deleteConfirmAlert/DeleteConfirmAlert";
 import { BASE_URL } from "../../../config";
+import ErrorBoundry from "../../ErrorBoundry";
+import PageSpinner from "../../layouts/spinners/page/PageSpinner";
 
 import { getChildren, deleteChildren } from "../../../actions/ChildActions";
 import { deleteSessions } from "../../../actions/SessionActions";
 import { deleteVideos } from "../../../actions/VideoActions";
+import { setNav } from "../../../actions/NavigationActions";
 import {
   CHILD_TYPES,
   CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD,
   CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD_NAME,
+  CSAAT_VIDEO_UPLOAD_ACTIVE_NAV,
   CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION,
   CSAAT_VIDEO_UPLOAD_CHILDTYPE,
+  NAV_LINKS,
 } from "../../../actions/Types";
 
 class TypicalChildren extends Component {
@@ -30,6 +35,7 @@ class TypicalChildren extends Component {
     deleteVideos: PropTypes.func.isRequired,
     deleteSessions: PropTypes.func.isRequired,
     deleteChildren: PropTypes.func.isRequired,
+    setNav: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -43,6 +49,7 @@ class TypicalChildren extends Component {
       nextLink: null,
       prevLink: null,
       isSearching: false,
+      loading: false,
     };
     this.afterReloadFetch = false;
   }
@@ -53,6 +60,13 @@ class TypicalChildren extends Component {
     this.props.deleteSessions();
     this.props.deleteVideos();
     localStorage.removeItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION);
+
+    // set navigation link
+    this.props.setNav(NAV_LINKS.NAV_TYPICAL_CHILD);
+    localStorage.setItem(
+      CSAAT_VIDEO_UPLOAD_ACTIVE_NAV,
+      NAV_LINKS.NAV_TYPICAL_CHILD
+    );
 
     // store child type on localstorage
     localStorage.setItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE, CHILD_TYPES.TYPICAL);
@@ -71,7 +85,10 @@ class TypicalChildren extends Component {
   ///////////////////////////////////////////////
   // set on scroll event
   trackScrolling = () => {
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 120) {
+    if (
+      window.innerHeight + window.scrollY >=
+      document.body.offsetHeight - 120
+    ) {
       // fetch more records
       if (!this.state.isSearching) {
         this.fetchChildren();
@@ -86,29 +103,31 @@ class TypicalChildren extends Component {
     } else {
       url = `${BASE_URL}/t-children/`;
     }
+    this.setState({ loading: true })
     axios
       .get(url)
       .then((res) => {
-        // console.log(res.data.results);
         const data = res.data;
         this.props.getChildren(data.results);
         this.setState({
           count: data.count,
           prevLink: data.previous,
           nextLink: data.next,
+          loading: false
         });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        this.setState({ loading: false })
+      });
   };
 
   filterChildren = (val) => {
     axios
       .get(`${BASE_URL}/t-f-children/?search=${val}`)
       .then((res) => {
-        // console.log(res.data);
         this.props.getChildren(res.data);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {});
   };
 
   createDataTable = () => {
@@ -276,7 +295,6 @@ class TypicalChildren extends Component {
   };
 
   closeDeleteConfirmPopup = (res) => {
-    console.log(res);
     if (res) {
       this.setState({ selectedRows: [] });
     }
@@ -288,7 +306,6 @@ class TypicalChildren extends Component {
   /////////////////////////////////////////////////////
   handleRowSelect = (state) => {
     // You can use setState or dispatch with something like Redux so we can use the retrieved data
-    console.log("Selected Rows: ", state.selectedRows);
     this.setState({
       selectedRows: state.selectedRows,
     });
@@ -312,8 +329,6 @@ class TypicalChildren extends Component {
   };
 
   deleteChildHandler = (child) => {
-    // console.log(id);
-
     // open delete confirm box
     let children = [...this.state.selectedRows];
 
@@ -330,7 +345,6 @@ class TypicalChildren extends Component {
   };
 
   toChildHandler = (child) => {
-    // console.log(child);
     localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD, child.id);
     localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD_NAME, child.name);
     this.props.history.push({
@@ -392,20 +406,30 @@ class TypicalChildren extends Component {
             </button>
           </div>
 
-          {this.props.children.length === 0 ? (
-            <div className={`${classes.empty_table}`}>
-              <img src={EmptySVG} alt="No records image" />
-              <h6>There are no records available</h6>
+          {this.state.loading ? (
+            <div className={classes.loading_div}>
+              <PageSpinner />
             </div>
           ) : (
-            <div id="typical_children_table" className={`${classes.table}`}>
-              {table}
-            </div>
+            <Fragment>
+              {this.props.children.length === 0 ? (
+                <div className={`${classes.empty_table}`}>
+                  <img src={EmptySVG} alt="No records image" />
+                  <h6>There are no records available</h6>
+                </div>
+              ) : (
+                <div id="typical_children_table" className={`${classes.table}`}>
+                  {table}
+                </div>
+              )}
+            </Fragment>
           )}
         </div>
 
         {addOrEdit ? (
-          <AddChild close={this.closeAddingWindow} child={editChild} />
+          <ErrorBoundry>
+            <AddChild close={this.closeAddingWindow} child={editChild} />
+          </ErrorBoundry>
         ) : null}
 
         {deleting ? (
@@ -431,4 +455,5 @@ export default connect(mapStateToProps, {
   deleteVideos,
   deleteSessions,
   deleteChildren,
+  setNav,
 })(TypicalChildren);

@@ -24,18 +24,12 @@ font-family: 'Raleway', sans-serif;
   --color-primary: rgb(0, 156, 234);
   --color-primary-light: rgba(0, 156, 234, 0.2);
   --color-primary-dark: #008bd1;
-  --color-secondary: rgb(244, 246, 247);
-  --color-secondary-dark: rgb(208, 210, 211);
-
-  --color-warning: #ffc107;
+  --color-secondary: rgba(0, 0, 0. 0.3);
+  --color-secondary-dark: rgba(0, 0, 0, 0.4);
+  --color-black: #000;
   --color-danger: rgb(220, 53, 69);
   --color-danger-light: rgb(255, 69, 0);
-  --color-green: rgba(40, 167, 70, 1);
-  --color-green-light: rgba(40, 167, 70, 0.1);
-  --color-green-dark: #269b41;
-  --color-teal: #20c997;
-  --color-info: rgb(23, 162, 184);
-  --color-info-dark: rgb(21, 147, 167);
+
   --color-input: #495057;
 
   --breakpoint-xs: 0;

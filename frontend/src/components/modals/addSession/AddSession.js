@@ -56,7 +56,6 @@ function AddSession(props) {
   ////////////////////// event handlers ////////////////////////////
   //////////////////////////////////////////////////////////////////
   const onChangeHandler = (e) => {
-    // console.log(e.target.value)
     // validation
     const rDate_f = document.getElementById("session_add_form_date");
     const rDate_e = document.getElementById("rDate_error");
@@ -97,7 +96,6 @@ function AddSession(props) {
       },
     })
       .then((res) => {
-        console.log("session created", res.data);
         setLoading(false);
         props.addSession(res.data);
         props.setActiveSession(res.data);
@@ -108,7 +106,6 @@ function AddSession(props) {
         props.close();
       })
       .catch((err) => {
-        console.log(err);
         showFailed();
       });
 
