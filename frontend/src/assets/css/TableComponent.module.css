@@ -69,6 +69,40 @@
   padding: 20px 15px;
   box-shadow: 0 5px 29px 0 rgba(0, 0, 0, 0.1);
   border-radius: 3px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.table_info_refresh{
+  max-width: 500px;
+  margin-bottom: 10px;
+  align-self: flex-end;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.table_info_refresh > span{
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.table_info_refresh > button{
+  background-color: transparent;
+  padding: 5px 10px;
+  margin-left: 5px;
+}
+
+.table_info_refresh > button:hover{
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.table_info_refresh > button > svg{
+  transform: scale(1);
+  fill: rgba(0, 0, 0, 0.5);
 }
 
 .viewDocbtn {
@@ -91,7 +125,6 @@
 .viewbtn {
   height: 30px;
   background-color: transparent;
-  border-radius: 3px;
   padding: 0 4px;
 }
 
@@ -127,7 +160,7 @@
 
 .viewbtn:hover,
 .editbtn:hover,
-.removebtn:hover{
+.removebtn:hover {
   background-color: rgba(208, 210, 211, 0.5);
 }
 
@@ -140,6 +173,7 @@
   justify-content: center;
   align-items: center;
   background-color: #fff;
+  box-shadow: 0 5px 29px 0 rgba(0, 0, 0, 0.1);
   border-radius: 3px;
 }
 
@@ -148,7 +182,3 @@
   margin-top: 10px;
   margin-bottom: 30px;
 }
-
-
-
-

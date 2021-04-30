@@ -4,7 +4,7 @@ import axios from "axios";
 import { connect } from "react-redux";
 import DataTable from "react-data-table-component";
 
-import classes from "../Children.module.css";
+import classes from "../../../assets/css/TableComponent.module.css";
 import Breadcrumbs from "../../layouts/breadcrumbs/Breadcrumbs";
 import AddChild from "../../modals/addChild/AddChild";
 import EmptySVG from "../../../assets/svg/empty.svg";
@@ -51,7 +51,7 @@ class TypicalChildren extends Component {
       isSearching: false,
       loading: false,
     };
-    this.afterReloadFetch = false;
+    this.lastClick = 0;
   }
 
   componentDidMount() {
@@ -95,15 +95,28 @@ class TypicalChildren extends Component {
       }
     }
   };
-
-  fetchChildren = () => {
-    let url = "";
-    if (this.state.nextLink) {
-      url = this.state.nextLink;
-    } else {
-      url = `${BASE_URL}/t-children/`;
+  
+  fetchChildren = (refresh = false) => {
+    var delay = 20;
+    if (this.lastClick >= (Date.now() - delay)){
+      return;
     }
-    this.setState({ loading: true })
+    this.lastClick = Date.now()
+
+    let url = "";
+    if(refresh) {
+      this.props.deleteChildren()
+      url = `${BASE_URL}/t-children/`;
+    }else {
+      if (this.state.nextLink) {
+        url = this.state.nextLink;
+      } else {
+        url = `${BASE_URL}/t-children/`;
+      }
+    }
+    if(this.props.children.length == 0) {
+      this.setState({ loading: true });
+    }
     axios
       .get(url)
       .then((res) => {
@@ -113,11 +126,11 @@ class TypicalChildren extends Component {
           count: data.count,
           prevLink: data.previous,
           nextLink: data.next,
-          loading: false
+          loading: false,
         });
       })
       .catch((err) => {
-        this.setState({ loading: false })
+        this.setState({ loading: false });
       });
   };
 
@@ -305,7 +318,6 @@ class TypicalChildren extends Component {
   ////////////////// event listeners //////////////////
   /////////////////////////////////////////////////////
   handleRowSelect = (state) => {
-    // You can use setState or dispatch with something like Redux so we can use the retrieved data
     this.setState({
       selectedRows: state.selectedRows,
     });
@@ -352,7 +364,7 @@ class TypicalChildren extends Component {
     });
   };
 
-  AddChildHandler = () => {
+  addChildHandler = () => {
     this.setState({
       addOrEdit: true,
     });
@@ -366,13 +378,7 @@ class TypicalChildren extends Component {
   };
 
   render() {
-    const {
-      searchVal,
-      addOrEdit,
-      editChild,
-      deleting,
-      selectedRows,
-    } = this.state;
+    const { addOrEdit, editChild, deleting, selectedRows } = this.state;
 
     const table = this.createDataTable();
     const sub_links = [{ name: "Home", link: "/" }];
@@ -400,7 +406,7 @@ class TypicalChildren extends Component {
 
             <button
               className={`button_primary ${classes.addbtn}`}
-              onClick={this.AddChildHandler}
+              onClick={this.addChildHandler}
             >
               New Child
             </button>
@@ -419,6 +425,24 @@ class TypicalChildren extends Component {
                 </div>
               ) : (
                 <div id="typical_children_table" className={`${classes.table}`}>
+                  <div className={classes.table_info_refresh}>
+                    <span>
+                      Showing {this.props.children.length} out of {this.state.count} records
+                    </span>
+                    <button onClick={this.fetchChildren.bind(this, true)}>
+                      <svg
+                        version="1.1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                      >
+                        <title>Refresh</title>
+                        <path d="M12 18v-3l3.984 3.984-3.984 4.031v-3q-3.281 0-5.648-2.367t-2.367-5.648q0-2.344 1.266-4.266l1.453 1.453q-0.703 1.266-0.703 2.813 0 2.484 1.758 4.242t4.242 1.758zM12 3.984q3.281 0 5.648 2.367t2.367 5.648q0 2.344-1.266 4.266l-1.453-1.453q0.703-1.266 0.703-2.813 0-2.484-1.758-4.242t-4.242-1.758v3l-3.984-3.984 3.984-4.031v3z"></path>
+                      </svg>
+                    </button>
+                  </div>
+                  
                   {table}
                 </div>
               )}

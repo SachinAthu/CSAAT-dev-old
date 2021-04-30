@@ -60,9 +60,15 @@ export const TOOGLE_PLAY_STATE = 'TOOGLE_PLAY_STATE';
 
 // camera
 export const FETCH_CAMERAS = 'FETCH_CAMERAS';
+export const ADD_CAMERA = 'ADD_CAMERA';
+export const DELETE_CAMERA = 'DELETE_CAMERA';
+export const DELETE_CAMERAS = 'DELETE_CAMERAS';
 
 // camera angles
 export const FETCH_CAMERA_ANGLES = 'FETCH_CAMERA_ANGLES';
+export const ADD_CAMERA_ANGLE = 'ADD_CAMERA_ANGLE';
+export const DELETE_CAMERA_ANGLE = 'DELETE_CAMERA_ANGLE';
+export const DELETE_CAMERA_ANGLES = 'DELETE_CAMERA_ANGLES';
 
 // navigations
 export const NAV_LINKS = {

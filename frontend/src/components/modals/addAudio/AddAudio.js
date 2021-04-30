@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import axios from "axios";
 
-import classes from "./AddAudio.module.css";
+import classes from "../../../assets/css/AddModal.module.css";
 import ModalFrame from "../modalFrame/ModalFrame";
 import { BASE_URL } from "../../../config";
 import BtnSpinner from "../../layouts/spinners/btn/BtnSpinner";
@@ -224,7 +224,7 @@ class AddAudio extends Component {
 
     return (
       <ModalFrame close={this.props.close}>
-        <div className={classes.container}>
+        <div className={classes.container} style={{width: '30rem'}}>
           <h4>New Audio</h4>
 
           <form className={classes.form} onSubmit={this.onSubmitHandler}>

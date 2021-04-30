@@ -90,8 +90,7 @@ class Sessions(models.Model):
 class Cameras(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
     resolution = models.CharField(max_length=100, blank=True, null=True)
-    megapixels = models.DecimalField(
-        max_digits=10, decimal_places=0, blank=True, null=True)
+    megapixels = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return self.name

@@ -3,14 +3,15 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import axios from "axios";
 
-import classes from "./AddVideo.module.css";
+import classes from "../../../assets/css/AddModal.module.css";
 import ModalFrame from "../modalFrame/ModalFrame";
 import DragDropField from "../../layouts/dragDropField/DragDropField";
 import BtnSpinner from "../../layouts/spinners/btn/BtnSpinner";
 import { BASE_URL } from "../../../config";
 
 import { addVideo } from "../../../actions/VideoActions";
-import { getCameras, getCameraAngles } from "../../../actions/CameraActions";
+import { getCameras } from "../../../actions/CameraActions";
+import { getCameraAngles } from '../../../actions/CameraAngleActions'
 import {
   CHILD_TYPES,
   CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD,
@@ -24,7 +25,7 @@ axios.defaults.xsrfHeaderName = "X-CSRFToken";
 class AddVideo extends Component {
   static propTypes = {
     cameras: PropTypes.array,
-    camera_angles: PropTypes.array,
+    cameraAngles: PropTypes.array,
     getCameras: PropTypes.func.isRequired,
     getCameraAngles: PropTypes.func.isRequired,
     addVideo: PropTypes.func.isRequired,
@@ -34,7 +35,7 @@ class AddVideo extends Component {
     super(props);
     this.state = {
       camera: "",
-      camera_angle: "",
+      cameraAngle: "",
       description: "",
       video: "",
       name: "",
@@ -99,7 +100,7 @@ class AddVideo extends Component {
 
     this.setState({
       camera: "",
-      camera_angle: "",
+      cameraAngle: "",
       description: "",
       video: "",
       name: "",
@@ -152,7 +153,7 @@ class AddVideo extends Component {
   };
 
   checkAllFields = () => {
-    const { camera, camera_angle, description, video } = this.state;
+    const { camera, cameraAngle, description, video } = this.state;
 
     // camera
     const camera_f = document.getElementById("video_add_form_camera");
@@ -164,17 +165,17 @@ class AddVideo extends Component {
       "Camera is required"
     );
 
-    // camera_angle
-    const camera_angle_f = document.getElementById(
-      "video_add_form_camera_angle"
+    // cameraAngle
+    const cameraAngle_f = document.getElementById(
+      "video_add_form_cameraAngle"
     );
-    const camera_angle_e = document.getElementById(
-      "video_add_form_camera_angle_error"
+    const cameraAngle_e = document.getElementById(
+      "video_add_form_cameraAngle_error"
     );
     const r2 = this.checkSelectField(
-      camera_angle,
-      camera_angle_f,
-      camera_angle_e,
+      cameraAngle,
+      cameraAngle_f,
+      cameraAngle_e,
       "Camera angle is required"
     );
 
@@ -269,7 +270,7 @@ class AddVideo extends Component {
     const {
       name,
       camera,
-      camera_angle,
+      cameraAngle,
       description,
       video,
       duration,
@@ -297,7 +298,7 @@ class AddVideo extends Component {
     );
     formData.append("description", description);
     formData.append("camera", camera);
-    formData.append("camera_angle", camera_angle);
+    formData.append("camera_angle", cameraAngle);
     formData.append("name", name);
     formData.append("video", video);
     formData.append("file_type", video.type);
@@ -324,10 +325,10 @@ class AddVideo extends Component {
         );
         break;
 
-      case "camera_angle":
-        var field = document.getElementById("video_add_form_camera_angle");
+      case "cameraAngle":
+        var field = document.getElementById("video_add_form_cameraAngle");
         var errorField = document.getElementById(
-          "video_add_form_camera_angle_error"
+          "video_add_form_cameraAngle_error"
         );
         var r = this.checkSelectField(
           e.target.value,
@@ -343,7 +344,6 @@ class AddVideo extends Component {
         break;
 
       default:
-        return;
     }
     this.setState({
       [e.target.name]: e.target.value,
@@ -368,18 +368,18 @@ class AddVideo extends Component {
   render() {
     const {
       camera,
-      camera_angle,
+      cameraAngle,
       description,
       video,
       name,
       loading,
       progress,
     } = this.state;
-    const { cameras, camera_angles } = this.props;
+    const { cameras, cameraAngles } = this.props;
 
     return (
       <ModalFrame close={this.props.close}>
-        <div className={classes.container}>
+        <div className={classes.container} style={{width: '32rem'}}>
           <h4>New Video</h4>
 
           <form className={classes.form} onSubmit={this.onSubmit.bind(this)}>
@@ -412,19 +412,19 @@ class AddVideo extends Component {
             </div>
 
             <div className={classes.formgroup}>
-              <label htmlFor="video_add_form_camera_angle">CAMERA ANGLE</label>
+              <label htmlFor="video_add_form_cameraAngle">CAMERA ANGLE</label>
 
-              {camera_angles.length > 0 ? (
+              {cameraAngles.length > 0 ? (
                 <Fragment>
                   <select
-                    name="camera_angle"
-                    id="video_add_form_camera_angle"
+                    name="cameraAngle"
+                    id="video_add_form_cameraAngle"
                     onChange={this.onChange}
                   >
                     <option value={null} defaultChecked={true}>
                       Select the camera angle..
                     </option>
-                    {camera_angles.map((c, i) => (
+                    {cameraAngles.map((c, i) => (
                       <option key={i} value={c.id}>
                         {c.name}
                       </option>
@@ -436,7 +436,7 @@ class AddVideo extends Component {
               )}
 
               <span
-                id="video_add_form_camera_angle_error"
+                id="video_add_form_cameraAngle_error"
                 className={classes.fieldError}
               ></span>
             </div>
@@ -548,7 +548,7 @@ const mapStateToProps = (state) => ({
   childType: state.childReducer.childType,
   activeSession: state.sessionReducer.activeSession,
   cameras: state.cameraReducer.cameras,
-  camera_angles: state.cameraReducer.camera_angles,
+  cameraAngles: state.cameraAngleReducer.cameraAngles,
 });
 
 export default connect(mapStateToProps, {

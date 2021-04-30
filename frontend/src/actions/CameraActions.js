@@ -1,4 +1,4 @@
-import {FETCH_CAMERAS, FETCH_CAMERA_ANGLES} from './Types'
+import {FETCH_CAMERAS, ADD_CAMERA, DELETE_CAMERA, DELETE_CAMERAS} from './Types'
 
 // get all cameras
 export const getCameras = (cameras) => (dispatch, getState) => {
@@ -8,10 +8,27 @@ export const getCameras = (cameras) => (dispatch, getState) => {
     })
 }
 
-// get all camera angles
-export const getCameraAngles = (camera_angles) => (dispatch, getState) => {
+// add a camera
+export const addCamera = (camera) => (dispatch, getState) => {
     dispatch({
-        type: FETCH_CAMERA_ANGLES,
-        data: camera_angles
+        type: ADD_CAMERA,
+        data: camera
     })
 }
+
+// delete a camera
+export const deleteCamera = (id) => (dispatch, getState) => {
+    dispatch({
+        type: DELETE_CAMERA,
+        data: id
+    })
+}
+
+// delete all cameras
+export const deleteCameras = () => (dispatch, getState) => {
+    dispatch({
+        type: DELETE_CAMERAS,
+    })
+}
+
+

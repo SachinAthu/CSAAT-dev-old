@@ -8,6 +8,7 @@ from .cameras_views import *
 from .videos_views import *
 from .audio_views import *
 from .video_clips_views import *
+from .camera_angles_views import *
 
 @api_view(['GET'])
 def welcome(request):

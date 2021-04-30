@@ -1,8 +1,7 @@
-import { FETCH_CAMERAS, FETCH_CAMERA_ANGLES } from "../actions/Types";
+import { FETCH_CAMERAS, ADD_CAMERA, DELETE_CAMERA, DELETE_CAMERAS } from "../actions/Types";
 
 const initialState = {
   cameras: [],
-  camera_angles: [],
 };
 
 export default function (state = initialState, action) {
@@ -13,11 +12,25 @@ export default function (state = initialState, action) {
         cameras: action.data,
       };
 
-    case FETCH_CAMERA_ANGLES:
-      return {
-        ...state,
-        camera_angles: action.data,
-      };
+      case ADD_CAMERA:
+        let c = [...state.cameras];
+        c.unshift(action.data);
+        return {
+          ...state,
+          cameras: c,
+        };
+  
+      case DELETE_CAMERA:
+        return {
+          ...state,
+          cameras: state.cameras.filter((camera) => camera.id !== action.data),
+        };
+  
+      case DELETE_CAMERAS:
+        return {
+          ...state,
+          cameras: [],
+        };
 
     default:
       return state;

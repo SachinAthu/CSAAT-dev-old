@@ -3,14 +3,16 @@ import ChildReducer from './ChildReducer'
 import SessionReducer from './SessionReducer'
 import VideoReducer from './VideoReducer'
 import AudioReducer from './AudioReducer'
-import CameraReducer from './CameraReducer'
 import NavigationReducer from './NavigationReducer'
+import CameraReducer from './CameraReducer'
+import CameraAngleReducer from './CameraAngleReducer'
 
 export default combineReducers({
     childReducer: ChildReducer,
     sessionReducer: SessionReducer,
     videoReducer: VideoReducer,
-    cameraReducer: CameraReducer,
     audioReducer: AudioReducer,
     navigationReducer: NavigationReducer,
+    cameraReducer: CameraReducer,
+    cameraAngleReducer: CameraAngleReducer,
 })

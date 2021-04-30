@@ -17,6 +17,7 @@ class VideoPlayer extends Component {
     super(props);
     this.state = {
       modal: false,
+      loaded: false
     };
   }
 
@@ -39,7 +40,7 @@ class VideoPlayer extends Component {
 
   // play video on mouse hover
   onMouseEnterHandler = () => {
-    if (!this.props.video.video) {
+    if (!this.props.video.video || !this.state.loaded) {
       return;
     }
     if (
@@ -70,6 +71,10 @@ class VideoPlayer extends Component {
     }
   };
 
+  onLoadedDataHandler = () => {
+    this.setState({ loaded: true })
+  }
+
   render() {
     return (
       <div className={classes.container}>
@@ -84,9 +89,13 @@ class VideoPlayer extends Component {
           autoPlay={false}
           controls={false}
           muted={true}
-          src={"http://localhost:8000" + this.props.video.video}
-          type={this.props.video.file_type}
-        ></video>
+        >
+          <source 
+            src={"http://localhost:8000" + this.props.video.video} 
+            type={this.props.video.file_type}
+          ></source>
+          Video playing error.
+        </video>
 
         {this.state.modal ? (
           <SingleVideoPlayerModal

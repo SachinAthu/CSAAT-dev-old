@@ -50,13 +50,10 @@ export default function (state = initialState, action) {
 
     case DELETE_SESSION:
       const ts = [...state.sessions];
-      const fts = ts.filter((session) => session.id != action.data);
-      localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION, fts[0].id)
 
       return {
         ...state,
-        sessions: fts,
-        activeSession: fts[0],
+        sessions: ts.filter((session) => session.id != action.data),
       };
 
     case DELETE_SESSIONS:
@@ -74,6 +71,7 @@ export default function (state = initialState, action) {
     case SET_ACTIVE_SESSION_FIRST:
       var s = [...state.sessions];
       localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION, s[0].id)
+
       return {
         ...state,
         activeSession: s[0]

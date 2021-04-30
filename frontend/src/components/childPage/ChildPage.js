@@ -165,6 +165,7 @@ class ChildPage extends Component {
   // change selected session when dropdown value change
   onChangeSelectHandler = (e) => {
     this.fetchVideos(e.target.value);
+    this.fetchAudio(e.target.value)
     const session = this.props.sessions.filter(
       (s, i) => s.id == e.target.value
     );
@@ -249,7 +250,7 @@ class ChildPage extends Component {
               </ErrorBoundry>
             </div>
           ) : (
-            <div className={classes.novideo}>
+            <div className={classes.nosession}>
               <img src={EmptySVG} alt="No Sessions Image" />
               <h6>There are no Sessions available</h6>
             </div>
