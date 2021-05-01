@@ -4,7 +4,7 @@ import { Link, NavLink } from "react-router-dom";
 import { connect } from 'react-redux'
 
 import classes from "./Navbar.module.css";
-import logo from "../../../assets/svg/logo.svg";
+import logo from "../../../assets/img/logo.png";
 import { CHILD_TYPES, CSAAT_VIDEO_UPLOAD_ACTIVE_NAV, NAV_LINKS } from "../../../actions/Types";
 import { setNav } from '../../../actions/NavigationActions'
 
@@ -71,16 +71,22 @@ class Navbar extends Component {
     this.props.setNav(l)
     localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_NAV, l)
 
+    this.removeSelected()
+    link.classList.add(`${classes.nav_a_selected}`)
+  }
+
+  removeSelected = () => {
     const el = document.getElementsByClassName(`${classes.nav}`)[0]
+    if(!el) return
     const links = el.getElementsByTagName('a')
     for(let i = 0; i < links.length; i++) {
         links[i].classList.remove(`${classes.nav_a_selected}`)
     }
-    link.classList.add(`${classes.nav_a_selected}`)
   }
 
   render() {
     let link = null
+    this.removeSelected()
     if(this.props.currentNav) {
         link = this.props.currentNav
     }else {
@@ -90,11 +96,11 @@ class Navbar extends Component {
     return (
       <div className={classes.container}>
         <div className={classes.logo}>
-          <img src={logo} alt="logo" className={`img-fluid`} />
+          <img src={logo} alt="logo" />
 
           <div className={classes.logo_1}>
-            <span className={classes.logo_1_1}>CSAAT</span>
-            <span className={classes.logo_1_2}>Video Uploader</span>
+            <h1 className={classes.logo_1_1}>CSAAT</h1>
+            <h4 className={classes.logo_1_2}>Video Uploader</h4>
           </div>
         </div>
 

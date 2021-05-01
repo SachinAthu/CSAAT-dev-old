@@ -50,9 +50,9 @@
 .backwardBtn,
 .forwardBtn {
   background: transparent;
-  padding: 12px;
+  padding: 8px 10px;
   border-radius: 5px;
-  margin-top: 0px;
+  margin-top: 5px;
   transition: all 0.1s !important;
 }
 
@@ -73,21 +73,21 @@
 }
 
 .playBtn > svg {
-  transform: scale(1.6);
+  transform: scale(1.4);
 }
 
 .pauseBtn > svg {
-  transform: scale(1.6);
+  transform: scale(1.4);
 }
 
 .stopBtn > svg {
-  transform: scale(2.3);
+  transform: scale(2.1);
 }
 
 .backwardBtn > svg {
-  transform: scale(0.9);
+  transform: scale(0.8);
 }
 
 .forwardBtn > svg {
-  transform: scale(0.9);
+  transform: scale(0.8);
 }

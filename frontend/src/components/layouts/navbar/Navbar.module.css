@@ -23,8 +23,8 @@
 }
 
 .logo > img {
-  width: 80px;
-  margin: 2px -8px 0 0;
+  width: 54px;
+  margin: 2px 0px 0 0;
 }
 
 .logo_1 {
@@ -39,17 +39,16 @@
 .logo_1_1 {
   font-size: 25px;
   color: #000;
-  font-weight: 600;
+  font-weight: bolder;
   letter-spacing: 6px;
 }
 
 .logo_1_2 {
   font-size: 13px;
   color: #576971;
-  font-weight: 600;
+  font-weight: bolder;
   letter-spacing: 1px;
   text-transform: uppercase;
-  margin-top: -6px;
 }
 
 .nav {

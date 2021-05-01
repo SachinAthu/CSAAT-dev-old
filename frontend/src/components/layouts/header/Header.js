@@ -1,10 +1,6 @@
 import $ from "jquery";
-import { Link } from "react-router-dom";
 
-import logo from "../../../assets/svg/logo.svg";
 import classes from "./Header.module.css";
-
-import { CHILD_TYPES } from "../../../actions/Types";
 
 const Header = (props) => {
 
