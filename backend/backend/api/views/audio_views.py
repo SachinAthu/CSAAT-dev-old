@@ -85,18 +85,6 @@ def addATAudio(request):
 
     return Response(serializer.data)
 
-
-# update typical child audio
-@api_view(['PUT'])
-def updateTAideo(request, pk):
-    print(request.data)
-
-
-# update atypical child audio
-@api_view(['PUT'])
-def updateATAideo(request, pk):
-    print(request.data)
-
 # delete a audio
 @api_view(['DELETE'])
 def deleteAudio(request, pk):

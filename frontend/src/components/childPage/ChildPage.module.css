@@ -57,16 +57,17 @@
   border-radius: 3px;
 }
 
-.novideo {
+.nosession {
   width: 100%;
   height: 30rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  box-shadow: 0 5px 29px 0 rgba(0, 0, 0, 0.1);
 }
 
-.novideo img {
-  width: 22rem;
+.nosession img {
+  width: 18rem;
   margin-bottom: 30px;
 }

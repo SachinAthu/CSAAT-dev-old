@@ -57,8 +57,6 @@ class DragDropField extends Component {
         e.preventDefault();
         e.stopPropagation();
 
-        console.log(e.dataTransfer.files)
-
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
           this.setState({
             dragging: false,

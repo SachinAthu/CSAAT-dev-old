@@ -34,8 +34,6 @@ urlpatterns = [
     path('videos/<str:pk>/', sessionVideos, name='session-videos'),
     path('add-t-video/', addTVideo, name='add-t-video'),
     path('add-at-video/', addATVideo, name='add-at-video'),
-    path('update-t-video/<str:pk>/', updateTVideo, name='update-t-video'),
-    path('update-at-video/<str:pk>/', updateATVideo, name='update-at-video'),
     path('delete-video/<str:pk>/', deleteVideo, name='delete-video'),
     path('delete-videos/', deleteVideos, name='delete-videos'),
 
@@ -43,8 +41,6 @@ urlpatterns = [
     path('audio/<str:pk>/', sessionAudio, name='session-audio'),
     path('add-t-audio/', addTAudio, name='add-t-audio'),
     path('add-at-audio/', addATAudio, name='add-at-audio'),
-    # path('update-t-audio/<str:pk>/', updateTAudio, name='update-t-audio'),
-    # path('update-at-audio/<str:pk>/', updateATAudio, name='update-at-audio'),
     path('delete-audio/<str:pk>/', deleteAudio, name='delete-audio'),
     path('delete-audios/', deleteAudios, name='delete-audios'),
 
@@ -54,12 +50,16 @@ urlpatterns = [
     path('delete-video-clips/', deleteVideoClips, name='delete-video-clips'),
 
     path('cameras/', cameras, name='cameras'),
+    path('f-cameras/', CamerasListAPIView.as_view(), name='f-cameras'),
     path('camera/<str:pk>/', camera, name='camera'),
     path('add-camera/', addCamera, name='add-camera'),
-    path('update-camera/<str:pk>/', updateCamera, name='update-camera'),
     path('delete-camera/<str:pk>/', deleteCamera, name='delete-camera'),
     path('delete-cameras/', deleteCameras, name='delete-cameras'),
 
     path('camera-angles/', cameraAngles, name='camera-angles'),
+    path('f-camera-angles/', CameraAnglesListAPIView.as_view(), name='f-camera-angles'),
     path('camera-angle/<str:pk>', cameraAngle, name='camera-angle'),
+    path('add-camera-angle/', addCameraAngle, name='add-camera-angle'),
+    path('delete-camera-angle/<str:pk>/', deleteCameraAngle, name='delete-camera-angle'),
+    path('delete-camera-angles/', deleteCameraAngles, name='delete-camera-angles'),
 ]

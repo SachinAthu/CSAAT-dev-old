@@ -1,6 +1,9 @@
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+import shutil
+import os
+from django.conf import settings
 from django.core.files.storage import default_storage
 
 from api.models import Videos, Sessions, Cameras, CameraAngles, TypicalChild, AntypicalChild
@@ -81,55 +84,6 @@ def addATVideo(request):
                 file_extension = '.mp4'
 
         serializer.save(name=name, camera_name=camera.name, camera_angle_name=camera_angle.name, file_extension=file_extension)
-    else:
-        print(serializer.errors)
-
-    return Response(serializer.data)
-
-# edit typical child video
-@api_view(['PUT'])
-def updateTVideo(request, pk):
-    print(request.data)
-    video = Videos.objects.get(id=pk)
-    serializer = VideosSerializer(data=request.data, instance=video)
-
-    if serializer.is_valid():
-        # set video name
-        camera = Cameras.objects.get(id=request.data['camera'])
-        camera_angle = CameraAngles.objects.get(id=request.data['camera_angle'])
-        child = TypicalChild.objects.get(id=request.data['tChild'])
-        session = Sessions.objects.get(id=request.data['session'])
-
-        name = f'{child.unique_no}_{session.id}_{camera.name}'
-
-        # #set file extension
-        # file_type = request.data['file_type']
-        # file_extension = ''
-        # t = file_type.split('/')[1]
-        # if t == 'mp4':
-        #     file_extension = '.mp4'
-        # elif t == 'x-matroska':
-        #     file_extension = '.mkv'
-        # else:
-        #     file_extension = '.mp4'
-
-
-        serializer.save()
-        serializer.save(name=name, camera_name=camera.name, camera_angle_name=camera_angle.name, file_extension=file_extension)
-    else:
-        print(serializer.errors)
-
-    return Response(serializer.data)
-
-# edit antypical child video
-@api_view(['PUT'])
-def updateATVideo(request, pk):
-    video = Videos.objects.get(id=pk)
-    serializer = VideosSerializer(data=request.data, instance=video)
-
-    if serializer.is_valid():
-        print(request.data)
-        serializer.save()
     else:
         print(serializer.errors)
 

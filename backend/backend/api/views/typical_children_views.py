@@ -70,38 +70,30 @@ def updateTChild(request, pk):
     serializer = TypicalChildSerializer(data=request.data, instance=child)
 
     if serializer.is_valid():
+        print(request.data)
+    
         cd = cd_name = dgf = dgf_name = None
-        # previous values
-        cdoc = child.cdoc
-        cdoc_name = child.cdoc_name
-        dgform = child.dgform
-        dgform_name = child.dgform_name
-
+        
         if request.data["cdoc"]:
             cd = request.data["cdoc"]
             cd_name = f'cdoc_{request.data["unique_no"]}.pdf'
-        elif not request.data["cdoc"] and default_storage.exists(cdoc.path):
-            cd = request.data["cdoc"]
-            cd_name = f'cdoc_{request.data["unique_no"]}.pdf'
-            # delete previous file
-            try:
-                default_storage.delete(dgform.path)
-            except:
-                print('previous cdoc deletion error')
     
         if request.data["dgform"]:
             dgf = request.data["dgform"]
             dgf_name = f'dgform_{request.data["unique_no"]}.pdf'
-        elif not request.data["dgform"] and default_storage.exists(dgform.path):
-            dgf = request.data["dgform"]
-            dgf_name = f'dgform_{request.data["unique_no"]}.pdf'
-            # delete previous file
-            try:
-                default_storage.delete(dgform.path)
-            except:
-                print('previous dgform deletion error')
-    
+
+        # delete previous cdoc
+        if not child.cdoc == None:
+            if default_storage.exists(child.cdoc.path):
+                default_storage.delete(child.cdoc.path)
+
+        # delete previous dgform
+        if not child.dgform == None:
+            if default_storage.exists(child.dgform.path):
+                default_storage.delete(child.dgform.path)
+
         serializer.save(cdoc=cd, cdoc_name=cd_name, dgform=dgf, dgform_name=dgf_name)
+       
     else:
         print(serializer.errors)
 

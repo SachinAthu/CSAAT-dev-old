@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import { connect } from "react-redux";
 
-import classes from "./AddChild.module.css";
+import classes from "../../../assets/css/AddModal.module.css";
 import ModalFrame from "../modalFrame/ModalFrame";
 import DragDropField from "../../layouts/dragDropField/DragDropField";
 import BtnSpinner from "../../layouts/spinners/btn/BtnSpinner";
@@ -45,7 +45,6 @@ export class AddChild extends Component {
     const childType = localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE)
 
     const c = this.props.child;
-    console.log(c);
     if (c) {
       if (childType === CHILD_TYPES.TYPICAL) {
         this.setState({
@@ -419,7 +418,6 @@ export class AddChild extends Component {
         break;
 
       default:
-        return;
     }
 
     this.setState({
@@ -542,8 +540,6 @@ export class AddChild extends Component {
       },
     })
       .then((res) => {
-        console.log(res.data);
-
         this.setState({ requesting: false });
         if (this.state.editing) {
           this.props.updateChild(res.data);
@@ -554,7 +550,6 @@ export class AddChild extends Component {
       })
       .catch((err) => {
         this.setState({ requesting: false });
-        console.log(err);
         if (method === "POST") {
           this.showFailed("Child adding failed!");
         } else {
@@ -635,7 +630,7 @@ export class AddChild extends Component {
 
     return (
       <ModalFrame close={this.props.close}>
-        <div className={classes.container}>
+        <div className={classes.container} style={{width: '34rem'}}>
           <h4>{editing ? "Edit Child" : "New Child"}</h4>
 
           <form className={classes.form} onSubmit={this.onSubmitHandler}>

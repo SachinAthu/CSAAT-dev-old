@@ -22,8 +22,8 @@ class Breadcrumbs extends Component {
     }
 
     return (
-      <div className={`${classes.breadcrumbs}`}>
-        <div className={`container`}>
+      <div className='container'>
+        <div className={`${classes.breadcrumbs}`}>
           {sub_links ? (
             <ol>
               {links.map((link, index) => (

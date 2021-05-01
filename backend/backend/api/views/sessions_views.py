@@ -4,7 +4,6 @@ from rest_framework.response import Response
 import os
 from django.conf import settings
 import shutil
-from django.db.models import Q
 
 from api.models import Sessions, Videos, TypicalChild, AntypicalChild
 from api.serializers import SessionsSerializer

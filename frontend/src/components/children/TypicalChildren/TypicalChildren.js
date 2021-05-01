@@ -4,23 +4,28 @@ import axios from "axios";
 import { connect } from "react-redux";
 import DataTable from "react-data-table-component";
 
-import classes from "../Children.module.css";
+import classes from "../../../assets/css/TableComponent.module.css";
 import Breadcrumbs from "../../layouts/breadcrumbs/Breadcrumbs";
 import AddChild from "../../modals/addChild/AddChild";
 import EmptySVG from "../../../assets/svg/empty.svg";
-import { customStyles } from "../DatatableStyles";
+import { customStyles } from "../../DatatableStyles";
 import DeleteConfirmPopup from "../../modals/deleteConfirmAlert/DeleteConfirmAlert";
 import { BASE_URL } from "../../../config";
+import ErrorBoundry from "../../ErrorBoundry";
+import PageSpinner from "../../layouts/spinners/page/PageSpinner";
 
 import { getChildren, deleteChildren } from "../../../actions/ChildActions";
 import { deleteSessions } from "../../../actions/SessionActions";
 import { deleteVideos } from "../../../actions/VideoActions";
+import { setNav } from "../../../actions/NavigationActions";
 import {
   CHILD_TYPES,
   CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD,
   CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD_NAME,
+  CSAAT_VIDEO_UPLOAD_ACTIVE_NAV,
   CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION,
   CSAAT_VIDEO_UPLOAD_CHILDTYPE,
+  NAV_LINKS,
 } from "../../../actions/Types";
 
 class TypicalChildren extends Component {
@@ -30,6 +35,7 @@ class TypicalChildren extends Component {
     deleteVideos: PropTypes.func.isRequired,
     deleteSessions: PropTypes.func.isRequired,
     deleteChildren: PropTypes.func.isRequired,
+    setNav: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -43,8 +49,9 @@ class TypicalChildren extends Component {
       nextLink: null,
       prevLink: null,
       isSearching: false,
+      loading: false,
     };
-    this.afterReloadFetch = false;
+    this.lastClick = 0;
   }
 
   componentDidMount() {
@@ -53,6 +60,13 @@ class TypicalChildren extends Component {
     this.props.deleteSessions();
     this.props.deleteVideos();
     localStorage.removeItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION);
+
+    // set navigation link
+    this.props.setNav(NAV_LINKS.NAV_TYPICAL_CHILD);
+    localStorage.setItem(
+      CSAAT_VIDEO_UPLOAD_ACTIVE_NAV,
+      NAV_LINKS.NAV_TYPICAL_CHILD
+    );
 
     // store child type on localstorage
     localStorage.setItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE, CHILD_TYPES.TYPICAL);
@@ -71,51 +85,62 @@ class TypicalChildren extends Component {
   ///////////////////////////////////////////////
   // set on scroll event
   trackScrolling = () => {
-    // console.log(window.innerHeight + window.scrollY, document.body.offsetHeight)
-    let lastScrollTop = 0;
-    const el = document.getElementById("typical_children_table");
-    let st = window.pageYOffset || document.documentElement.scrollTop;
-
-    if (st > lastScrollTop && el.getBoundingClientRect().bottom <= window.innerHeight) {
-      // console.log('bottom')
+    if (
+      window.innerHeight + window.scrollY >=
+      document.body.offsetHeight - 120
+    ) {
       // fetch more records
       if (!this.state.isSearching) {
         this.fetchChildren();
       }
     }
-    lastScrollTop = st <= 0 ? 0 : st;
   };
+  
+  fetchChildren = (refresh = false) => {
+    var delay = 20;
+    if (this.lastClick >= (Date.now() - delay)){
+      return;
+    }
+    this.lastClick = Date.now()
 
-  fetchChildren = () => {
     let url = "";
-    if (this.state.nextLink) {
-      url = this.state.nextLink;
-    } else {
+    if(refresh) {
+      this.props.deleteChildren()
       url = `${BASE_URL}/t-children/`;
+    }else {
+      if (this.state.nextLink) {
+        url = this.state.nextLink;
+      } else {
+        url = `${BASE_URL}/t-children/`;
+      }
+    }
+    if(this.props.children.length == 0) {
+      this.setState({ loading: true });
     }
     axios
       .get(url)
       .then((res) => {
-        // console.log(res.data.results);
         const data = res.data;
         this.props.getChildren(data.results);
         this.setState({
           count: data.count,
           prevLink: data.previous,
           nextLink: data.next,
+          loading: false,
         });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        this.setState({ loading: false });
+      });
   };
 
   filterChildren = (val) => {
     axios
       .get(`${BASE_URL}/t-f-children/?search=${val}`)
       .then((res) => {
-        // console.log(res.data);
         this.props.getChildren(res.data);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {});
   };
 
   createDataTable = () => {
@@ -123,32 +148,32 @@ class TypicalChildren extends Component {
 
     let columns = [
       {
-        name: "UNIQUE NO",
+        name: "Unique No",
         selector: "unique_no",
         sortable: true,
       },
       {
-        name: "SEQUENCE NO",
+        name: "Sequence No",
         selector: "sequence_no",
         sortable: true,
       },
       {
-        name: "CHILD NAME",
+        name: "Child Name",
         selector: "name",
         sortable: true,
       },
       {
-        name: "DATE OF BIRTH",
+        name: "Date of Birth",
         selector: "dob",
         sortable: true,
       },
       {
-        name: "GENDER",
+        name: "Gender",
         selector: "gender",
         sortable: true,
       },
       {
-        name: "CONSENT DOCUMENT",
+        name: "Consent Document",
         sortable: false,
         cell: (row) => {
           if (row.cdoc) {
@@ -168,7 +193,7 @@ class TypicalChildren extends Component {
         },
       },
       {
-        name: "DATA GATHERING FORM",
+        name: "Data Gathering Form",
         sortable: false,
         cell: (row) => {
           if (row.dgform) {
@@ -283,7 +308,6 @@ class TypicalChildren extends Component {
   };
 
   closeDeleteConfirmPopup = (res) => {
-    console.log(res);
     if (res) {
       this.setState({ selectedRows: [] });
     }
@@ -294,8 +318,6 @@ class TypicalChildren extends Component {
   ////////////////// event listeners //////////////////
   /////////////////////////////////////////////////////
   handleRowSelect = (state) => {
-    // You can use setState or dispatch with something like Redux so we can use the retrieved data
-    console.log("Selected Rows: ", state.selectedRows);
     this.setState({
       selectedRows: state.selectedRows,
     });
@@ -319,8 +341,6 @@ class TypicalChildren extends Component {
   };
 
   deleteChildHandler = (child) => {
-    // console.log(id);
-
     // open delete confirm box
     let children = [...this.state.selectedRows];
 
@@ -337,7 +357,6 @@ class TypicalChildren extends Component {
   };
 
   toChildHandler = (child) => {
-    // console.log(child);
     localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD, child.id);
     localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD_NAME, child.name);
     this.props.history.push({
@@ -345,7 +364,7 @@ class TypicalChildren extends Component {
     });
   };
 
-  AddChildHandler = () => {
+  addChildHandler = () => {
     this.setState({
       addOrEdit: true,
     });
@@ -359,13 +378,7 @@ class TypicalChildren extends Component {
   };
 
   render() {
-    const {
-      searchVal,
-      addOrEdit,
-      editChild,
-      deleting,
-      selectedRows,
-    } = this.state;
+    const { addOrEdit, editChild, deleting, selectedRows } = this.state;
 
     const table = this.createDataTable();
     const sub_links = [{ name: "Home", link: "/" }];
@@ -385,7 +398,7 @@ class TypicalChildren extends Component {
               <input
                 id="searchField"
                 name="searchField"
-                placeholder="Search children..."
+                placeholder="Search children by any field..."
                 type="text"
                 onChange={this.onSearchValChange}
               />
@@ -393,26 +406,54 @@ class TypicalChildren extends Component {
 
             <button
               className={`button_primary ${classes.addbtn}`}
-              onClick={this.AddChildHandler}
+              onClick={this.addChildHandler}
             >
               New Child
             </button>
           </div>
 
-          {this.props.children.length === 0 ? (
-            <div className={`${classes.empty_table}`}>
-              <img src={EmptySVG} alt="No records image" />
-              <h6>There are no records available</h6>
+          {this.state.loading ? (
+            <div className={classes.loading_div}>
+              <PageSpinner />
             </div>
           ) : (
-            <div id="typical_children_table" className={`${classes.table}`}>
-              {table}
-            </div>
+            <Fragment>
+              {this.props.children.length === 0 ? (
+                <div className={`${classes.empty_table}`}>
+                  <img src={EmptySVG} alt="No records image" />
+                  <h6>There are no records available</h6>
+                </div>
+              ) : (
+                <div id="typical_children_table" className={`${classes.table}`}>
+                  <div className={classes.table_info_refresh}>
+                    <span>
+                      Showing {this.props.children.length} out of {this.state.count} records
+                    </span>
+                    <button onClick={this.fetchChildren.bind(this, true)}>
+                      <svg
+                        version="1.1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                      >
+                        <title>Refresh</title>
+                        <path d="M12 18v-3l3.984 3.984-3.984 4.031v-3q-3.281 0-5.648-2.367t-2.367-5.648q0-2.344 1.266-4.266l1.453 1.453q-0.703 1.266-0.703 2.813 0 2.484 1.758 4.242t4.242 1.758zM12 3.984q3.281 0 5.648 2.367t2.367 5.648q0 2.344-1.266 4.266l-1.453-1.453q0.703-1.266 0.703-2.813 0-2.484-1.758-4.242t-4.242-1.758v3l-3.984-3.984 3.984-4.031v3z"></path>
+                      </svg>
+                    </button>
+                  </div>
+                  
+                  {table}
+                </div>
+              )}
+            </Fragment>
           )}
         </div>
 
         {addOrEdit ? (
-          <AddChild close={this.closeAddingWindow} child={editChild} />
+          <ErrorBoundry>
+            <AddChild close={this.closeAddingWindow} child={editChild} />
+          </ErrorBoundry>
         ) : null}
 
         {deleting ? (
@@ -438,4 +479,5 @@ export default connect(mapStateToProps, {
   deleteVideos,
   deleteSessions,
   deleteChildren,
+  setNav,
 })(TypicalChildren);

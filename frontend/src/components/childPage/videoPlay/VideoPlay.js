@@ -7,6 +7,7 @@ import VideoPlayer from "../../videoPlayer/VideoPlayer";
 import DeleteConfirmPopup from "../../modals/deleteConfirmAlert/DeleteConfirmAlert";
 import classes from "./VideoPlay.module.css";
 import ControlPanel from './controlPanel/ControlPanel'
+import ErrorBoundry from '../../ErrorBoundry'
 
 import { CHILD_TYPES, CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD, CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION, CSAAT_VIDEO_UPLOAD_CHILDTYPE } from '../../../actions/Types'
 
@@ -59,7 +60,6 @@ class VideoPlay extends Component {
 
    // close the delete confirm alert
   closeDeleteConfirmPopup = (res) => {
-    // console.log(res);
     this.setState({ deleting: false });
   };
 
@@ -115,32 +115,14 @@ class VideoPlay extends Component {
               className={classes.editbtn}
               onClick={this.editSessionHandler.bind(this)}
             >
-              <svg
-                version="1.1"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-              >
-                <title>Edit</title>
-                <path d="M20.719 7.031l-1.828 1.828-3.75-3.75 1.828-1.828q0.281-0.281 0.703-0.281t0.703 0.281l2.344 2.344q0.281 0.281 0.281 0.703t-0.281 0.703zM3 17.25l11.063-11.063 3.75 3.75-11.063 11.063h-3.75v-3.75z"></path>
-              </svg>
+              Edit
             </button>
 
             <button
               className={classes.removebtn}
               onClick={this.deleteSessionHandler.bind(this, localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION))}
             >
-              <svg
-                version="1.1"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-              >
-                <title>Delete</title>
-                <path d="M18.984 3.984v2.016h-13.969v-2.016h3.469l1.031-0.984h4.969l1.031 0.984h3.469zM6 18.984v-12h12v12q0 0.797-0.609 1.406t-1.406 0.609h-7.969q-0.797 0-1.406-0.609t-0.609-1.406z"></path>
-              </svg>
+             Delete
             </button>
           </div>
         </div>
@@ -151,10 +133,12 @@ class VideoPlay extends Component {
               {video_list.map((video, index) => (
                 <div className={classes.player} key={index}>
                   {video ? (
-                    <VideoPlayer
-                      key={Math.random()}
-                      video={video}
-                    />
+                    <ErrorBoundry>
+                      <VideoPlayer
+                        key={Math.random()}
+                        video={video}
+                      />
+                    </ErrorBoundry>
                   ) : (
                     <div
                       className={classes.empty_video}
@@ -176,7 +160,9 @@ class VideoPlay extends Component {
               ))}
             </div>
 
-            <ControlPanel />
+            <ErrorBoundry>
+              <ControlPanel />
+            </ErrorBoundry>
           </div>
         ) : (
           <div className={classes.novideo}>

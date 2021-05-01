@@ -3,9 +3,10 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import { connect } from "react-redux";
 
-import classes from "./AddSession.module.css";
+import classes from "../../../assets/css/AddModal.module.css";
 import ModalFrame from "../modalFrame/ModalFrame";
 import BtnSpinner from "../../layouts/spinners/btn/BtnSpinner";
+import { BASE_URL } from '../../../config'
 
 import { addSession, setActiveSession } from "../../../actions/SessionActions";
 import { deleteVideos } from "../../../actions/VideoActions";
@@ -56,7 +57,6 @@ function AddSession(props) {
   ////////////////////// event handlers ////////////////////////////
   //////////////////////////////////////////////////////////////////
   const onChangeHandler = (e) => {
-    // console.log(e.target.value)
     // validation
     const rDate_f = document.getElementById("session_add_form_date");
     const rDate_e = document.getElementById("rDate_error");
@@ -80,9 +80,9 @@ function AddSession(props) {
     // create a new session and set created session as the active session
     let url = "";
     if (childType === CHILD_TYPES.TYPICAL) {
-      url = "http://localhost:8000/api/add-t-session/";
+      url = `${BASE_URL}/add-t-session/`;
     } else {
-      url = "http://localhost:8000/api/add-at-session/";
+      url = `${BASE_URL}/add-at-session/`;
     }
 
     axios(url, {
@@ -97,7 +97,6 @@ function AddSession(props) {
       },
     })
       .then((res) => {
-        console.log("session created", res.data);
         setLoading(false);
         props.addSession(res.data);
         props.setActiveSession(res.data);
@@ -108,7 +107,6 @@ function AddSession(props) {
         props.close();
       })
       .catch((err) => {
-        console.log(err);
         showFailed();
       });
 
@@ -131,7 +129,7 @@ function AddSession(props) {
 
   return (
     <ModalFrame close={props.close}>
-      <div className={classes.container}>
+      <div className={classes.container} style={{width: '22rem'}}>
         <h4>New Session</h4>
 
         <form className={classes.form} onSubmit={onSubmit.bind(this)}>

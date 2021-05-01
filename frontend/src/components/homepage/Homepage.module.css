@@ -1,0 +1,106 @@
+.container {
+  height: calc(100vh - 175px);
+  position: relative;
+  padding: 0 5%;
+}
+
+.container > h1 {
+  width: max-content;
+  position: relative;
+  font-size: 4rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.8);
+  text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
+  padding: 40px 0 0 0;
+}
+
+.container > h1::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: rgba(6, 91, 134, 0.2);
+  width: 100%;
+  height: 100%;
+  transform: perspective(1.5em) rotateX(40deg) scale(1, 0.5);
+  filter: blur(1em);
+}
+
+.tasks {
+  position: absolute;
+  top: 400px;
+  left: 6%;
+  width: max-content;
+  display: flex;
+  flex-direction: column;
+}
+
+.tasks a {
+  position: relative;
+  text-decoration: none;
+  color: rgba(0, 0, 0, 0.7);
+  padding: 10px 50px;
+  transition: all ease-in 0.15s;
+  background-color: #fff;
+  border-bottom: none;
+  border-radius: 10px 0 10px 0;
+  box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.1);
+  margin: 10px 0;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: capitalize;
+  display: flex;
+  align-items: center;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+.tasks a:after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "";
+  width: 0;
+  height: 100%;
+  display: block;
+  border-bottom: 3px solid rgba(0, 156, 234, 1);
+  transition: width 0.15s;
+}
+
+.tasks a:hover,
+.tasks a:focus {
+  transform: scale(1.05);
+  box-shadow: 5px 5px 20px 0 rgba(0, 0, 0, 0.15);
+}
+
+.tasks a:hover::after,
+.tasks a:focus::after {
+  width: 98%;
+}
+
+.tasks span {
+  margin-left: 10px;
+}
+
+.image {
+  position: relative;
+  width: 45%;
+  margin: auto 0;
+  float: right;
+}
+
+.container img {
+  width: 100%;
+}
+
+.image::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 15%;
+  height: 8%;
+  width: 100%;
+  background-color: rgba(6, 91, 134, 0.2);
+  transform: perspective(1em) rotateX(30deg) scale(1, 0.5);
+  filter: blur(1em);
+}

@@ -8,8 +8,9 @@ import EmptySVG from "../../assets/svg/empty.svg";
 import Breadcrumbs from "../layouts/breadcrumbs/Breadcrumbs";
 import BtnSpinner from "../layouts/spinners/btn/BtnSpinner";
 import AddSession from "../modals/addSession/AddSession";
-import { BASE_URL } from '../../config'
+import { BASE_URL } from "../../config";
 import VideoPlay from "./videoPlay/VideoPlay";
+import ErrorBoundry from '../ErrorBoundry'
 
 import {
   getSessions,
@@ -17,8 +18,17 @@ import {
   setActiveSession,
 } from "../../actions/SessionActions";
 import { getVideos, deleteVideos } from "../../actions/VideoActions";
-import { getAudio } from '../../actions/AudioActions'
-import { CHILD_TYPES, CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD, CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD_NAME, CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION, CSAAT_VIDEO_UPLOAD_CHILDTYPE } from '../../actions/Types'
+import { getAudio } from "../../actions/AudioActions";
+import { setNav } from "../../actions/NavigationActions";
+import {
+  CHILD_TYPES,
+  CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD,
+  CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD_NAME,
+  CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION,
+  CSAAT_VIDEO_UPLOAD_CHILDTYPE,
+  NAV_LINKS,
+  CSAAT_VIDEO_UPLOAD_ACTIVE_NAV,
+} from "../../actions/Types";
 
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
@@ -32,6 +42,7 @@ class ChildPage extends Component {
     deleteVideos: PropTypes.func.isRequired,
     getAudio: PropTypes.func.isRequired,
     setActiveSession: PropTypes.func.isRequired,
+    setNav: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -43,7 +54,23 @@ class ChildPage extends Component {
   }
 
   componentDidMount() {
+    // set navigation link
+    if(localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE) === CHILD_TYPES.TYPICAL) {
+      this.props.setNav(NAV_LINKS.NAV_TYPICAL_CHILD);
+      localStorage.setItem(
+        CSAAT_VIDEO_UPLOAD_ACTIVE_NAV,
+        NAV_LINKS.NAV_TYPICAL_CHILD
+      );
+    }else{
+      this.props.setNav(NAV_LINKS.NAV_ATPICAL_CHILD);
+      localStorage.setItem(
+        CSAAT_VIDEO_UPLOAD_ACTIVE_NAV,
+        NAV_LINKS.NAV_ATPICAL_CHILD
+      );
+    }
+
     this.fetchSessions();
+
   }
 
   //////////////////////////////////////////////////////////////
@@ -51,26 +78,30 @@ class ChildPage extends Component {
   //////////////////////////////////////////////////////////////
   // fetch all sessions from DB
   fetchSessions = () => {
-    const activeChild = localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD)
-    let url = ""
-    if(localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE) === CHILD_TYPES.TYPICAL){
-      url = `${BASE_URL}/t-sessions/${activeChild}/`
-    }else{
-      url = `${BASE_URL}/at-sessions/${activeChild}/`
+    const activeChild = localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD);
+    let url = "";
+    if (
+      localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE) === CHILD_TYPES.TYPICAL
+    ) {
+      url = `${BASE_URL}/t-sessions/${activeChild}/`;
+    } else {
+      url = `${BASE_URL}/at-sessions/${activeChild}/`;
     }
     axios
       .get(url)
       .then((res) => {
-        // console.log(res.data);
         if (res.data[0]) {
           this.props.getSessions(res.data);
-          this.props.setActiveSession(res.data[0])
-          localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION, res.data[0].id)
+          this.props.setActiveSession(res.data[0]);
+          localStorage.setItem(
+            CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION,
+            res.data[0].id
+          );
           this.fetchVideos(res.data[0].id);
           this.fetchAudio(res.data[0].id);
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {});
   };
 
   // fetch audio for the selected session from DB
@@ -78,21 +109,19 @@ class ChildPage extends Component {
     axios
       .get(`${BASE_URL}/audio/${id}/`)
       .then((res) => {
-        console.log(res.data);
         this.props.getAudio(res.data[0]);
       })
-      .catch((err) => console.log(err));
-  }
+      .catch((err) => {});
+  };
 
   // fetch all videos for selected session from DB
   fetchVideos = (id) => {
     axios
       .get(`${BASE_URL}/videos/${id}/`)
       .then((res) => {
-        // console.log(res.data);
         this.props.getVideos(res.data);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {});
   };
 
   // format datetime
@@ -135,13 +164,13 @@ class ChildPage extends Component {
   //////////////////////////////////////////////////////////////////
   // change selected session when dropdown value change
   onChangeSelectHandler = (e) => {
-    // console.log(e.target.value)
     this.fetchVideos(e.target.value);
+    this.fetchAudio(e.target.value)
     const session = this.props.sessions.filter(
       (s, i) => s.id == e.target.value
     );
     this.props.setActiveSession(session[0]);
-    localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION, session[0].id)
+    localStorage.setItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION, session[0].id);
   };
 
   addSessionHandler = () => {
@@ -176,7 +205,7 @@ class ChildPage extends Component {
       </select>
     );
 
-    const childType = localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE)
+    const childType = localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE);
     const sub_links = [
       { name: "Home", link: "/" },
       {
@@ -184,9 +213,8 @@ class ChildPage extends Component {
           childType === CHILD_TYPES.TYPICAL
             ? "Typical Children"
             : "Atypical Children",
-        link: childType === CHILD_TYPES.TYPICAL
-        ? "/t_children"
-        : "/at_children",
+        link:
+          childType === CHILD_TYPES.TYPICAL ? "/t_children" : "/at_children",
       },
     ];
 
@@ -217,10 +245,12 @@ class ChildPage extends Component {
 
           {sessions.length > 0 ? (
             <div className={classes.videoplay}>
-              <VideoPlay history={this.props.history} />
+              <ErrorBoundry>
+                <VideoPlay history={this.props.history} />
+              </ErrorBoundry>
             </div>
           ) : (
-            <div className={classes.novideo}>
+            <div className={classes.nosession}>
               <img src={EmptySVG} alt="No Sessions Image" />
               <h6>There are no Sessions available</h6>
             </div>
@@ -246,4 +276,5 @@ export default connect(mapStateToProps, {
   deleteVideos,
   getAudio,
   setActiveSession,
+  setNav,
 })(ChildPage);

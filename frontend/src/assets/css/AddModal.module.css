@@ -1,0 +1,202 @@
+.container {
+  padding: 0;
+  width: 34rem;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.container h4 {
+  font-size: 24px;
+  color: #364146;
+  margin: 10px auto 65px auto;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  padding: 5px 10px;
+}
+
+.form textarea,
+.form select {
+  height: 36px;
+  font-size: 0.75rem;
+  font-weight: 400;
+  padding: 6px 15px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+  color: var(--color-input);
+  transition: all 0.3s ease-in-out;
+  outline: none;
+  outline-style: none;
+}
+
+.form textarea {
+  height: auto;
+}
+
+.form input:focus,
+.form textarea:focus,
+.form select:focus {
+  outline: none;
+  outline-style: none;
+  border: 1px solid rgba(0, 123, 255, 0.5);
+}
+
+.form input:focus {
+  outline: none;
+  outline-style: none;
+  box-shadow: none;
+}
+
+.formgroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.formgroup2 {
+  margin-bottom: 20px;
+}
+
+.formgroup3 {
+  display: flex;
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+
+.formgroup3 button {
+  flex: 1;
+  height: 36px;
+  color: #fff;
+}
+
+.formgroup_radio {
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.formgroup_radio_1 {
+  display: flex;
+  align-items: center;
+}
+
+.formgroup_file {
+  margin-bottom: 20px;
+}
+
+.formgroup_btn {
+  display: flex;
+  margin-top: 20px;
+  margin-bottom: 25px;
+}
+
+.formgroup_btn button {
+  flex: 1;
+  height: 36px;
+  color: #fff;
+}
+
+.resetbtn {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.3);
+  margin-right: 2px;
+}
+
+.resetbtn:hover {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.submitbtn {
+  color: #fff;
+  background-color: var(--color-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-left: 2px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.submitbtn:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.result_div {
+  text-align: center;
+  margin: 10px 0;
+}
+
+.result_div > span {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.progress {
+  padding: 12px 10px;
+  margin: 8px 0;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.progress_1 {
+  margin-bottom: 10px;
+}
+
+.progress_1 > span {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.progress_2 {
+  display: flex;
+  align-items: center;
+}
+
+.progressBar {
+  flex: 95%;
+  height: 20px;
+}
+
+.cancelBtn {
+  flex: 5%;
+  margin-left: 5px;
+}
+
+.cancelBtn > button {
+  border-radius: 50%;
+  padding: 1px;
+}
+
+.cancelBtn > button > svg {
+  fill: var(--color-danger);
+  transform: scale(1);
+}
+
+.fieldError {
+  display: none;
+  color: var(--color-danger);
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.errorBorder {
+  border: 1px solid var(--color-danger) !important;
+}
+
+.failed {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-danger);
+  margin: 0 auto;
+  margin-bottom: 10px;
+}

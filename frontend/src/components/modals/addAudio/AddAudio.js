@@ -3,13 +3,13 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import axios from "axios";
 
-import classes from "./AddAudio.module.css";
+import classes from "../../../assets/css/AddModal.module.css";
 import ModalFrame from "../modalFrame/ModalFrame";
 import { BASE_URL } from "../../../config";
 import BtnSpinner from "../../layouts/spinners/btn/BtnSpinner";
 import DragDropField from "../../layouts/dragDropField/DragDropField";
 
-import { addAudio, updateAudio } from "../../../actions/AudioActions";
+import { addAudio } from "../../../actions/AudioActions";
 import { CHILD_TYPES, CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD, CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION, CSAAT_VIDEO_UPLOAD_CHILDTYPE } from "../../../actions/Types";
 
 axios.defaults.xsrfCookieName = "csrftoken";
@@ -18,7 +18,6 @@ axios.defaults.xsrfHeaderName = "X-CSRFToken";
 class AddAudio extends Component {
   static propTypes = {
     addAudio: PropTypes.func.isRequired,
-    updateAudio: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -30,7 +29,6 @@ class AddAudio extends Component {
       file_type: "",
       file_extension: "",
       duration: 0,
-      editing: false,
       loading: false,
       progress: 0,
       progressBar: false,
@@ -41,19 +39,6 @@ class AddAudio extends Component {
   }
 
   componentDidMount() {
-    const a = this.props.audio;
-    console.log(a);
-    if (a) {
-      this.setState({
-        editing: true,
-        id: a.id ? a.id : "",
-        name: a.name ? a.name : "",
-        audio: a.audio ? a.audio : "",
-        file_type: a.file_type ? a.file_type : "",
-        file_extension: a.file_extension ? a.file_extension : "",
-        duration: a.duration ? a.duration : "",
-      });
-    }
     this.childType = localStorage.getItem(CSAAT_VIDEO_UPLOAD_CHILDTYPE)
     this.activeChild = localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_CHILD)
     this.activeSession = localStorage.getItem(CSAAT_VIDEO_UPLOAD_ACTIVE_SESSION)
@@ -146,23 +131,10 @@ class AddAudio extends Component {
     this.setState({ loading: true, progressBar: true });
 
     let url = "";
-    let method = "";
     if (this.childType === CHILD_TYPES.TYPICAL) {
-      if (this.state.editing) {
-        url = `${BASE_URL}/update-t-audio/${id}/`;
-        method = "PUT";
-      } else {
-        url = `${BASE_URL}/add-t-audio/`;
-        method = "POST";
-      }
+      url = `${BASE_URL}/add-t-audio/`;
     } else {
-      if (this.state.editing) {
-        url = `${BASE_URL}/update-at-audio/${id}/`;
-        method = "PUT";
-      } else {
-        url = `${BASE_URL}/add-at-audio/`;
-        method = "POST";
-      }
+      url = `${BASE_URL}/add-at-audio/`;
     }
 
     let formData = new FormData();
@@ -180,7 +152,7 @@ class AddAudio extends Component {
       formData.append("duration", this.state.duration);
 
       axios(url, {
-        method: method,
+        method: 'POST',
         data: formData,
         headers: {
           "Content-Type": "multipart/form-data",
@@ -195,19 +167,12 @@ class AddAudio extends Component {
         cancelToken: this.cancelTokenSource.token,
       })
         .then((res) => {
-          console.log("audio uploaded", res.data);
-          if (this.props.video) {
-            this.props.updateAudio(res.data);
-          } else {
-            this.props.addAudio(res.data);
-          }
-
+          this.props.addAudio(res.data);
           this.setState({ loading: false, progressBar: false });
           this.props.close();
         })
         .catch((thrown) => {
           if (axios.isCancel(thrown)) {
-            console.log("Uploading canceled", thrown.message);
             this.showFailed("Uploading cancelled!");
           } else {
             // show result fail
@@ -219,7 +184,6 @@ class AddAudio extends Component {
   };
 
   onAudioChangeHandler = (file) => {
-    console.log(file);
     var errorF = document.getElementById("audio_add_form_audio_error");
     var r = this.checkFieldEmpty(file, errorF, "Audio file is required");
     if (r) {
@@ -256,12 +220,12 @@ class AddAudio extends Component {
   };
 
   render() {
-    const { name, audio, editing, loading, progress } = this.state;
+    const { name, audio, loading, progress } = this.state;
 
     return (
       <ModalFrame close={this.props.close}>
-        <div className={classes.container}>
-          <h4>{editing ? "Edit Audio" : "New Audio"}</h4>
+        <div className={classes.container} style={{width: '30rem'}}>
+          <h4>New Audio</h4>
 
           <form className={classes.form} onSubmit={this.onSubmitHandler}>
             <div className={classes.formgroup}>
@@ -335,7 +299,7 @@ class AddAudio extends Component {
               >
                 {loading ? <BtnSpinner /> : null}
 
-                {editing ? "EDIT" : "ADD"}
+                ADD
               </button>
             </div>
           </form>
@@ -355,4 +319,4 @@ class AddAudio extends Component {
 }
 
 
-export default connect(null, { addAudio, updateAudio })(AddAudio);
+export default connect(null, { addAudio })(AddAudio);
